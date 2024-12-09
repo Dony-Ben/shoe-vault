@@ -1,0 +1,133 @@
+<!-- <%- include("../../views/partials/admin/header") %> -->
+ <style>
+:root {
+  --primary-color: #3498db;
+  --primary-hover: #2980b9;
+  --text-color: #333;
+  --background-color: #f8f9fa;
+  --border-color: #ced4da;
+  --border-radius: 0.25rem;
+  --transition: all 0.3s ease;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  line-height: 1.6;
+  color: var(--text-color);
+  background-color: var(--background-color);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.col-md-6 {
+  width: 100%;
+  padding: 0 15px;
+}
+
+@media (min-width: 768px) {
+  .col-md-6 {
+    width: 50%;
+  }
+}
+
+.mt-60 {
+  margin-top: 60px;
+}
+
+.mt-30 {
+  margin-top: 30px;
+}
+
+.mb-4 {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text-color);
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+.btn {
+  display: inline-block;
+  font-weight: 400;
+  text-align: center;
+  vertical-align: middle;
+  user-select: none;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #299843;
+  border-color: #299843;
+}
+
+.text-end {
+  text-align: right;
+}
+
+.d-grid {
+  display: grid;
+}
+
+ </style>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 mt-60">
+            <form method="post" action="/admin/editCategory/<%= category._id %>">
+                <div class="mb-4 mt-30">
+                    <label for="categoryName" class="form-label">Name</label>
+                    <input type="text" id="categoryName" name="categoryName" value="<%= category.name %>" class="form-control border" required />
+                </div>
+                
+                <div class="mb-4">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea id="description" name="description" class="form-control border" required><%= category.description %></textarea>
+                </div>
+
+                <div class="d-grid text-end mt-30">
+                    <button class="btn btn-primary" type="submit">Update Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- <%- include("../../views/partials/admin/footer") %> -->

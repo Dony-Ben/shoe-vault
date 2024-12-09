@@ -1,0 +1,132 @@
+<header>
+  <div class="header_section">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="logo"><a href=""><img src="images/logo.png"></a></div>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/home">HOME</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/about">ABOUT</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/mens">MEN</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/women">WOMEN</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/kids">KIDS</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="contact.html">CONTACT US</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><img src=""></a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+  <style>
+    General Reset * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    Header Styling .header_section {
+      width: 100%;
+      background-color: #f8f9fa;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .header_section .logo img {
+      height: 50px;
+      width: auto;
+      margin: 10px 20px;
+    }
+
+    .navbar {
+      padding: 10px 20px;
+    }
+
+    .navbar-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .navbar-toggler {
+      border: none;
+      background-color: transparent;
+    }
+
+    .navbar-toggler-icon {
+      width: 30px;
+      height: 3px;
+      background-color: #333;
+      display: block;
+      position: relative;
+    }
+
+    .navbar-toggler-icon::before,
+    .navbar-toggler-icon::after {
+      content: '';
+      width: 30px;
+      height: 3px;
+      background-color: #333;
+      position: absolute;
+      left: 0;
+    }
+
+    .navbar-toggler-icon::before {
+      top: -8px;
+    }
+
+    .navbar-toggler-icon::after {
+      bottom: -8px;
+    }
+
+    .navbar-nav .nav-item {
+      margin: 0 10px;
+    }
+
+    .navbar-nav .nav-link {
+      text-transform: uppercase;
+      font-weight: bold;
+      color: #333;
+      transition: color 0.3s;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .navbar-nav .nav-item.active .nav-link {
+      color: #007bff;
+      font-weight: bolder;
+    }
+
+    @media (max-width: 768px) {
+      .navbar-nav {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .navbar-toggler {
+        margin-left: auto;
+      }
+
+      .collapse {
+        margin-top: 10px;
+      }
+    }
+  </style>
+</header>

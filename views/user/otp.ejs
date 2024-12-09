@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OTP Verification</title>
+  <link rel="stylesheet" href="otp.css">
+</head>
+<body style="margin-top: 30px;">
+  <div class="container register">
+      <div class="d-flex justify-content-center">
+          <div class="contact">
+              <form method="POST" action="/otp" onsubmit="return validateOTPFOrm()">
+                  <p>
+                      <label>Enter OTP</label>
+                      <input type="text" name="otp" id="otp" required>
+                  </p>
+                  <p>
+                      <span id="timer" style="font-size: 14px; color: red;"></span>
+                  </p>
+                  <p class="full">
+                      <button type="submit" id="submit-btn">Submit</button>
+                  </p>
+              </form>
+              <br>
+              <form method="POST" action="/resend">
+                  <p class="full">
+                      <button type="submit">Resend OTP</button>
+                  </p>
+              </form>
+          </div>
+      </div>
+  </div>
+  <script>
+    // Timer variables
+    let timerDuration = 60; // Timer duration in seconds (e.g., 5 minutes)
+    let timerInterval;
+
+    // Function to start the timer
+    function startTimer() {
+        const timerElement = document.getElementById("timer");
+        const submitButton = document.getElementById("submit-btn");
+        
+        timerInterval = setInterval(() => {
+            let minutes = Math.floor(timerDuration / 60);
+            let seconds = timerDuration % 60;
+
+            // Format time as MM:SS
+            timerElement.textContent = `Time left: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+            // Decrease the timer
+            timerDuration--;
+
+            // Check if time is up
+            if (timerDuration < 0) {
+                clearInterval(timerInterval);
+                timerElement.textContent = "OTP expired. Please request a new one.";
+                submitButton.disabled = true; // Disable submit button
+            }
+        }, 1000);
+    }
+
+    // Start the timer on page load
+    window.onload = startTimer;
+
+    // Validate OTP form before submission
+    function validateOTPFOrm() {
+        const otpInput = document.getElementById("otp").value;
+        if (timerDuration < 0) {
+            alert("OTP has expired. Please request a new one.");
+            return false;
+        }
+
+        // Perform AJAX validation
+        $.ajax({
+            type: "POST",
+            url: "verify",
+            data: { otp: otpInput },
+            success: function (res) {
+                if (res.success) {
+                    Swal.fire("Success", "OTP verified successfully!", "success");
+                } else {
+                    Swal.fire("Error", "Invalid OTP. Please try again.", "error");
+                }
+            },
+            error: function () {
+                Swal.fire("Error", "An error occurred. Please try again later.", "error");
+            }
+        });
+
+        return false; // Prevent form submission to handle AJAX
+    }
+  </script>
+</body>
+</html>
