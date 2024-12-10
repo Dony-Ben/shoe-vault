@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="viewport" content="initial-scale=1, maximum-scale=1">
-<title>BLACKSTONE</title>
+<title>FOOTIFY</title>
 <meta name="keywords" content="">
 <meta name="description" content="">
 <meta name="author" content="">	
@@ -25,7 +25,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <!-- <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet"> -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-color: #4a90e2;
@@ -126,7 +126,7 @@
     </style>
 </head>
 <body>
-    <p>Total Users: <%= totalUsers %></p>
+    <!-- <p>Total Users: <%= totalUsers %></p> -->
     <div class="dashboard">
         <aside class="sidebar">
             <div class="sidebar-header">AdminPanel</div>
@@ -150,9 +150,22 @@
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="/admin/addproduct">
+                    <a href="/admin/products">
+                        <i class="fas fa-cog"></i>
+                        products
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="/admin/addProducts">
                         <i class="fas fa-cog"></i>
                         Add product
+                    </a>
+                </div>
+
+                <div class="nav-item">
+                    <a href="/admin/brands">
+                        <i class="fas fa-users"></i>
+                        Brands
                     </a>
                 </div>
             </nav>
@@ -161,7 +174,7 @@
             <header class="header">
                 <h1>Dashboard</h1>
                 <div class="user-info">
-                    <img src="https://via.placeholder.com/40" alt="User Avatar">
+                    <img src="/me.jpg/">
                     <span>John Doe</span>
                     <a href="/admin/logout">Logout</a>
 

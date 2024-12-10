@@ -1,5 +1,6 @@
 <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css" />
+    <link> 
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -329,11 +330,18 @@
             </div>
         </div>
         <div class="pagination-container">
-            <a href="#">&laquo; Previous</a>
-            <span class="current-page"></span>
-            <a href="#"></a>
-            <a href="#">Next &raquo;</a>
-        </div>
+      <% if (currentPage > 1) { %>
+      <a href="?page=<%= currentPage - 1 %>">&laquo; Previous</a>
+      <% } %> <% for (let i = 1; i <= totalPages; i++) { %> <% if (i ===
+      currentPage) { %>
+      <span class="current-page"><%= i %></span>
+      <% } else { %>
+      <a href="?page=<%= i %>"><%= i %></a>
+      <% } %> <% } %> <% if (currentPage < totalPages) { %>
+      <a href="?page=<%= currentPage + 1 %>">Next &raquo;</a>
+      <% } %>
+    </div>
+
     </section>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -476,7 +484,7 @@ async function removeOffer(categoryId) {
                 "The offer has been removed successfully.",
                 "success"
             ).then(() => {
-                location.reload(); // Reload the page after the user acknowledges the success alert
+                location.reload(); 
             });
         } else {
             Swal.fire("Failed", data.message || "Removing offer failed", "error");

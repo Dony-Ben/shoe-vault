@@ -3,9 +3,12 @@ const adminRouter = express.Router();
 const adminController = require("../controllers/adminController");
 const customerController = require("../controllers/customerController")
 const categoryController = require("../controllers/categoryController")
-const productController = require("../controllers/productController")
-const multer = require('multer');
-const {adminAuth} = require("../middleware/auth")
+const productController = require("../controllers/productController");
+const brandController = require("../controllers/brandController")
+const multer = require("multer");
+const storage = require("../helpers/multer");
+const uploads = multer({storage:storage});
+const {adminAuth} = require("../middleware/auth");
 
 // adminRouter.get("/pageError",adminController.pageerror)
 adminRouter.get("/", adminController.loadlogin);
@@ -25,8 +28,19 @@ adminRouter.post("/removeCategoryOffer",adminAuth,categoryController.removeCateg
 adminRouter.get("/listCategory",adminAuth,categoryController.getListCategory);
 adminRouter.get("/unlistCategory",adminAuth,categoryController.getUnlistCategory);
 adminRouter.get("/editCAtegory",adminAuth,categoryController.getEdiCategory);
-adminRouter.post("/editCategory/:id",adminAuth,categoryController.editCategory)
+adminRouter.post("/editCategory/:id",adminAuth,categoryController.editCategory);
+// BrandManagement
+adminRouter.get("/brands",adminAuth,brandController.getBrandpage);
+adminRouter.post("/addBrand",adminAuth,uploads.single("image"),brandController.addBrand);
+adminRouter.get("/blockBrand",adminAuth,brandController.blockBrand);
+adminRouter.get("/unBlockBrand",adminAuth,brandController.unBlockBrand);
+adminRouter.get("/deleteBrand",adminAuth,brandController.deleteBrand);
 // productmanagement
-adminRouter.get("/addProducts",adminAuth,productController.getProductAddpage);
+adminRouter.get("/addProducts",productController.getProductAddpage);
+adminRouter.post("/addproducts",uploads.array('images'), productController.addProducts);
+adminRouter.get("/products",adminAuth,productController.getAllProducts);
+adminRouter.get("/blockProduct",adminAuth,productController.blockProduct);
+adminRouter.get("/unblockProduct",adminAuth,productController.unblockProduct)
+
 
 module.exports = adminRouter

@@ -1,5 +1,4 @@
 const Category = require("../models/category");
-
 const Product = require("../models/product")
 const categoryInfo = async (req, res) => {
     try {
@@ -30,21 +29,20 @@ const categoryInfo = async (req, res) => {
 
 const addCategory = async (req, res) => {
     const { name, description } = req.body;
-    console.log(req.body);
 
     try {
         const existingCategory = await Category.findOne({ name });
         if (existingCategory) {
             return res.status(400).json({ error: "Category alredy exist" })
         }
-        const newCategory = new category({
+        const newCategory = new Category({
             name,
             description,
         })
         await newCategory.save();
         return res.json({ message: "Category added successfully" })
     } catch (error) {
-        return res.status(500).json({ error: "internal server Error" })
+        return res.status(500).json({ error: `Internal Server Error: ${error.message}` });
     }
 }
 const addCategoryOffer = async (req, res) => {

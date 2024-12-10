@@ -13,7 +13,7 @@ const productSchema = new Schema(
     },
     category: {
       type: String,
-      ref: "Category", // Assuming you have a Category model
+      ref: "Category", 
       required: true,
     },
     regularPrice: {
@@ -32,10 +32,11 @@ const productSchema = new Schema(
       type: Number,
       default: 0, // Updated `default` to a valid value for a Number field
     },
-    color: {
-      type: String, // Changed from `Number` to `String` assuming `color` is a name or code
-      required: true,
-    },
+    isblocked:{
+      type:Boolean,
+      default:false
+       },
+   
     productImage: {
       type: [String],
       default: [], // Changed `false` to an empty array for a field of type `[String]`
