@@ -60,7 +60,7 @@ form {
 
 /* Button styling */
 button {
-    background-color: #007BFF;
+    background-color: #000000;
     color: #fff;
     padding: 10px;
     font-size: 18px;
@@ -70,9 +70,6 @@ button {
     transition: background-color 0.3s;
 }
 
-button:hover {
-    background-color: #0056b3;
-}
 
 /* Link styling */
 .signup-container a {

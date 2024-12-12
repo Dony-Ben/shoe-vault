@@ -1,10 +1,10 @@
 const express = require("express");
 const adminRouter = express.Router();
 const adminController = require("../controllers/adminController");
-const customerController = require("../controllers/customerController")
-const categoryController = require("../controllers/categoryController")
+const customerController = require("../controllers/customerController");
+const categoryController = require("../controllers/categoryController");
 const productController = require("../controllers/productController");
-const brandController = require("../controllers/brandController")
+const brandController = require("../controllers/brandController");
 const multer = require("multer");
 const storage = require("../helpers/multer");
 const uploads = multer({storage:storage});
@@ -14,8 +14,8 @@ const {adminAuth} = require("../middleware/auth");
 adminRouter.get("/", adminController.loadlogin);
 // loginmanagement
 adminRouter.post("/login", adminController.handleLogin);
-adminRouter.get("/dashboard",adminAuth,adminController.loaddashboard)
-adminRouter.get("/logout",adminAuth,adminController.adminlogout)
+adminRouter.get("/dashboard",adminAuth,adminController.loaddashboard);
+adminRouter.get("/logout",adminAuth,adminController.adminlogout);
 // customer mnagement
 adminRouter.get("/customers",adminAuth,customerController.customerInfo);
 adminRouter.get("/blockCustomer",adminAuth,customerController.customerBlocked);
@@ -41,6 +41,9 @@ adminRouter.post("/addproducts",uploads.array('images'), productController.addPr
 adminRouter.get("/products",adminAuth,productController.getAllProducts);
 adminRouter.get("/blockProduct",adminAuth,productController.blockProduct);
 adminRouter.get("/unblockProduct",adminAuth,productController.unblockProduct)
+adminRouter.get("/editProduct",adminAuth,productController.getEditProduct);
+adminRouter.post("/editProduct/:id",adminAuth,uploads.array("images",3),productController.editProduct);
+adminRouter.post("/deleteImage",adminAuth,productController.deleteSingleImage);
 
 
 module.exports = adminRouter

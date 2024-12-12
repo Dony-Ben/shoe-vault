@@ -3,209 +3,287 @@
     <link> 
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f9f9f9;
+    font-family: 'Poppins', sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h2 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.card, form {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+input, select, .btn {
+    font-size: 1rem;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+input:focus, select:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.btn {
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 20px;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    text-align: center;
+    padding: 10px;
+}
+
+th {
+    background-color: #007bff;
+    color: white;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+.btn-info, .btn-danger, .btn-success {
+    padding: 5px 10px;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    border-radius: 4px;
+}
+
+.btn-info { background-color: #17a2b8; }
+.btn-info:hover { background-color: #138496; }
+
+.btn-danger { background-color: #dc3545; }
+.btn-danger:hover { background-color: #c82333; }
+
+.btn-success { background-color: #28a745; }
+.btn-success:hover { background-color: #218838; }
+
+.pagination-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.pagination-container a {
+    text-decoration: none;
+    margin: 0 5px;
+    color: #007bff;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.pagination-container a:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.current-page {
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    border: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .input-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+}
+
+    </style>
+    <style>
+        :root {
+            --primary-color: #000000;
+            --secondary-color: #f5f7fa;
+            --text-color: #333;
+            --sidebar-width: 240px;
+        }
+        * {
             margin: 0;
             padding: 0;
-            color: #333;
+            color: #f1f1f1;
+        text-decoration: none;
+            box-sizing: border-box;
         }
-
-        .content-main {
-            padding: 20px;
-            max-width: 1200px;
-            margin: auto;
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
         }
-
-        /* Header and Title */
-        .content-header h2 {
-            color: #333;
-            font-size: 2rem;
-            margin-bottom: 20px;
+        th,td{
+            color: #000000;
         }
-
-        .card-header {
-            background-color: #ffffff;
-            border: 1px solid #ddd;
+        .dashboard {
+            display: grid;
+            grid-template-columns: var(--sidebar-width) 1fr;
+            height: 100vh;
+        }
+        .sidebar {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+        .sidebar-header {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
             border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
         }
-
-        .input-group {
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .nav-item i {
+            margin-right: 1rem;
+        }
+        .main-content {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+        }
+        .user-info {
             display: flex;
             align-items: center;
         }
-
-        .input-group .form-control {
-            border: none;
-            font-size: 1rem;
-            padding: 10px 15px;
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 1rem;
         }
-
-        .input-group .btn {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
+        .widgets {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
         }
-
-        .input-group .btn:hover {
-            background-color: #0056b3;
-        }
-
-        /* Form Styling */
-        form {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
+        .widget {
+            background-color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-
-        form .form-label {
-            font-weight: bold;
-            color: #555;
+        .widget:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
         }
-
-        form .form-control {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 1rem;
+        .widget h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
         }
-
-        form .form-control:focus {
-            border-color: #007bff;
-            outline: none;
-            box-shadow: 0 0 3px rgba(0, 123, 255, 0.5);
-        }
-
-        form .btn-primary {
-            background-color: #28a745;
-            color: #fff;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-        }
-
-        form .btn-primary:hover {
-            background-color: #218838;
-        }
-
-        /* Table Styling */
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .table thead th {
-            background-color: #007bff;
-            color: white;
-            padding: 10px;
-            text-align: center;
-        }
-
-        .table tbody tr {
-            background-color: #ffffff;
-            transition: background-color 0.3s;
-        }
-
-        .table tbody tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        .table td {
-            padding: 10px;
-            text-align: center;
-        }
-
-        .table .btn {
-            font-size: 0.9rem;
-            padding: 5px 10px;
-            border-radius: 4px;
-            text-transform: uppercase;
-        }
-
-        .btn-info {
-            background-color: #17a2b8;
-            color: white;
-        }
-
-        .btn-info:hover {
-            background-color: #138496;
-        }
-
-        .btn-danger {
-            background-color: #dc3545;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background-color: #c82333;
-        }
-
-        .btn-success {
-            background-color: #28a745;
-            color: white;
-        }
-
-        .btn-success:hover {
-            background-color: #218838;
-        }
-
-        /* Pagination */
-        .pagination-container {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .pagination-container a {
-            text-decoration: none;
-            margin: 0 5px;
-            color: #007bff;
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        .pagination-container a:hover {
-            background-color: #007bff;
-            color: white;
-        }
-
-        .pagination-container .current-page {
-            padding: 8px 12px;
-            background-color: #007bff;
-            color: white;
-            border-radius: 4px;
-            border: none;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .input-group {
-                width: 100%;
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .content-header h2 {
-                text-align: center;
-            }
-
-            form {
-                margin-bottom: 20px;
-            }
+        .widget-value {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--primary-color);
         }
     </style>
 </head>
 
 <body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="sidebar-header">AdminPanel</div>
+            <nav>
+                <div class="nav-item">
+                    <a href="/admin/dashboard">
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="/admin/customers">
+                        <i class="fas fa-users"></i>
+                        Users
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="/admin/Category">
+                        <i class="fas fa-chart-bar"></i>
+                        Category
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="/admin/products">
+                        <i class="fas fa-cog"></i>
+                        products
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="/admin/addProducts">
+                        <i class="fas fa-cog"></i>
+                        Add product
+                    </a>
+                </div>
+    
+                <div class="nav-item">
+                    <a href="/admin/brands">
+                        <i class="fas fa-users"></i>
+                        Brands
+                    </a>
+                </div>
+            </nav>
+        </aside>
+    <div class="content-header row">
+<!-- /// -->
     <section class="content-main">
         <div class="content-header">
             <div>

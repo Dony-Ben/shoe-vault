@@ -1,186 +1,138 @@
 :root {
-    --primary-color: #3498db;
-    --secondary-color: #2ecc71;
-    --background-color: #f8f9fa;
-    --text-color: #34495e;
-    --border-color: #e0e0e0;
-    --hover-color: #2980b9;
-  }
-  
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--background-color);
-    color: var(--text-color);
-    line-height: 1.6;
-  }
-  
-  .content-header {
-    background-color: white;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-bottom: 30px;
-  }
-  
-  .content-title {
-    color: var(--primary-color);
-    font-size: 2.5rem;
-    margin: 0;
-  }
-  
-  .card-header {
-    background-color: white;
-    border: none;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  }
-  
+  --primary-color: #3498db;
+  --secondary-color: #2c3e50;
+  --background-color: #f8f9fa;
+  --text-color: #333;
+  --border-color: #e0e0e0;
+  --success-color: #2ecc71;
+  --danger-color: #e74c3c;
+  --info-color: #3498db;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+.content-header {
+  padding: 2rem 0;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.content-title {
+  font-size: 2rem;
+  color: var(--secondary-color);
+  margin-bottom: 0;
+}
+
+.card-header {
+  background-color: transparent;
+  border-bottom: none;
+  padding: 1.5rem 0;
+}
+
+.input-group {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.input-group:focus-within {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.form-control {
+  border: none;
+  padding: 0.75rem 1.5rem;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-info {
+  background-color: var(--info-color);
+  border-color: var(--info-color);
+}
+
+.btn-danger {
+  background-color: var(--danger-color);
+  border-color: var(--danger-color);
+}
+
+.btn-success {
+  background-color: var(--success-color);
+  border-color: var(--success-color);
+}
+
+.table {
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.table thead th {
+  background-color: var(--secondary-color);
+  color: rgb(0, 0, 0);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 1rem;
+  border-bottom: none;
+}
+
+.table td {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pagination-container a, .pagination-container span {
+  padding: 0.5rem 1rem;
+  margin: 0 0.25rem;
+  border-radius: 4px;
+  color: blue;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.pagination-container .current-page {
+  background-color: rgba(43, 124, 6, 0.879);
+  color: rgb(255, 255, 255);
+}
+
+.product-image {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+@media (max-width: 768px) {
   .input-group {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
+    width: 100%;
+    margin-left: 0;
   }
-  
-  .input-group:focus-within {
-    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+
+  .table-responsive {
+    overflow-x: auto;
   }
-  
-  .form-control {
-    border: none;
-    font-size: 1rem;
-  }
-  
-  .form-control:focus {
-    box-shadow: none;
-  }
-  
-  .btn {
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 50px;
-    transition: all 0.3s ease;
-  }
-  
-  .btn:hover {
-    background-color: var(--hover-color);
-    transform: translateY(-2px);
-  }
-  
-  .table {
-    background-color: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  }
-  
-  .table thead th {
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 15px;
-    font-size: 1rem;
-  }
-  
-  .table tbody td {
-    padding: 15px;
-    vertical-align: middle;
-    border-bottom: 1px solid var(--border-color);
-  }
-  
-  .table tbody tr:last-child td {
-    border-bottom: none;
-  }
-  
-  .btn-info {
-    background-color: var(--secondary-color);
-  }
-  
-  .btn-info:hover {
-    background-color: #27ae60;
-  }
-  
-  .btn-danger {
-    background-color: #e74c3c;
-  }
-  
-  .btn-danger:hover {
-    background-color: #c0392b;
-  }
-  
-  .btn-success {
-    background-color: #27ae60;
-  }
-  
-  .btn-success:hover {
-    background-color: #2ecc71;
-  }
-  
-  .pagination-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 30px;
-  }
-  
-  .pagination-container a, .pagination-container span {
-    color: var(--primary-color);
-    padding: 8px 16px;
-    text-decoration: none;
-    transition: background-color 0.3s;
-    border: 1px solid var(--border-color);
-    margin: 0 4px;
-    border-radius: 5px;
-  }
-  
-  .pagination-container a:hover {
-    background-color: var(--primary-color);
-    color: white;
-  }
-  
-  .pagination-container .current-page {
-    background-color: var(--primary-color);
-    color: white;
-    border: 1px solid var(--primary-color);
-  }
-  
-  @media (max-width: 768px) {
-    .content-title {
-      font-size: 2rem;
-    }
-  
-    .input-group {
-      width: 100% !important;
-      margin-left: 0 !important;
-    }
-  
-    .table thead {
-      display: none;
-    }
-  
-    .table, .table tbody, .table tr, .table td {
-      display: block;
-      width: 100%;
-    }
-  
-    .table tr {
-      margin-bottom: 15px;
-    }
-  
-    .table td {
-      text-align: right;
-      padding-left: 50%;
-      position: relative;
-    }
-  
-    .table td::before {
-      content: attr(data-label);
-      position: absolute;
-      left: 6px;
-      width: 45%;
-      padding-right: 10px;
-      white-space: nowrap;
-      text-align: left;
-      font-weight: bold;
-    }
-  }
-    
+}

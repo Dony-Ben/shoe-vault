@@ -1,26 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="viewport" content="initial-scale=1, maximum-scale=1">
-<title>FOOTIFY</title>
-<meta name="keywords" content="">
-<meta name="description" content="">
-<meta name="author" content="">	
-<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="landing.css">
-<link rel="stylesheet" href="responsive.css">
-<link rel="icon" href="images/fevicon.png" type="image/gif" />
-<link rel="stylesheet" href="jquery.mCustomScrollbar.min.css">
-<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/font-awesome.css">
-<link rel="stylesheet" href="owl.carousel.min.css">
-<link rel="stylesheet" href="owl.theme.default.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
-</head>
-<!-- <%- include('../partials/admin/header.ejs') %> -->
+<!--  -->
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,14 +6,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #4a90e2;
+            --primary-color: #000000;
             --secondary-color: #f5f7fa;
-            --text-color: #333;
+            --text-color: #ffffff;
             --sidebar-width: 240px;
         }
         * {
             margin: 0;
             padding: 0;
+            color: #ffffff;
+            text-decoration: none;
             box-sizing: border-box;
         }
         body {
@@ -86,6 +66,7 @@
         }
         .header h1 {
             font-size: 2rem;
+            color: black;
             font-weight: 600;
         }
         .user-info {
@@ -117,6 +98,7 @@
         .widget h2 {
             font-size: 1.25rem;
             margin-bottom: 1rem;
+            color: #000000;
         }
         .widget-value {
             font-size: 2rem;
@@ -126,7 +108,6 @@
     </style>
 </head>
 <body>
-    <!-- <p>Total Users: <%= totalUsers %></p> -->
     <div class="dashboard">
         <aside class="sidebar">
             <div class="sidebar-header">AdminPanel</div>
@@ -174,9 +155,10 @@
             <header class="header">
                 <h1>Dashboard</h1>
                 <div class="user-info">
-                    <img src="/me.jpg/">
-                    <span>John Doe</span>
-                    <a href="/admin/logout">Logout</a>
+                    <img src="/image/profile.jpg">
+                    <span style="color:#000000;">ESCOBAR</span>
+    <button style="color: red;" onclick="window.location.href='/admin/logout'">Logout</button>
+                     
 
                 </div>
             </header>

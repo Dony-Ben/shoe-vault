@@ -1,10 +1,12 @@
 const userModel = require("../models/User.js");
 
 const userAuth = (req, res, next) => {
+  console.log("session in auth",req.session.user);
+  
   if (req.session.user) {
-    userModel.findById(req.session.user)
+    userModel.findById(req.session.user.id)
       .then(data => {
-        if (data && !data.isBlocked) {
+        if (data && !data.isblocked) {
           next(); 
         } else {
           res.redirect("/login");
@@ -12,7 +14,7 @@ const userAuth = (req, res, next) => {
       })
       .catch(error => {
         console.log("Error in user auth middleware:", error);
-        res.status(500).render('error', { message: "Internal server error" });
+        res.status(500).render('user/page-404', { message: "Internal server error" });
       });
   } else {
     res.redirect("/login");

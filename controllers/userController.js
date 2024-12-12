@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
+const product = require("../models/product.js")
+const userModel = require('../models/User.js');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const session=require("express-session")
 
-const userModel = require('../models/User.js');
 
 const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -66,6 +67,7 @@ const userSignup = async (req, res) => {
     }
 
     const existingUser = await userModel.findOne({ email });
+
     if (existingUser) {
       return res.status(409).send("Email is already registered.");
     }
@@ -170,33 +172,22 @@ const userLogin = async (req, res) => {
     if (!email || !password) {
       return res.status(400).send("Email and password are required.");
     }
-
-    // Find user by email
     const user = await userModel.findOne({ email });
     if (!user) {
       console.warn("Login attempt failed: User not found with email:", email);
       return res.status(401).send("Invalid email or password.");
     }
-
-    // Compare passwords
     const isPasswordMatch = await bcrypt.compare(password, user.password);
-    console.log("Password match result for user:", email, "=>", isPasswordMatch);
-
     if (!isPasswordMatch) {
-      console.warn("Login attempt failed: Invalid password for email:", email);
       return res.status(401).send("Invalid email or password.");
     }
-
-    // Successful login
-    console.log("Login successful for user:", email);
-    req.session.user = { id: user._id, email: user.email }; // Only store minimal info in the session
+    req.session.user = { id: user._id, email: user.email }; 
     return res.redirect("/home");
   } catch (error) {
     console.error("Error during login process:", error.message, error.stack);
     return res.status(500).send("Something went wrong. Please try again later.");
   }
 };
-
 
 const logout = async (req, res) => {
   try {
@@ -213,6 +204,7 @@ const logout = async (req, res) => {
 
   }
 }
+
 module.exports = {
   userLogin,
   userSignup,

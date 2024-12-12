@@ -52,8 +52,8 @@ const addBrand = async (req, res) => {
 }
 const blockBrand = async (req,res)=>{
     try {
-        const id = req.query._id;
-        await Brand.updateOne({_id:id},{$set:{isblocked:true}});
+        const id = req.query.id;
+        await Brand.updateOne({_id:id},{$set:{isBlocked:true}});
         res.redirect("/admin/brands")
 
     } catch (error) {
@@ -64,7 +64,7 @@ const blockBrand = async (req,res)=>{
 const unBlockBrand =async (req,res)=>{
     try {
         const id = req.query.id;
-        await Brand.updateOne({_id:id},{$set:{isblocked:false}});
+        await Brand.updateOne({_id:id},{$set:{isBlocked:false}});
         res.redirect("/admin/brands");
     } catch (error) {
       res.redirect("/pageError")  

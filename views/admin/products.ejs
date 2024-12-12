@@ -2,6 +2,319 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="/productlist.css">
 </head>
+<style>
+        :root {
+            --primary-color: #000000;
+            --secondary-color: #f5f7fa;
+            --text-color: #333;
+            --sidebar-width: 240px;
+            --border-color: #e0e0e0;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --info-color: #3498db;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: var(--sidebar-width) 1fr;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem;
+            position: fixed;
+            width: var(--sidebar-width);
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .sidebar-header {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 2rem;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-item a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .nav-item i {
+            margin-right: 1rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+        }
+        
+        /* Header Section Styles */
+        .header-section {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .content-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+        
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .search-form {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 0.75rem 1.25rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-button {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+        
+        .search-button:hover {
+            background-color: #111;
+        }
+        
+        /* Table Styles */
+        .table-container {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-left: 20rem;
+            color: #000000;
+            height:100%;
+        }
+        
+        .table th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            padding: 1rem;
+            text-align: left;
+        }
+        
+        .table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* Button Styles */
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+        
+        .btn + .btn {
+            margin-left: 0.5rem;
+        }
+        
+        .btn-info {
+            background-color: var(--info-color);
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* New styles for right-aligned product details */
+        .product-details {
+            display: flex;
+            flex-direction: row-reverse;
+            gap: 2rem;
+        }
+
+        .product-list {
+            flex: 1;
+        }
+
+        .product-info {
+            width: 300px;
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 2rem;
+            height: fit-content;
+        }
+
+        .product-info h3 {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .product-info-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .product-info-label {
+            font-weight: 600;
+        }
+
+        @media (max-width: 1024px) {
+            .product-details {
+                flex-direction: column;
+            }
+
+            .product-info {
+                width: 100%;
+                position: static;
+            }
+        }
+        .imagediv{
+           height: 80px;
+           width: 80px;
+           overflow: hidden;
+        }
+
+.imagediv img {
+  max-width: 100%; 
+  max-height: 100%; 
+  object-fit: cover; /* Makes the image behave like a background cover */
+}
+    </style>
+<div class="dashboard">
+    <aside class="sidebar">
+        <div class="sidebar-header">AdminPanel</div>
+        <nav>
+            <div class="nav-item">
+                <a href="/admin/dashboard">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/admin/customers">
+                    <i class="fas fa-users"></i>
+                    Users
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/admin/Category">
+                    <i class="fas fa-chart-bar"></i>
+                    Category
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/admin/products">
+                    <i class="fas fa-cog"></i>
+                    products
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/admin/addProducts">
+                    <i class="fas fa-cog"></i>
+                    Add product
+                </a>
+            </div>
+
+            <div class="nav-item">
+                <a href="/admin/brands">
+                    <i class="fas fa-users"></i>
+                    Brands
+                </a>
+            </div>
+        </nav>
+    </aside>
 <div class="content-header">
     <div>
         <h2 class="content-title card-title">Products</h2>
@@ -19,12 +332,13 @@
     <table class="table table-striped">
         <thead>
             <tr>
+                <th scope="col"><b>Product image</b></th>
                 <th scope="col"><b>Product name</b></th>
                 <th scope="col"><b>Brand</b></th>
                 <th scope="col"><b>Category</b></th>
                 <th scope="col"><b>Sale Price</b></th>
-                <th scope="col"><b>Offer Price</b></th>
-                <th scope="col"><b>Offer</b></th>
+                <!-- <th scope="col"><b>Offer Price</b></th> -->
+                <!-- <th scope="col"><b>Offer</b></th> -->
                 <th scope="col"><b>Quantity</b></th>
                 <th scope="col"><b>Action</b></th>
                 <th scope="col"><b>Edit</b></th>
@@ -33,13 +347,18 @@
         <tbody>
             <% for(let i = data.length - 1; i >= 0; i--) { %>
             <tr>       
-                
-                <td><%= data[i].productImage %></td>
+                <td>
+                    <div class="d-flex align-items-center justify-content-center imagediv">
+                          <img 
+                            src="/uploads/product-images/<%= data[i].productImage[0] %>" 
+                           alt="<%= data[i].productName %>">
+                      </div>
+                </td>
                 <td><%= data[i].productName %></td>
-                <td><%= data[i].brand %></td>
-                <td><%= data[i].category ? data[i].category.name : 'No Category' %></td>
+                <td><%= data[i].brands.brandName %></td>
+                <td><%= data[i].category.name %></td>
                 <td><%= data[i].salePrice %></td>
-
+                <td><%= data[i].quantity %></td>
                 <td>
                     <button class="btn btn-info" style="width: 100px;">
                         <a href="#" class="text-white">Add Offer</a>
@@ -62,7 +381,7 @@
                 </td>
                 <td>
                     <button class="btn btn-info" style="width: 80px;">
-                        <a href="#" class="text-white" style="text-decoration: none;">Edit</a>
+                        <a href="/admin/editProduct?id=<%= data[i]._id %>" class="text-white" style="text-decoration: none;">Edit</a>
                     </button>
                 </td>
             </tr>

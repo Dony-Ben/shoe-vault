@@ -255,7 +255,7 @@ button {
 .banner_section {
     width: 100%;
     float: left;
-    background-image: url(/images/second.jpg);
+    background-image: url(/image/profile.jpg);
     height: auto;
     padding-bottom: 200px;
     background-size: cover;
@@ -279,7 +279,7 @@ button {
     width: 100%;
     float: left;
     font-size: 70px;
-    color: #599ee9;
+    color: #00162d;
     font-weight: 600;
     text-transform: uppercase;
     line-height: 50px;

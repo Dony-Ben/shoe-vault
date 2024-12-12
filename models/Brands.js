@@ -5,15 +5,15 @@ const brandSchema = new Schema(
   {
     brandName: {
       type: String,
-      required: true, // Fixed 'require' to 'required'
+      required: true,
     },
     brandImage: {
       type: String,
-      required: true, // Fixed 'require' to 'required'
+      required: true,
     },
     description: {
       type: String,
-      default: "", // Optional with a default empty string
+      default: "",
     },
     isBlocked: {
       type: Boolean,
@@ -21,7 +21,7 @@ const brandSchema = new Schema(
     },
   },
   {
-    timestamps: true, // Automatically adds `createdAt` and `updatedAt` fields
+    timestamps: true,
   }
 );
 

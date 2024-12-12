@@ -43,9 +43,21 @@
                                         <td><%= brand.brandName %></td>
                                         <td>
                                             <div class="d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden;">
-                                                <img src="/uploads/re-image<%= brand.brandImage %>" alt="<%= brand.brandName %>" class="img-fluid rounded-circle" style="width: 100%; height: auto;">
+                                              <% if (brand.brandImage) { %>
+                                                <img 
+                                                  src="/uploads/re-image/<%= brand.brandImage %>" 
+                                                  alt="<%= brand.brandName %>" 
+                                                  class="img-fluid rounded-circle" 
+                                                  style="width: 100%; height: 100%; object-fit: cover;"
+                                                  onerror="this.onerror=null; this.src='/path/to/fallback-image.jpg';"
+                                                >
+                                              <% } else { %>
+                                                <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="width: 100%; height: 100%;">
+                                                  <%= brand.brandName.charAt(0).toUpperCase() %>
+                                                </div>
+                                              <% } %>
                                             </div>
-                                        </td>
+                                          </td>
                                         <td>
                                             <% if (brand.isBlocked) { %>
                                                 <span class="badge rounded-pill alert-danger">Blocked</span>

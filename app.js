@@ -10,11 +10,13 @@ const adminRouter=require("./routes/adminRouter")
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.use(session({
-  secret:process.env.SESSION_SECRET,
+  secret: process.env.SESSION_SECRET || 'fallbackSecretKey',
   resave:false,
-  saveUninitialized:true,
+  saveUninitialized:false,
 }))
+
 app.use(passport.initialize())
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, "public")));
@@ -26,7 +28,7 @@ connectDB()
 app.use("/", userRoutes);
 app.use('/admin',adminRouter)
 
-const PORT = process.env.PORT || 7000;
+const PORT = process.env.PORT||7000
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

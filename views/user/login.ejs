@@ -15,13 +15,13 @@
 
         <form action="/login" method="POST">
             <div class="form-group">
-                <!-- <label for="email">Email:</label> -->
+                <label for="email">Email:</label>
                 <input type="email" id="email" name="email" placeholder="Enter your email">
                 <div id="emailError" class="error-message" style="display: none; color: red;"></div>
             </div>
 
             <div class="form-group">
-                <!-- <label for="password">Password:</label> -->
+                <label for="password">Password:</label>
                 <input type="password" id="password" name="password" placeholder="Enter your password">
                 <div id="passwordError" class="error-message" style="display: none; color: red;"></div>
             </div>
@@ -36,47 +36,64 @@
 </html>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        const loginForm = document.querySelector("form");
+    console.log("DOM fully loaded and parsed");
+    const loginForm = document.querySelector("form");
 
-        loginForm.addEventListener("submit", (event) => {
-            event.preventDefault();
+    if (!loginForm) {
+        console.error("Form element not found.");
+        return;
+    }
 
-            clearErrors();
-            const email = document.getElementById("email").value.trim();
-            const password = document.getElementById("password").value;
+    loginForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        console.log("Form submit event triggered");
 
-            let isValid = true;
+        clearErrors();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
 
-            const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            if (!email) {
-                showError("emailError", "Email is required.");
-                isValid = false;
-            } else if (!emailPattern.test(email)) {
-                showError("emailError", "Please enter a valid email address.");
-                isValid = false;
-            }
+        console.log("Email:", email);
+        console.log("Password:", password);
 
-            if (!password) {
-                showError("passwordError", "Password is required.");
-                isValid = false;
-            }
+        let isValid = true;
 
-            if (isValid) {
-                loginForm.submit();
-            }
-        });
-        function clearErrors() {
-            const errorElements = document.querySelectorAll(".error-message");
-            errorElements.forEach((element) => {
-                element.textContent = "";
-                element.style.display = "none";
-            });
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!email) {
+            showError("emailError", "Email is required.");
+            isValid = false;
+        } else if (!emailPattern.test(email)) {
+            showError("emailError", "Please enter a valid email address.");
+            isValid = false;
         }
 
-        function showError(elementId, message) {
-            const errorElement = document.getElementById(elementId);
-            errorElement.textContent = message;
-            errorElement.style.display = "block";
+        if (!password) {
+            showError("passwordError", "Password is required.");
+            isValid = false;
+        }
+
+        if (isValid) {
+            console.log("Form is valid. Submitting...");
+            loginForm.submit();
         }
     });
+
+    function clearErrors() {
+        const errorElements = document.querySelectorAll(".error-message");
+        errorElements.forEach((element) => {
+            element.textContent = "";
+            element.style.display = "none";
+        });
+    }
+
+    function showError(elementId, message) {
+        const errorElement = document.getElementById(elementId);
+        if (!errorElement) {
+            console.error(`Error element with ID "${elementId}" not found.`);
+            return;
+        }
+        errorElement.textContent = message;
+        errorElement.style.display = "block";
+    }
+});
+
 </script>

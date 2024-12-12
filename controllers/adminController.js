@@ -16,7 +16,7 @@ const loadlogin = (req, res) => {
 
 const handleLogin = async (req, res) => {
     try {
-        console.log("res in admin", req.body);
+        // console.log("res in admin", req.body);
 
         const { email, password } = req.body;
         const admin = await userModel.findOne({ email, isadmin: true });
@@ -63,7 +63,7 @@ const adminlogout = async (req, res) => {
                 // return res.redirect("/pageError");
             }
 
-            res.redirect("/admin/login");
+            res.redirect("/admin");
         });
     } catch (error) {
         console.error("Unexpected error during logout:", error);

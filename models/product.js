@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { Schema } = mongoose;
+const { Schema,Types } = mongoose;
 
 const productSchema = new Schema(
   {
@@ -12,9 +12,14 @@ const productSchema = new Schema(
       required: true,
     },
     category: {
-      type: String,
+      type: Types.ObjectId,
       ref: "Category", 
       required: true,
+    },
+    brands:{
+      type: Types.ObjectId,
+      ref:'Brand',
+      required:true,
     },
     regularPrice: {
       type: Number,

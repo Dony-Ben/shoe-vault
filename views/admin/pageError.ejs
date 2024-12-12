@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f8f8f8;
+      color: #333;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .error-container {
+      max-width: 600px;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .error-container img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .error-title {
+      font-size: 36px;
+      color: #ff6b6b;
+      margin: 20px 0;
+    }
+
+    .error-message {
+      font-size: 18px;
+      color: #555;
+      margin-bottom: 20px;
+    }
+
+    .buttons {
+      margin-top: 20px;
+    }
+
+    .buttons a {
+      display: inline-block;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-weight: bold;
+      margin: 0 10px;
+      transition: all 0.3s;
+    }
+
+    .home-button {
+      background: #ff6b6b;
+      color: #fff;
+    }
+
+    .home-button:hover {
+      background: #e05656;
+    }
+
+    .support-button {
+      background: #333;
+      color: #fff;
+    }
+
+    .support-button:hover {
+      background: #444;
+    }
+  </style>
+</head>
+<body>
+  <div class="error-container">
+    <img src="https://via.placeholder.com/400x200.png?text=Oops!+Shoes+Got+Lost" alt="Error Image">
+    <h1 class="error-title">404 - Page Not Found</h1>
+    <p class="error-message">Oops! The page you’re looking for isn’t here. Maybe it’s lost its sole!</p>
+    <div class="buttons">
+      <a href="/admin/dashboard" class="home-button">Go to Homepage</a>
+      <!-- <a href="/support" class="support-button">Contact Support</a> -->
+    </div>
+  </div>
+</body>
+</html>
