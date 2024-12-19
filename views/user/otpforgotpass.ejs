@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #e3e3e3;
+        }
+
+        .container {
+            background-color: rgb(255, 255, 255);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .otp-input {
+            width: 200px;
+            font-size: 1.5rem;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            letter-spacing: 0.5rem;
+        }
+
+        .button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .timer {
+            font-size: 1.2rem;
+            margin-top: 1rem;
+        }
+
+        .alert {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <form action="/verify-otp" method="POST">
+        <h1>Enter OTP</h1>
+        <input type="text" class="otp-input" maxlength="6" placeholder="Enter OTP" name="otp" required>
+        <br>
+        <button class="button submit-button" type="submit">Submit OTP</button>
+        <button class="button resend-button" type="button" onclick="resendOTP()">Resend OTP</button>
+        <div class="timer" id="timer"></div>
+        <div class="alert" id="alert"></div>
+    </form>
+
+
+    <script>
+
+        let timeLeft = 30;
+        let timerId;
+
+        function startTimer() {
+            timeLeft = 30;
+            document.querySelector('.resend-button').disabled = true;
+            document.querySelector('.submit-button').disabled = false;
+            timerId = setInterval(updateTimer, 1000);
+        }
+        function updateTimer() {
+            const timerElement = document.getElementById('timer');
+            const alertElement = document.getElementById('alert');
+            const submitButton = document.querySelector('.submit-button');
+
+            if (timeLeft > 0) {
+                timerElement.textContent = `Time remaining: ${timeLeft} seconds`;
+                timeLeft--;
+
+                if (timeLeft <= 10) {
+                    alertElement.style.backgroundColor = '#ffcccc';
+                    alertElement.style.color = '#cc0000';
+                    alertElement.textContent = 'Time is running out!';
+                } else {
+                    alertElement.style.backgroundColor = '#ccffcc';
+                    alertElement.style.color = '#006600';
+                    alertElement.textContent = 'Enter the OTP sent to your device.';
+                }
+            } else {
+                clearInterval(timerId);
+                timerElement.textContent = 'Time expired!';
+                document.querySelector('.resend-button').disabled = false;
+                submitButton.disabled = true;
+
+                // Change alert color when time exceeds
+                alertElement.style.backgroundColor = '#ff9999';
+                alertElement.style.color = '#990000';
+                alertElement.textContent = 'OTP expired. Please request a new one.';
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Time expired!',
+                    text: 'OTP expired. Please request a new one.',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            }
+        }
+
+        function resendOTP() {
+            console.log('Resending OTP...');
+            Swal.fire({
+                icon: 'info',
+                title: 'OTP Resent',
+                text: 'A new OTP has been sent to your device.',
+                timer: 2000,
+                timerProgressBar: true
+            });
+            startTimer();
+        }
+
+        function submitOTP() {
+            const otpInput = document.querySelector('.otp-input');
+            const otp = otpInput.value;
+
+            if (otp.length === 6) {
+                console.log('Submitting OTP:', otp);
+
+                // Make an AJAX request to verify the OTP
+                fetch('/verify-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ otp: otp }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // If OTP is verified, redirect to the new password page
+                            window.location.href = '/newpassword';
+                        } else {
+                            // If OTP is invalid, show an alert
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Invalid OTP',
+                                text: 'Please enter a valid 6-digit OTP.',
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error submitting OTP:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Something went wrong',
+                            text: 'Please try again later.',
+                        });
+                    });
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid OTP',
+                    text: 'Please enter a valid 6-digit OTP.',
+                });
+            }
+        }
+        startTimer();
+    </script>
+</body>
+
+</html>

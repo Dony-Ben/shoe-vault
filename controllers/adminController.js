@@ -60,7 +60,7 @@ const adminlogout = async (req, res) => {
         req.session.destroy((err) => {
             if (err) {
                 console.error("Error destroying session:", err);
-                // return res.redirect("/pageError");
+               
             }
 
             res.redirect("/admin");

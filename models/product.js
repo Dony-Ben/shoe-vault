@@ -6,6 +6,7 @@ const productSchema = new Schema(
     productName: {
       type: String,
       required: true,
+      
     },
     description: {
       type: String,
@@ -30,26 +31,29 @@ const productSchema = new Schema(
       required: true,
     },
     productOffer: {
-      type: Number, // Added the `type` property
+      type: Number, 
       default: 0,
     },
     quantity: {
       type: Number,
-      default: 0, // Updated `default` to a valid value for a Number field
+      default: 0, 
     },
     isblocked:{
       type:Boolean,
       default:false
        },
-   
+       subtotal:{
+        type:Number,
+        require:true,
+       },
     productImage: {
       type: [String],
-      default: [], // Changed `false` to an empty array for a field of type `[String]`
+      default: [], 
     },
     status: {
       type: String,
       enum: ["Available", "Out of Stock", "Discontinued"],
-      default: "Available", // Fixed the spelling of `default`
+      default: "Available",
       required: true,
     },
   },

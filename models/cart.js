@@ -1,6 +1,6 @@
 const mongoose=require("mongoose");
 const {Schema}=mongoose;
-const cartSchema = new mongoose({
+const cartSchema = new Schema({
     userId:{
         type:Schema.Types.ObjectId,
         ref:"User",
@@ -9,10 +9,10 @@ const cartSchema = new mongoose({
     items:[{
         productId:{
             type:Schema.Types.ObjectId,
-            ref:'product',
+            ref:'Product',
             required:true
         },
-        qauantity:{
+        quantity:{
             type:Number,
             default:1
         },
@@ -24,15 +24,9 @@ const cartSchema = new mongoose({
             type:Number,
             required:true
         },
-        status:{
-            type:String,
-            default:"placed"
-        },
-        cancelletionReaseon:{
-            type:String,
-            default:"none"
-        }
+        
+    
     }]
 })
-const Cart=mongoose.model("cartSchema");
+const Cart=mongoose.model("Cart",cartSchema);
 module.exports=Cart

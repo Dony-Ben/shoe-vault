@@ -21,8 +21,7 @@ async (accessToken, refreshToken, profile, done) => {
             googleId: profile.id,
         });
         await user.save();
-        return done(null, user);
-    }
+        return done(null, { id: user._id, email: user.email }); }
    } catch (error) {
     return done(error, null); 
    } 
@@ -32,14 +31,17 @@ passport.serializeUser((user, done) => {
     done(null, user.id);
 });
 
-passport.deserializeUser((id, done) => {
-    User.findById(id) // Use User model here
-    .then(user => {
-        done(null, user);
-    })
-    .catch(err => {
+passport.deserializeUser(async (id, done) => {
+    try {
+        const user = await User.findById(id).select("_id email firstname lastname");
+        if (user) {
+            done(null, { id: user._id, email: user.email });
+        } else {
+            done(null, null);
+        }
+    } catch (err) {
         done(err, null);
-    });
+    }
 });
 
 module.exports = passport;

@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #ff0000;
+            padding: 20px;
+            height: 100vh;
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin-bottom: 10px;
+        }
+        .sidebar ul li a {
+            text-decoration: none;
+            font-size: x-large;
+            color: #050000;
+            
+        }
+        .active {
+            font-weight: bold;
+        }
+        .profile-picture {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>USERINFO</h2>
+        <ul>
+            <li><a href="/Profile" class="active">Profile</a></li>
+            <li><a href="/address">Address</a></li>
+            <li><a href="/orders">Orders</a></li>
+            <li><a href="/settings">Settings</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h1>User Profile</h1>
+        
+        <% if (user.profilePicture) { %>
+            <img src="image/profile.jpg<%= user.profilePicture %>" alt="Profile Picture" class="profile-picture">
+        <% } %>
+        
+        <h2>Personal Information</h2>
+        <p><strong>Name:</strong> <%= user.firstname %></p>
+        <p><strong>Email:</strong> <%= user.email %></p>
+        
+        <button onclick="location.href='/edit-profile'">Edit Profile</button>
+    </div>
+</body>
+</html>

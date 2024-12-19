@@ -24,18 +24,23 @@ const loadhome = async (req, res) => {
 
 const loadhomepage = async (req, res) => {
     try {
-
-        let productData = await Product.find({ isblocked: false })
-         res.render("user/landing", { products: productData });
-        
+      if (req.session.user && req.session.user.id && req.session.user.email) {
+        return res.redirect("/home");
+      }
+  
+      let productData = await Product.find({ isblocked: false });
+      res.render("user/landing", { products: productData });
+  
     } catch (error) {
-        console.error("Error loading home page:", error);
+      console.error("Error loading home page:", error);
+      res.status(500).render("user/page-404", { message: "Internal server error" });
     }
-};
+  };
+  
 
 const loadlogin = async (req, res) => {
     try {
-        res.render('user/login', { errorMessage: null });
+        res.render('user/login', { message: null });
     } catch (error) {
         console.error("Error loading login page:", error);
         res.status(500).render('error', { message: "Internal Server Error" });
@@ -70,7 +75,14 @@ const shop = async (req, res) => {
         res.status(500).send("An error occurred while loading the page.");
     }
 };
-
+const about = async(req,res)=>{
+    try {
+        res.render("user/about")
+    } catch (error) {
+       console.error(error);
+        
+    }
+}
 
 module.exports = {
     loadhomepage,
@@ -80,4 +92,5 @@ module.exports = {
     loadregister,
     loadOTP,
     shop,
+    about,
 }

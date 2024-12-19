@@ -6,11 +6,11 @@
         :root {
             --primary-color: #000000;
             --secondary-color: #f5f7fa;
-            --text-color: #333;
+            --text-color: #ffffff;
             --sidebar-width: 240px;
             --border-color: #e0e0e0;
-            --success-color: #2ecc71;
-            --danger-color: #e74c3c;
+            --success-color: #008a3a;
+            --danger-color: #ff0000;
             --info-color: #3498db;
         }
         
@@ -337,13 +337,13 @@
                 <th scope="col"><b>Brand</b></th>
                 <th scope="col"><b>Category</b></th>
                 <th scope="col"><b>Sale Price</b></th>
-                <!-- <th scope="col"><b>Offer Price</b></th> -->
+                <!-- <th scope="col"><b>Offer Price</b></th>  -->
                 <!-- <th scope="col"><b>Offer</b></th> -->
-                <th scope="col"><b>Quantity</b></th>
+                 <th scope="col"><b>Quantity</b></th> 
                 <th scope="col"><b>Action</b></th>
-                <th scope="col"><b>Edit</b></th>
-            </tr>
-        </thead>
+                <th scope="col"><b>Edit</b></th> 
+             </tr> 
+           </thead> 
         <tbody>
             <% for(let i = data.length - 1; i >= 0; i--) { %>
             <tr>       
@@ -355,11 +355,11 @@
                       </div>
                 </td>
                 <td><%= data[i].productName %></td>
-                <td><%= data[i].brands.brandName %></td>
+                <td><%= data[i].brands ? data[i].brands.brandName : 'No Brand' %></td>
                 <td><%= data[i].category.name %></td>
                 <td><%= data[i].salePrice %></td>
                 <td><%= data[i].quantity %></td>
-                <td>
+                <!-- <td>
                     <button class="btn btn-info" style="width: 100px;">
                         <a href="#" class="text-white">Add Offer</a>
                     </button>
@@ -367,7 +367,7 @@
                     <button class="btn btn-info" style="width: 100px;">
                         <a href="#" class="text-white">Remove</a>
                     </button>
-                </td>
+                </td> -->
                 <td>
                     <% if(data[i].isblocked === false) { %>
                         <button class="btn btn-danger" style="width: 80px;">

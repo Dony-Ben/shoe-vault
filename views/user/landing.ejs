@@ -14,7 +14,7 @@
                     colors: {
                         primary: '1d1716',
                         secondary: '#402a23',
-                        accent: '#FFD700',
+                        accent: '#000000',
                         light: '#F9F5F4',
                     },
                     fontFamily: {
@@ -86,14 +86,14 @@
     <!-- Navbar -->
     <nav class="bg-transparent p-4 fixed w-full z-10 transition-all duration-300 ease-in-out" id="navbar">
         <div class="container mx-auto flex justify-between items-center">
-            <a href="#" class="text-2xl font-serif font-bold text-primary">Shoe Vault</a>
+            <a href="#" class="text-2xl font-serif font-bold text-black">Shoe Vault</a>
             <ul class="flex space-x-6">
-                <li><a href="/" class="text-light hover:text-accent transition duration-300">Home</a></li>
-                <li><a href="/shop" class="text-light hover:text-accent transition duration-300">SHOP</a></li>
-                <li><a href="/about" class="text-light hover:text-accent transition duration-300">ABOUT</a></li>
+                <li><a href="/home" class="text-black hover:text-accent transition duration-300">Home</a></li>
+                <li><a href="/shop" class="text-black hover:text-accent transition duration-300">SHOP</a></li>
+                <li><a href="/about" class="text-black hover:text-accent transition duration-300">ABOUT</a></li>
                 <!-- <li><a href="/kids" class="text-light hover:text-accent transition duration-300">KIDS</a></li> -->
-                <li><a href="/login" class="text-light hover:text-accent transition duration-300">LOGIN</a></li>
-                <li><a href="/signup" class="text-light hover:text-accent transition duration-300">SIGNUP</a></li>
+                <li><a href="/login" class="text-black hover:text-accent transition duration-300">LOGIN</a></li>
+                <li><a href="/signup" class="text-black hover:text-accent transition duration-300">SIGNUP</a></li>
 
 
             </ul>
@@ -107,7 +107,7 @@
             <p class="text-xl mb-12 animate-fade-in-up" style="animation-delay: 0.2s;">
                 Discover exclusive products crafted for modern lifestyles.
             </p>
-            <a href="#" class="modern-btn bg-primary text-light py-3 px-8 rounded-full text-lg font-medium hover:bg-opacity-90 transition duration-300 animate-fade-in-up" style="animation-delay: 0.4s;">Explore Now</a>
+            <a href="#" class="modern-btn bg-black text-light py-3 px-8 rounded-full text-lg font-medium hover:bg-opacity-90 transition duration-300 animate-fade-in-up" style="animation-delay: 0.4s;">Explore Now</a>
         </div>
         <div class="absolute inset-0 bg-gradient-to-t from-secondary to-transparent"></div>
     </section>
@@ -115,7 +115,7 @@
     <!-- Trending Products -->
     <section class="py-16 bg-light">
         <div class="container mx-auto">
-            <h2 class="text-4xl font-bold text-center mb-12 font-serif text-primary">Trending Products</h2>
+            <h2 class="text-4xl font-bold text-center mb-12 font-serif text-black">Trending Products</h2>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
                 <% if (Array.isArray(products) && products.length > 0) { %>
                   <% products.forEach((product) => { %>
@@ -124,7 +124,7 @@
                             <a href="/productDetails?product=<%=product._id%>" class="block">
                               <img src="/uploads/product-images/<%= product.productImage[0] %>" class="card-img-top rounded-top" alt="<%= product.productName %>">
                               <div class="card-body text-center">
-                                  <h5 class="card-title text-lg font-semibold mb-2 text-primary"><%= product.productName %></h5>
+                                  <h5 class="card-title text-lg font-semibold mb-2 text-black"><%= product.productName %></h5>
                                   <p class="card-text text-accent font-bold mb-4">₹<%= product.salePrice %></p>
                                   <a href="#" class="modern-btn btn btn-primary bg-primary hover:bg-opacity-80 text-light transition duration-300">Add to Cart</a>
                               </div>

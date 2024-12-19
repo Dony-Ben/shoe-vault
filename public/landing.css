@@ -477,7 +477,7 @@ button {
 .video_section{
     width: 100%;
     float: left;
-    background-image: url(../images/video-bg.png);
+    background-image: url(/image/profil.jpg);
     height: auto;
     margin-top: 90px;
 }

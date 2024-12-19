@@ -1,10 +1,8 @@
 const mongoose = require('mongoose');
-const product = require("../models/product.js")
+const product = require("../models/product.js");
 const userModel = require('../models/User.js');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
-const session=require("express-session")
-
 
 const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -112,9 +110,9 @@ const resentOtp = async (req, res) => {
     console.log("req.session.userOtp", req.session.resendOtp);
     console.log("Resend OTP:", otp);
     const emailSent = await sendVerificationEmail(email, otp);
-    
+
     if (emailSent) {
-      
+
       res.status(200).json({ success: true, message: "OTP resent successfully" });
     } else {
       res.status(500).json({ success: false, message: "Failed to resend OTP. Please try again." });
@@ -128,7 +126,7 @@ const resentOtp = async (req, res) => {
 const verifyotp = async (req, res) => {
   try {
     const { otp } = req.body;
-    console.log("verifyotp",req.session.userOtp, otp);
+    console.log("verifyotp", req.session.userOtp, otp);
 
     if (req.session.userOtp == otp || req.session.resendOtp == otp) {
       const user = req.session.userData
@@ -154,11 +152,11 @@ const verifyotp = async (req, res) => {
       req.session.user = saveUserData.id;
       res.redirect("login");
     } else {
-      res.status(400).json({ success: false, message: "Invalid OTP, plase try again 1111111" })
+      res.status(400).json({ success: false, message: "Invalid OTP, plase try again" })
     }
   } catch (error) {
     console.error("Error verifiying otp,error", error);
-    res.status(500).json({ success: false, message: "An errir is occured" })
+    res.status(500).json({ success: false, message: "An error is occured" })
 
   }
 }
@@ -166,44 +164,52 @@ const verifyotp = async (req, res) => {
 const userLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log("Login request body:", req.body);
 
-    // Validate input
     if (!email || !password) {
-      return res.status(400).send("Email and password are required.");
+      return res.render("user/login", { message: "Email and password are required." });
     }
+
     const user = await userModel.findOne({ email });
     if (!user) {
       console.warn("Login attempt failed: User not found with email:", email);
-      return res.status(401).send("Invalid email or password.");
+      return res.render('user/login', { message: 'User not found. Please signup' });
     }
+
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
-      return res.status(401).send("Invalid email or password.");
+      console.warn("Login attempt failed: Invalid password for email:", email);
+      return res.render("user/login", { message: "Invalid email or password." });
     }
-    req.session.user = { id: user._id, email: user.email }; 
+
+    // Set session
+    req.session.user = { id: user._id, email: user.email };
+    console.log("User session set:", req.session.user);
+
+    // Redirect to home page after successful login
     return res.redirect("/home");
+
   } catch (error) {
     console.error("Error during login process:", error.message, error.stack);
     return res.status(500).send("Something went wrong. Please try again later.");
   }
 };
 
+
 const logout = async (req, res) => {
   try {
-    req.session.destroy((err) => {
-      if (err) {
-        console.log("Secssion destruction error", message);
-        return res.redirect("/pageNotFound");
-      }
-      return res.redirect("/login")
-    })
+    req.session.user.id = null;
+    req.session.user.email = null;
+
+    console.log("Session after logout:", req.session);
+
+    return res.redirect("/");
   } catch (error) {
     console.log("Logout error", error);
-    res.redirect("/pageNotFound")
-
+    return res.redirect("/pageNotFound");
   }
 }
+
+
 
 module.exports = {
   userLogin,
