@@ -1,6 +1,7 @@
 const Cart = require("../models/cart");
 const Product = require("../models/product");
 
+
 const getcartpage = async (req, res) => {
     try {
         const userId = req.session.user?.id;
@@ -32,28 +33,20 @@ const getcartpage = async (req, res) => {
 
 const cartaddToCart = async (req, res) => {
     try {
-
         const userId = req.session.user?.id;
         const productId = req.query.productId;
 
-        console.log("Session user ID:", userId);
-        console.log("Product ID :", productId);
-
         if (!productId || !userId) {
-            console.log("Missing product ID or user ID");
-            return res.status(400).send("Missing product or user ID.");
+            return res.render("user/shop", { message: "Missing product or user ID.", products: [] });
         }
-
-        const product = await Product.findById(productId);
+       const product = await Product.findById(productId);
         if (!product) {
-            return res.status(404).send("Product not found.");
+            return res.render("user/shop", { message: "Product not found.", products: [] });
         }
-
         let cart = await Cart.findOne({ userId });
         if (!cart) {
             cart = new Cart({ userId, items: [] });
         }
-
         const existingItem = cart.items.find(item => item.productId.equals(productId));
         if (existingItem) {
             existingItem.quantity += 1;
@@ -66,13 +59,16 @@ const cartaddToCart = async (req, res) => {
                 totalprice: product.salePrice,
             });
         }
-
         await cart.save();
+        const productList = await Product.find({}); 
+        res.render("user/shop", { products: productList });
     } catch (error) {
         console.error("Error in cartaddToCart:", error);
-        res.status(500).send("Something went wrong.");
+        res.render("user/shop", { message: "Something went wrong. Please try again later.", products: [] });
     }
 };
+
+
 
 const deleteProduct = async (req, res) => {
     try {
@@ -152,26 +148,10 @@ const quantityManage = async (req, res) => {
     }
 }
 
-const loadcheckout = async (req, res) => {
-    try {
-        const cartItems = req.session.cartItems || [];
-        let total = 0;
-
-        cartItems.forEach(item => {
-            total += item.salePrice  * item.quantity; 
-        });
-
-        res.render("user/checkout", { total });
-    } catch (error) {
-        console.error("Error while loading checkout page:", error.message);
-        res.status(500).send("Failed to load checkout page. Please try again later.");
-    }
-};
 
 module.exports = {
     getcartpage,
     cartaddToCart,
-    loadcheckout,
     deleteProduct,
-    quantityManage,
+    quantityManage
 };

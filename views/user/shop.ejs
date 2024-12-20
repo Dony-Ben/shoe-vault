@@ -28,6 +28,7 @@
 <%- include('../partials/user/header.ejs') %>
 
   <body>
+    
     <main class="py-40">
       
       <style>
@@ -111,7 +112,7 @@
             <p class="text-secondary font-medium text-xl">No products available at the moment. Please check back later!</p>
           </div>
         <% } %>
-      </div>
+      </div>     
     </main>
 
     <%- include('../partials/user/footer.ejs') %>
@@ -131,12 +132,6 @@
         },
         body: JSON.stringify({ productId })
       });
-
-      if (response.ok) {
-        alert("Product added to cart!");
-      } else {
-        alert("Failed to add product to cart.");
-      }
     });
   });
 

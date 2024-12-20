@@ -185,7 +185,7 @@ const editProduct = async (req, res) => {
         };
 
         if (images.length > 0) {
-            uploadFields.$push = { productImage: { $each: images } };
+            uploadFields.productImage = images;
         }
 
         await Product.findByIdAndUpdate(id, uploadFields, { new: true });

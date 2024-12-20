@@ -69,7 +69,9 @@ const loadOTP = async (req, res) => {
 const shop = async (req, res) => {
     try {
         let productData = await Product.find({ isblocked: false })
+        const message = req.query.message || ''; 
         res.render("user/shop", { products:productData });
+
     } catch (error) {
         console.error("Error while rendering Men's page:", error);
         res.status(500).send("An error occurred while loading the page.");

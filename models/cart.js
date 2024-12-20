@@ -20,12 +20,7 @@ const cartSchema = new Schema({
             type:Number,
             required:true
         },
-        totalprice:{
-            type:Number,
-            required:true
-        },
-        
-    
+      
     }]
 })
 const Cart=mongoose.model("Cart",cartSchema);

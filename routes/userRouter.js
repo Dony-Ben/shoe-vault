@@ -19,10 +19,10 @@ const {
 } = require('../controllers/userController.js');
 const { productDetails } = require("../controllers/userproductController.js");
 const { userAuth, ensureGuest } = require("../middleware/auth.js");
-const {getcartpage,cartaddToCart,loadcheckout,deleteProduct,quantityManage} = require("../controllers/cartController.js")
+const {getcartpage,cartaddToCart,deleteProduct,quantityManage} = require("../controllers/cartController.js")
 const passport = require("passport");
 const {getForgotPassPage,forgotEmailValid,verifyOtp,resetPassword,loadProfile,geteditprofile,editprofile,loadAddresses,AddAddressForm,editAddress,getAddressById} =require("../controllers/profileController.js")
-
+const {loadcheckout,OrderConfirmation,ordersuccess} = require("../controllers/orderController.js");
 userRouter.get("/", loadhomepage);
 userRouter.get("/login", ensureGuest, loadlogin);
 userRouter.post("/login", userLogin);
@@ -42,9 +42,6 @@ userRouter.get('/address', loadAddresses);
 userRouter.post('/add-address', AddAddressForm);
 userRouter.post('/edit-address/:id',editAddress);
 userRouter.get('/edit-address/:id', getAddressById);
-
-
-
 
 // Authenticated routes (Require login)
 userRouter.get("/home", userAuth, loadhome);
@@ -72,9 +69,13 @@ userRouter.get("/productDetails", userAuth, productDetails);
 // cartmanagement
 userRouter.get("/cart", getcartpage);
 userRouter.get("/cart/add", cartaddToCart); 
-userRouter.get("/checkout",loadcheckout);
 userRouter.delete('/cart/delete/:productId', deleteProduct);
-userRouter.post('/api/cart/update/:itemId',quantityManage)
+userRouter.post('/api/cart/update/:itemId',quantityManage);
+
+// product order 
+userRouter.get("/checkout",loadcheckout);
+userRouter.post("/checkout", OrderConfirmation);
+userRouter.get("/order-success/:orderId",ordersuccess)
 
 
 module.exports = userRouter;

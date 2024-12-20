@@ -6,10 +6,7 @@ const ordersSchema = new mongoose.Schema({
         required: true 
     },
     orderedItem : [{
-        categoryId: { 
-            type: String,
-            required: true 
-        },
+
         productId: { 
             type: mongoose.Schema.Types.ObjectId, 
             ref: 'Product', 
@@ -20,24 +17,14 @@ const ordersSchema = new mongoose.Schema({
             required: true, 
             default: 1 
         },
-        totalPrice: { 
-            type: Number, 
-            required: true 
-        },
+        
     }],
     deliveryAddress: { 
-        // label: { type: String, required: true },
-        address: { type: String, required: true },
-        city: { type: String, required: true },
-        pinCode: { 
+        name: { type: String, required: true },
+        cityStatePincode:{type: String, required:true},
+        phone: { 
             type: String, 
             required: true, 
-            // match: /^[0-9]{6}$/ 
-        },
-        phoneNumber: { 
-            type: String, 
-            required: true, 
-            // match: /^[0-9]{10}$/ 
         }
     },
     orderStatus: { 
@@ -53,39 +40,30 @@ const ordersSchema = new mongoose.Schema({
     },
     paymentMethod: { 
         type: String, 
-        enum: ['cash-on-delivery', 'credit-card', 'paypal'], 
+        enum: ['cod', 'credit-card', 'paypal'], 
         required: true 
     },
     offerDiscount: { 
         type: Number, 
-        required: true, 
         default: 0 
     },
     couponDiscount: { 
         type: Number, 
-        required: true, 
         default: 0 
     },
     totalDiscount: { 
         type: Number, 
-        required: true, 
         default: 0 
     },
     deliveryCharge: { 
         type: Number, 
-        required: true, 
         default: 0 
     },
     finalAmount: { 
         type: Number, 
-        required: true 
     },
     cancelled: { type: Boolean, default: false },
     returned: { type: Boolean, default: false },
-    returnReason: { 
-        type: String, 
-        required: function () { return this.returned; } 
-    },
     invoiceDate: { type: Date, default: Date.now },
     couponCode: { type: String },
     couponApplied: { type: Boolean, required: true, default: false },
@@ -96,5 +74,5 @@ const ordersSchema = new mongoose.Schema({
 ordersSchema.index({ userId: 1, orderDate: -1 });
 ordersSchema.index({ orderStatus: 1 });
 
-const Orders = mongoose.model('BuyNowOrder', ordersSchema);
-export default Orders;
+const Orders = mongoose.model('Orders', ordersSchema);
+module.exports = Orders

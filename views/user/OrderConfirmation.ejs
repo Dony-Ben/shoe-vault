@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            text-align: center;
+        }
+        .icon-container {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+        }
+        .check-circle {
+            width: 80px;
+            height: 80px;
+            background-color: #0bde00;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .check-icon {
+            width: 40px;
+            height: 40px;
+            color: white;
+        }
+    
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 16px;
+        }
+        p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 32px;
+        }
+        .buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .btn-primary {
+            background-color: #000000;
+            color: white;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #418d25;
+        }
+        .btn-outline {
+            background-color: transparent;
+            color: #333;
+            border: 2px solid #ddd;
+        }
+        .btn-outline:hover {
+            border-color: #FF7452;
+            color: #FF7452;
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon-container">
+            <div class="check-circle">
+                <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </div>
+        </div>
+        
+        <h1>Thank you for ordering!</h1>
+        <p>Your order #<%= orderDetails[0]._id %> has been confirmed and will be shipped soon.</p>
+        
+        <div class="buttons">
+            <a href="/orders/<%= orderDetails[0]._id %>" class="btn btn-outline">VIEW ORDER</a>
+            <a href="/shop" class="btn btn-primary">CONTINUE SHOPPING</a>
+        </div>
+    </div>
+</body>
+</html>
+
