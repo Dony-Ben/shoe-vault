@@ -1,413 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
-    <link rel="stylesheet" href="/productlist.css">
-</head>
-<style>
-        :root {
-            --primary-color: #000000;
-            --secondary-color: #f5f7fa;
-            --text-color: #ffffff;
-            --sidebar-width: 240px;
-            --border-color: #e0e0e0;
-            --success-color: #008a3a;
-            --danger-color: #ff0000;
-            --info-color: #3498db;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--secondary-color);
-            color: var(--text-color);
-            min-height: 100vh;
+            background-color: #f0f4f8;
+            color: #2d3748;
         }
-        
-        .dashboard {
-            display: grid;
-            grid-template-columns: var(--sidebar-width) 1fr;
-            min-height: 100vh;
-        }
-        
-        /* Sidebar Styles */
-        .sidebar {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 2rem;
-            position: fixed;
-            width: var(--sidebar-width);
-            height: 100vh;
-            overflow-y: auto;
-        }
-        
-        .sidebar-header {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #ffffff;
-            margin-bottom: 2rem;
-        }
-        
-        .nav-item {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            margin-bottom: 0.5rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-        
-        .nav-item:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        
-        .nav-item a {
-            color: white;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            width: 100%;
-        }
-        
-        .nav-item i {
-            margin-right: 1rem;
-            width: 20px;
-            text-align: center;
-        }
-        
-        /* Main Content Styles */
         .main-content {
-            margin-left: var(--sidebar-width);
-            padding: 2rem;
-        }
-        
-        /* Header Section Styles */
-        .header-section {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-        }
-        
-        .content-title {
-            font-size: 1.75rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            color: var(--text-color);
-        }
-        
-        .search-container {
-            max-width: 600px;
+            max-width: 1200px;
             margin: 0 auto;
+            padding: 2rem;
         }
-        
-        .search-form {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-        
-        .search-input {
-            flex: 1;
-            padding: 0.75rem 1.25rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
+        .card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
         }
-        
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
         }
-        
-        .search-button {
-            padding: 0.75rem 1.5rem;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background-color 0.3s ease;
-        }
-        
-        .search-button:hover {
-            background-color: #111;
-        }
-        
-        /* Table Styles */
-        .table-container {
-            background-color: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
         .table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-left: 20rem;
-            color: #000000;
-            height:100%;
+            border-radius: 10px;
+            overflow: hidden;
         }
-        
         .table th {
-            background-color: var(--primary-color);
+            background-color: #4a5568;
             color: white;
             font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
-            padding: 1rem;
-            text-align: left;
         }
-        
-        .table td {
-            padding: 1rem;
-            border-bottom: 1px solid var(--border-color);
+        .table-hover tbody tr:hover {
+            background-color: #edf2f7;
         }
-        
-        .table tr:last-child td {
-            border-bottom: none;
+        .btn-primary {
+            background-color: #4299e1;
+            border-color: #4299e1;
         }
-        
-        /* Button Styles */
-        .btn {
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-weight: 500;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-            font-size: 0.875rem;
+        .btn-primary:hover {
+            background-color: #3182ce;
+            border-color: #3182ce;
         }
-        
-        .btn + .btn {
-            margin-left: 0.5rem;
+        .btn-outline-primary {
+            color: #4299e1;
+            border-color: #4299e1;
         }
-        
-        .btn-info {
-            background-color: var(--info-color);
+        .btn-outline-primary:hover {
+            background-color: #4299e1;
             color: white;
         }
-        
-        .btn-danger {
-            background-color: var(--danger-color);
-            color: white;
+        .pagination-container {
+            margin-top: 2rem;
         }
-        
-        .btn-success {
-            background-color: var(--success-color);
-            color: white;
-        }
-        
-        .btn:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-
-        /* New styles for right-aligned product details */
-        .product-details {
-            display: flex;
-            flex-direction: row-reverse;
-            gap: 2rem;
-        }
-
-        .product-list {
-            flex: 1;
-        }
-
-        .product-info {
-            width: 300px;
-            background-color: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 2rem;
-            height: fit-content;
-        }
-
-        .product-info h3 {
-            margin-bottom: 1rem;
-            font-size: 1.2rem;
-        }
-
-        .product-info-item {
-            margin-bottom: 0.5rem;
-        }
-
-        .product-info-label {
-            font-weight: 600;
-        }
-
-        @media (max-width: 1024px) {
-            .product-details {
-                flex-direction: column;
-            }
-
-            .product-info {
-                width: 100%;
-                position: static;
-            }
-        }
-        .imagediv{
-           height: 80px;
-           width: 80px;
-           overflow: hidden;
-        }
-
-.imagediv img {
-  max-width: 100%; 
-  max-height: 100%; 
-  object-fit: cover; /* Makes the image behave like a background cover */
-}
     </style>
-<div class="dashboard">
-    <aside class="sidebar">
-        <div class="sidebar-header">AdminPanel</div>
-        <nav>
-            <div class="nav-item">
-                <a href="/admin/dashboard">
-                    <i class="fas fa-home"></i>
-                    Dashboard
-                </a>
+</head>
+<%- include('../partials/admin/leyout.ejs') %>
+<body>
+    <div class="main-content">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4" style="color: #2b6cb0;">Product</h2>
+                <form action="" method="get" class="mb-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search products or brands" name="search" aria-label="Search products or brands">
+                        <button class="btn btn-primary" type="submit">Search</button>
+                    </div>
+                </form>
             </div>
-            <div class="nav-item">
-                <a href="/admin/customers">
-                    <i class="fas fa-users"></i>
-                    Users
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="/admin/Category">
-                    <i class="fas fa-chart-bar"></i>
-                    Category
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="/admin/products">
-                    <i class="fas fa-cog"></i>
-                    products
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="/admin/addProducts">
-                    <i class="fas fa-cog"></i>
-                    Add product
-                </a>
-            </div>
-
-            <div class="nav-item">
-                <a href="/admin/brands">
-                    <i class="fas fa-users"></i>
-                    Brands
-                </a>
-            </div>
-        </nav>
-    </aside>
-<div class="content-header">
-    <div>
-        <h2 class="content-title card-title">Products</h2>
-    </div>
-</div>
-<header class="card-header text-center mb-20">
-    <form action="" method="get" class="d-inline">
-        <div class="input-group input-group-sm border border-1 border-grey rounded-pill" style="width: 500px; margin-left: 230px;">
-            <input type="text" class="form-control border-0 rounded-pill" placeholder="Search products or brands" name="search">
-            <button class="btn  border-0" type="submit">Search</button>
         </div>
-    </form>
-</header>
-<div class="right mt-5">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th scope="col"><b>Product image</b></th>
-                <th scope="col"><b>Product name</b></th>
-                <th scope="col"><b>Brand</b></th>
-                <th scope="col"><b>Category</b></th>
-                <th scope="col"><b>Sale Price</b></th>
-                <!-- <th scope="col"><b>Offer Price</b></th>  -->
-                <!-- <th scope="col"><b>Offer</b></th> -->
-                 <th scope="col"><b>Quantity</b></th> 
-                <th scope="col"><b>Action</b></th>
-                <th scope="col"><b>Edit</b></th> 
-             </tr> 
-           </thead> 
-        <tbody>
-            <% for(let i = data.length - 1; i >= 0; i--) { %>
-            <tr>       
-                <td>
-                    <div class="d-flex align-items-center justify-content-center imagediv">
-                          <img 
-                            src="/uploads/product-images/<%= data[i].productImage[0] %>" 
-                           alt="<%= data[i].productName %>">
-                      </div>
-                </td>
-                <td><%= data[i].productName %></td>
-                <td><%= data[i].brands ? data[i].brands.brandName : 'No Brand' %></td>
-                <td><%= data[i].category.name %></td>
-                <td><%= data[i].salePrice %></td>
-                <td><%= data[i].quantity %></td>
-                <!-- <td>
-                    <button class="btn btn-info" style="width: 100px;">
-                        <a href="#" class="text-white">Add Offer</a>
-                    </button>
-        
-                    <button class="btn btn-info" style="width: 100px;">
-                        <a href="#" class="text-white">Remove</a>
-                    </button>
-                </td> -->
-                <td>
-                    <% if(data[i].isblocked === false) { %>
-                        <button class="btn btn-danger" style="width: 80px;">
-                            <a href="/admin/blockProduct?id=<%= data[i]._id %>" class="text-white" style="text-decoration: none;">Block</a>
-                        </button>
-                    <% } else { %>
-                        <button class="btn btn-success" style="width: 80px;">
-                            <a href="/admin/unblockProduct?id=<%= data[i]._id %>" class="text-white" style="text-decoration: none;">Unblock</a>
-                        </button>
-                    <% } %>
-                </td>
-                <td>
-                    <button class="btn btn-info" style="width: 80px;">
-                        <a href="/admin/editProduct?id=<%= data[i]._id %>" class="text-white" style="text-decoration: none;">Edit</a>
-                    </button>
-                </td>
-            </tr>
-            <% } %>
-        </tbody>
-        
 
-    </table>
-</div>
-</div>
-</div>
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Product</th>
+                                <th>Brand</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% for (let i = data.length - 1; i >= 0; i--) { %>
+                            <tr>
+                                <td>
+                                    <img src="/uploads/product-images/<%= data[i].productImage[0] %>" 
+                                         alt="<%= data[i].productName %>" 
+                                         style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
+                                </td>
+                                <td><%= data[i].productName %></td>
+                                <td><%= data[i].brands ? data[i].brands.brandName : 'No Brand' %></td>
+                                <td><%= data[i].category.name %></td>
+                                <td>$<%= data[i].salePrice.toFixed(2) %></td>
+                                <td><%= data[i].quantity %></td>
+                                <td>
+                                    <% if (data[i].isblocked === false) { %>
+                                    <span class="badge bg-success">Active</span>
+                                    <% } else { %>
+                                    <span class="badge bg-danger">Blocked</span>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <% if (data[i].isblocked === false) { %>
+                                        <a href="/admin/blockProduct?id=<%= data[i]._id %>" class="btn btn-outline-danger btn-sm">Block</a>
+                                        <% } else { %>
+                                        <a href="/admin/unblockProduct?id=<%= data[i]._id %>" class="btn btn-outline-success btn-sm">Unblock</a>
+                                        <% } %>
+                                        <a href="/admin/editProduct?id=<%= data[i]._id %>" class="btn btn-outline-primary btn-sm">Edit</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-<div class="container mt-3">
-</div>
-<div class="pagination-container">
-    <% if (currentPage > 1) { %>
-    <a href="?page=<%= currentPage - 1 %>">&laquo; Previous</a>
-    <% } %> <% for (let i = 1; i <= totalPages; i++) { %> <% if (i ===
-    currentPage) { %>
-    <span class="current-page"><%= i %></span>
-    <% } else { %>
-    <a href="?page=<%= i %>"><%= i %></a>
-    <% } %> <% } %> <% if (currentPage < totalPages) { %>
-    <a href="?page=<%= currentPage + 1 %>">Next &raquo;</a>
-    <% } %>
-  </div>
+        <nav aria-label="Page navigation" class="pagination-container">
+            <ul class="pagination justify-content-center">
+                <% if (currentPage > 1) { %>
+                <li class="page-item">
+                    <a class="page-link" href="?page=<%= currentPage - 1 %>" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <% } %>
+                <% for (let i = 1; i <= totalPages; i++) { %>
+                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                    <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                </li>
+                <% } %>
+                <% if (currentPage < totalPages) { %>
+                <li class="page-item">
+                    <a class="page-link" href="?page=<%= currentPage + 1 %>" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                <% } %>
+            </ul>
+        </nav>
+    </div>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

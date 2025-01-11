@@ -159,7 +159,7 @@ const verifyotp = async (req, res) => {
     res.status(500).json({ success: false, message: "An error is occured" })
 
   }
-}
+};
 
 const userLogin = async (req, res) => {
   try {
@@ -208,8 +208,6 @@ const logout = async (req, res) => {
     return res.redirect("/pageNotFound");
   }
 }
-
-
 
 module.exports = {
   userLogin,

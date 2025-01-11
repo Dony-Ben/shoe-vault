@@ -70,7 +70,6 @@ const ordersSchema = new mongoose.Schema({
     orderDate: { type: Date, default: Date.now }
 });
 
-// Add indexes
 ordersSchema.index({ userId: 1, orderDate: -1 });
 ordersSchema.index({ orderStatus: 1 });
 

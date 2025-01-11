@@ -3,6 +3,8 @@
 
     <link rel="stylesheet" href="/productadd.css">
 </head>
+<%- include('../partials/admin/leyout.ejs') %>
+
 <style>
     .error-message {
         color: red;
@@ -115,7 +117,7 @@
                                     <label for="input1" class="form-label">Upload Image 1</label>
                                     <input class="form-control" type="file" name="images" id="input1" accept="image/png, image/jpeg, image/jpg"
                                         onchange="viewImage(event, 1)">
-                                    <img src="" alt="Original" id="imgView1" style="max-width: 100%; margin-top: 10px;">
+                                    <img src=""  id="imgView1" style="max-width: 100%; margin-top: 10px;">
                                     <div id="croppedPreview1" style="margin-top: 10px;">
                                         <h6>Cropped Preview:</h6>
                                         <img src="" id="croppedImg1" alt="Cropped" style="max-width: 100%;">
@@ -213,11 +215,6 @@
             displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
             isValid = false;
         }
-
-        if (color.trim() === "") {
-            displayErrorMessage('color-error', 'Please enter a color.');
-            isValid = false;
-        }
         if (!imageDatas && images.files.length === 0) {
             displayErrorMessage("images-error", 'Please select an image.');
             isValid = false;
@@ -291,8 +288,6 @@
         previewContainer.style.display = 'block';
     });
 }
-
-
 
     const selectedImages = [];
     document.getElementById("imageInput").addEventListener("change", handleFileSelect);

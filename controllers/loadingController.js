@@ -15,7 +15,7 @@ const loadhome = async (req, res) => {
     try {
         let productData = await Product.find({ isblocked: false })
 
-        res.render('user/home', { products :productData});
+        res.render('user/home', { products: productData });
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -24,19 +24,19 @@ const loadhome = async (req, res) => {
 
 const loadhomepage = async (req, res) => {
     try {
-      if (req.session.user && req.session.user.id && req.session.user.email) {
-        return res.redirect("/home");
-      }
-  
-      let productData = await Product.find({ isblocked: false });
-      res.render("user/landing", { products: productData });
-  
+        if (req.session.user && req.session.user.id && req.session.user.email) {
+            return res.redirect("/home");
+        }
+
+        let productData = await Product.find({ isblocked: false });
+        res.render("user/landing", { products: productData });
+
     } catch (error) {
-      console.error("Error loading home page:", error);
-      res.status(500).render("user/page-404", { message: "Internal server error" });
+        console.error("Error loading home page:", error);
+        res.status(500).render("user/page-404", { message: "Internal server error" });
     }
-  };
-  
+};
+
 
 const loadlogin = async (req, res) => {
     try {
@@ -64,27 +64,28 @@ const loadOTP = async (req, res) => {
     } catch (error) {
         console.log('error while loading otp page... ', error)
     }
-}
+};
 
 const shop = async (req, res) => {
     try {
         let productData = await Product.find({ isblocked: false })
-        const message = req.query.message || ''; 
-        res.render("user/shop", { products:productData });
+        const message = req.query.message || '';
+        res.render("user/shop", { products: productData });
 
     } catch (error) {
-        console.error("Error while rendering Men's page:", error);
+        console.error("Error while rendering shop page:", error);
         res.status(500).send("An error occurred while loading the page.");
     }
 };
-const about = async(req,res)=>{
+
+const about = async (req, res) => {
     try {
         res.render("user/about")
     } catch (error) {
-       console.error(error);
-        
+        console.error(error);
+
     }
-}
+};
 
 module.exports = {
     loadhomepage,

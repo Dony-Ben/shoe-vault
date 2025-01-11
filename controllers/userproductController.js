@@ -9,12 +9,12 @@ const productDetails = async (req, res) => {
         const id = req.query.product;
         const productData = await product.findById(id).populate('category');
         console.log(productData)
-        
+
         res.render("user/product-details", { productData });
     } catch (error) {
         console.log('error in productdetail: ', error);
     }
-}
+};
 
 module.exports = {
     productDetails,

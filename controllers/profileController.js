@@ -13,7 +13,7 @@ function generateOTP() {
         otp += digits[crypto.randomInt(0, digits.length)];
     }
     return otp;
-}
+};
 
 const sendVerificationEmail = async (email, otp) => {
     try {
@@ -88,22 +88,25 @@ const forgotEmailValid = async (req, res) => {
 const verifyOtp = async (req, res) => {
     try {
         const { userOtp, email } = req.session;
-        const enteredOtp = Object.values(req.body).join("");
+        console.log("Session Data:", req.session);
+        const enteredOtp = Object.values(req.body).join("").trim();
 
+        // Check if session has expired
         if (!userOtp || !email) {
+            console.log("Session expired or OTP not found in session.");
             return res.render("user/forgotpassword", { message: "Session expired. Please request a new OTP." });
         }
 
         console.log("Entered OTP:", enteredOtp);
         console.log("Stored OTP:", userOtp);
 
-        if (userOtp === enteredOtp) {
+        // Verify the OTP
+        if (userOtp.trim() === enteredOtp) {
             console.log("OTP Verified for email:", email);
             req.session.isOtpVerified = true;
-            console.log("Rendering newpassword page...");
-
             res.render("user/newpassword");
         } else {
+            console.log("Invalid OTP entered.");
             req.session.message = "Invalid OTP. Please try again.";
             res.redirect("/passwordreset");
         }
@@ -112,6 +115,7 @@ const verifyOtp = async (req, res) => {
         res.render("user/page-404", { message: "Something went wrong. Please try again." });
     }
 };
+
 
 const resetPassword = async (req, res) => {
     try {
@@ -273,7 +277,7 @@ const editAddress = async (req, res) => {
     try {
         const addressId = req.params.id;
         const { addressType, name, phone, city, state, pincode } = req.body;
-        
+
         console.log("Request body:", req.body);
 
         const updatedAddress = await Address.findByIdAndUpdate(addressId, {
@@ -283,8 +287,8 @@ const editAddress = async (req, res) => {
             city,
             state,
             pincode,
-        }, { new: true }); 
-        
+        }, { new: true });
+
         if (!updatedAddress) {
             return res.status(404).send('Address not found');
         }
@@ -305,12 +309,27 @@ const getAddressById = async (req, res) => {
             return res.status(404).json({ message: 'Address not found' });
         }
 
-        res.json(address); 
+        res.json(address);
     } catch (error) {
         console.error('Error fetching address:', error);
         res.status(500).json({ message: 'Server error' });
     }
 };
+
+const deleteAddress = async (req, res) => {
+    try {
+        const userId = req.session.user.id;
+        const addressId = req.params.id;
+
+        const result = await Address.deleteOne({ _id: addressId, userId });
+        console.log("address deleted successfully");
+        
+        res.redirect("/address")
+    } catch (error) {
+        console.error("Error deleting address:", error);
+        res.status(500).send("An error occurred while deleting the address.");
+    }
+}
 
 module.exports = {
     sendVerificationEmail,
@@ -325,4 +344,5 @@ module.exports = {
     AddAddressForm,
     editAddress,
     getAddressById,
+    deleteAddress,
 };

@@ -19,10 +19,11 @@ const {
 } = require('../controllers/userController.js');
 const { productDetails } = require("../controllers/userproductController.js");
 const { userAuth, ensureGuest } = require("../middleware/auth.js");
-const {getcartpage,cartaddToCart,deleteProduct,quantityManage} = require("../controllers/cartController.js")
+const { getcartpage, cartaddToCart, deleteProduct, quantityManage } = require("../controllers/cartController.js")
 const passport = require("passport");
-const {getForgotPassPage,forgotEmailValid,verifyOtp,resetPassword,loadProfile,geteditprofile,editprofile,loadAddresses,AddAddressForm,editAddress,getAddressById} =require("../controllers/profileController.js")
-const {loadcheckout,OrderConfirmation,ordersuccess} = require("../controllers/orderController.js");
+const { getForgotPassPage, forgotEmailValid, verifyOtp, resetPassword, loadProfile, geteditprofile, editprofile, loadAddresses, AddAddressForm, editAddress, getAddressById,deleteAddress } = require("../controllers/profileController.js")
+const { loadcheckout, OrderConfirmation, ordersuccess, getOrders ,OrderCancel} = require("../controllers/orderController.js");
+
 userRouter.get("/", loadhomepage);
 userRouter.get("/login", ensureGuest, loadlogin);
 userRouter.post("/login", userLogin);
@@ -30,25 +31,28 @@ userRouter.get("/signup", ensureGuest, loadregister);
 userRouter.post("/signup", userSignup);
 
 // profileController
-userRouter.get("/forgotpassword",getForgotPassPage);
-userRouter.post("/resetpassword",forgotEmailValid);
-userRouter.post("/verify-otp",verifyOtp);
-userRouter.post("/set-new-password",resetPassword);
+userRouter.get("/forgotpassword", getForgotPassPage);
+userRouter.post("/resetpassword", forgotEmailValid);
+userRouter.post("/verify-otp", verifyOtp);
+userRouter.post("/set-new-password", resetPassword);
+
 // editin user profile
-userRouter.get('/profile',loadProfile);
-userRouter.get('/edit-profile',geteditprofile);
-userRouter.post('/edit-profile',editprofile);
+userRouter.get('/profile', loadProfile);
+userRouter.get('/edit-profile', geteditprofile);
+userRouter.post('/edit-profile', editprofile);
 userRouter.get('/address', loadAddresses);
 userRouter.post('/add-address', AddAddressForm);
-userRouter.post('/edit-address/:id',editAddress);
+userRouter.post('/edit-address/:id', editAddress);
 userRouter.get('/edit-address/:id', getAddressById);
+userRouter.post('/user/delete-address/:id',deleteAddress);
+
 
 // Authenticated routes (Require login)
 userRouter.get("/home", userAuth, loadhome);
 userRouter.get("/logout", logout);
 userRouter.get("/pageNotFound", userAuth, pageNotFound);
 userRouter.get("/shop", userAuth, shop);
-userRouter.get("/about",about)
+userRouter.get("/about", about)
 
 // OTP Management
 userRouter.get('/otp', ensureGuest, loadOTP);
@@ -63,19 +67,23 @@ userRouter.get("/google/callback", passport.authenticate("google", { failureRedi
 
 
 // Product management
-userRouter.get("/productDetails", userAuth, productDetails);
+userRouter.get("/productDetails", productDetails);
 
 
 // cartmanagement
-userRouter.get("/cart", getcartpage);
-userRouter.get("/cart/add", cartaddToCart); 
+userRouter.get("/cart", userAuth, getcartpage);
+userRouter.get("/cart/add", userAuth, cartaddToCart);
 userRouter.delete('/cart/delete/:productId', deleteProduct);
-userRouter.post('/api/cart/update/:itemId',quantityManage);
+userRouter.post('/api/cart/update/:itemId', quantityManage);
+
 
 // product order 
-userRouter.get("/checkout",loadcheckout);
+userRouter.get("/checkout", loadcheckout);
 userRouter.post("/checkout", OrderConfirmation);
-userRouter.get("/order-success/:orderId",ordersuccess)
+userRouter.get("/order-success/:orderId", ordersuccess);
 
+// userRouter.get("/orders",loadOrderpage)
+userRouter.get("/orders", getOrders)
+userRouter.post("/orders/:orderId/cancel", OrderCancel);
 
-module.exports = userRouter;
+module.exports = userRouter;  

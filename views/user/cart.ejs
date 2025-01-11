@@ -11,9 +11,10 @@
 
 
 </head>
+<%- include('../partials/user/header.ejs') %>
 
 <body class="bg-gray-100">
-    <div class="container mx-auto px-4 py-8">
+    <div class="container mx-auto px-4 py-36">
         <h1 class="text-3xl font-bold mb-8">Your Cart</h1>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -100,17 +101,24 @@
 
     <script>
         // Update Item Quantity
-        function updateQuantity(itemId, change, buttonElement) {
+        let isUpdating = false;
+
+function updateQuantity(itemId, change, buttonElement) {
+    if (isUpdating) return;
+    isUpdating = true;
+
     const quantityElement = $(`#quantity-${itemId}`);
     const currentQuantity = parseInt(quantityElement.text());
     const newQuantity = currentQuantity + change;
 
     if (newQuantity < 1) {
         alert("Quantity cannot be less than 1.");
+        isUpdating = false;
         return;
     }
     if (newQuantity > 5) {
         alert("Quantity cannot be more than 5.");
+        isUpdating = false;
         return;
     }
 
@@ -129,23 +137,22 @@
                 if (totalPriceElement.length) {
                     totalPriceElement.text(data.totalprice.toFixed(2));
                 }
-                
             } else {
                 alert('Failed to update quantity: ' + data.message);
             }
         },
         error: function (xhr, status, error) {
-            console.error('Error:', error);
+            console.error('Error:', error, 'Status:', status, 'Response:', xhr.responseText);
             alert('An error occurred while updating the quantity.');
         },
         complete: function () {
-            // Re-enable the button
             $(buttonElement).prop('disabled', false);
+            isUpdating = false;
         }
     });
 }
 
-        function removeItem(itemId) {
+ function removeItem(itemId) {
             fetch(`/cart/delete/${itemId}`, {
                 method: 'DELETE',
                 headers: {

@@ -39,7 +39,8 @@ const handleLogin = async (req, res) => {
         console.log("Login error", error);
         return res.render('error', { message: "An error occurred during login" });
     }
-}
+};
+
 const loaddashboard = async (req, res) => {
     if (req.session.admin) {
         try {
@@ -50,17 +51,17 @@ const loaddashboard = async (req, res) => {
             res.render('error', { message: "An error occurred while loading the dashboard" });
         }
     } else {
-        return res.redirect("/admin");  
+        return res.redirect("/admin");
     }
 
-}
+};
 
 const adminlogout = async (req, res) => {
     try {
         req.session.destroy((err) => {
             if (err) {
                 console.error("Error destroying session:", err);
-               
+
             }
 
             res.redirect("/admin");
@@ -70,7 +71,9 @@ const adminlogout = async (req, res) => {
         res.redirect("/pageError");
     }
 };
+
 module.exports = {
+    pageError,
     loadlogin,
     handleLogin,
     loaddashboard,

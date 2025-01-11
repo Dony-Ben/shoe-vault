@@ -36,7 +36,7 @@ const productSchema = new Schema(
     },
     quantity: {
       type: Number,
-      default: 0, 
+      min: [0, 'Quantity cannot be negative'],
     },
     isblocked:{
       type:Boolean,

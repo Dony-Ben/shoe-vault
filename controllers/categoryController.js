@@ -1,5 +1,6 @@
 const Category = require("../models/category");
-const Product = require("../models/product")
+const Product = require("../models/product");
+
 const categoryInfo = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -44,7 +45,8 @@ const addCategory = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ error: `Internal Server Error: ${error.message}` });
     }
-}
+};
+
 const addCategoryOffer = async (req, res) => {
     try {
         const percentage = parseInt(req.body.percentage);
@@ -68,7 +70,7 @@ const addCategoryOffer = async (req, res) => {
     } catch (error) {
         res.status(500).json({ status: false, message: "internal sever Error" })
     }
-}
+};
 
 const removeCategoryOffer = async (req, res) => {
     try {
@@ -92,7 +94,7 @@ const removeCategoryOffer = async (req, res) => {
     } catch (error) {
 
     }
-}
+};
 
 const getListCategory = async (req, res) => {
     try {
@@ -102,7 +104,8 @@ const getListCategory = async (req, res) => {
     } catch (error) {
         res.redirect("/pageError")
     }
-}
+};
+
 const getUnlistCategory = async (req, res) => {
     try {
         let id = req.query.id;
@@ -112,7 +115,7 @@ const getUnlistCategory = async (req, res) => {
     } catch (error) {
         res.redirect("/pageError")
     }
-}
+};
 
 const getEdiCategory = async (req, res) => {
     try {
@@ -135,10 +138,8 @@ const getEdiCategory = async (req, res) => {
 const editCategory = async (req, res) => {
     try {
         const id = req.params.id;
-        console.log("params id", id);
 
         const { categoryName, description } = req.body;
-        console.log("req.body in edit category", req.body);
 
         let isExist = await Category.findOne({name:categoryName})
         if(isExist){
@@ -166,7 +167,8 @@ const editCategory = async (req, res) => {
 
         res.status(500).json({ error: "Internal server error" })
     }
-}
+};
+
 module.exports = {
     categoryInfo,
     addCategory,

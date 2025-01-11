@@ -1,5 +1,6 @@
-const userModel=require("../models/User");
-const customerInfo = async (req,res)=>{
+const userModel = require("../models/User");
+
+const customerInfo = async (req, res) => {
     try {
         let search = "";
         if (req.query.search) {
@@ -33,55 +34,51 @@ const customerInfo = async (req,res)=>{
             ],
         });
 
-        // Dummy users in case of no data
-        const dummyUsers = [
-            { name: "John Doe", email: "john.doe@example.com", phone: "123-456-7890" },
-            { name: "Jane Smith", email: "jane.smith@example.com", phone: "987-654-3210" },
-            { name: "Alice Johnson", email: "alice.johnson@example.com", phone: null },
-        ];
-
+  
         // Use dummy users if no data is found
-        const data = userData.length > 0 ? userData : dummyUsers;
+        const data = userData.length > 0 ? userData:"no user";
 
         // Pass variables to the EJS template
         res.render("admin/coustomers", {
             data,
             currentPage: page,
             totalPages: Math.ceil(count / limit),
-            search, 
+            search,
         });
     } catch (error) {
         console.error("Error in customerInfo:", error);
         res.status(500).send("An error occurred while fetching customers.");
     }
-}
-const customerBlocked= async (req,res) => {
+};
+
+const customerBlocked = async (req, res) => {
     try {
-        console.log("it coming from customerblocked",req.query);
-        
-       let id= req.query.id;
-       
-       await userModel.updateOne({_id:id},{isblocked:true});
-       res.redirect("/admin/customers")
-    } catch (error) {
-        res.redirect("/pageError");
-  
-    }
-}
-    const customerUnblocked = async (req,res) => {
-       try {
-        console.log("it coming from customerunblocked",req.query);
+        console.log("it coming from customerblocked", req.query);
 
         let id = req.query.id;
-         await userModel.updateOne({_id:id},{isblocked:false});
-         res.redirect("/admin/customers")
 
-       } catch (error) {
-        res.redirect("/pageError")
-       } 
+        await userModel.updateOne({ _id: id }, { isblocked: true });
+        res.redirect("/admin/customers")
+    } catch (error) {
+        res.redirect("/pageError");
+
     }
+};
 
-module.exports ={ 
+const customerUnblocked = async (req, res) => {
+    try {
+        console.log("it coming from customerunblocked", req.query);
+
+        let id = req.query.id;
+        await userModel.updateOne({ _id: id }, { isblocked: false });
+        res.redirect("/admin/customers")
+
+    } catch (error) {
+        res.redirect("/pageError")
+    }
+};
+
+module.exports = {
     customerInfo,
     customerBlocked,
     customerUnblocked,

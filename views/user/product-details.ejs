@@ -1,18 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= productData.productName %> - Product Detail</title>
+  <title>
+    <%= productData.productName %> - Product Detail
+  </title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+
   <style>
     .product-image-slider img {
       width: 100%;
       height: 400px;
       object-fit: cover;
       border-radius: 10px;
+
     }
+
     .slider-nav-thumbnails img {
       width: 80px;
       height: 80px;
@@ -21,18 +27,52 @@
       cursor: pointer;
       transition: all 0.3s ease;
     }
+
     .slider-nav-thumbnails img:hover {
       transform: scale(1.1);
     }
+
     .related-products .card {
       transition: all 0.3s ease;
     }
+
     .related-products .card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    /*  */
+    .image-zoom-container {
+      position: relative;
+      width: 100%;
+      height: 400px;
+      overflow: hidden;
+    }
+
+    #mainImage {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    #zoomLens {
+      position: absolute;
+      border: 2px solid #ccc;
+      width: 100px;
+      height: 100px;
+      background: rgba(255, 255, 255, 0.4);
+      pointer-events: none;
+      display: none;
+    }
+
+    .product-image-slider {
+      position: relative;
+      cursor: crosshair;
     }
   </style>
 </head>
+
 <body>
   <main class="main">
     <section class="mt-5 mb-5">
@@ -41,66 +81,75 @@
           <ol class="breadcrumb bg-light p-3 rounded">
             <li class="breadcrumb-item"><a href="/home" class="text-decoration-none">Home</a></li>
             <li class="breadcrumb-item"><a href="/shop" class="text-decoration-none">Shop</a></li>
-            <li class="breadcrumb-item active" aria-current="page"><%= productData.productName %></li>
+            <li class="breadcrumb-item active" aria-current="page">
+              <%= productData.productName %>
+            </li>
           </ol>
         </nav>
 
         <div class="row">
           <div class="col-lg-6">
-            <div class="product-image-slider mb-4">
+            <div class="product-image-slider mb-4 position-relative">
               <!-- Main Image -->
-              <div id="mainImageContainer">
-                <img 
-                  id="mainImage" 
-                  src="/uploads/product-images/<%= productData.productImage[0] %>" 
-                  alt="<%= productData.productName %> - Main Image" 
-                  class="img-fluid"
-                >
+              <div id="mainImageContainer" class="image-zoom-container">
+                <img id="mainImage" src="/uploads/product-images/<%= productData.productImage[0] %>"
+                  alt="<%= productData.productName %> - Main Image" class="img-fluid">
+                <div id="zoomLens" class="zoom-lens"></div>
               </div>
             </div>
             <div class="slider-nav-thumbnails d-flex justify-content-center">
-              <% productData.productImage.forEach((image, index) => { %>
+              <% productData.productImage.forEach((image, index)=> { %>
                 <div class="mx-2">
-                  <img 
-                    src="/uploads/product-images/<%= image %>" 
-                    alt="Thumbnail <%= index + 1 %>" 
-                    class="thumbnail" 
-                    onclick="changeMainImage('<%= image %>')"
-                    style="cursor: pointer; width: 80px; height: 80px;"
-                  >
+                  <img src="/uploads/product-images/<%= image %>" alt="Thumbnail <%= index + 1 %>" class="thumbnail"
+                    onclick="changeMainImage('<%= image %>')" style="cursor: pointer; width: 80px; height: 80px;">
                 </div>
-              <% }); %>
+                <% }); %>
             </div>
           </div>
           <div class="col-lg-6">
             <div class="product-details">
-              <h1 class="mb-4"><%= productData.productName %></h1>
+              <h1 class="mb-4">
+                <%= productData.productName %>
+              </h1>
               <div class="d-flex justify-content-between align-items-center mb-4">
                 <div class="product-price">
                   <span class="h3 text-success">₹<%= productData.salePrice.toFixed(2) %></span>
                 </div>
                 <div class="product-rating">
-                  <% for (let i = 0; i < 5; i++) { %>
+                  <% for (let i=0; i < 5; i++) { %>
                     <i class="fas fa-star <%= i < productData.rating ? 'text-warning' : 'text-muted' %>"></i>
-                  <% } %>
-                  <span class="ms-2 text-muted">(25 reviews)</span>
+                    <% } %>
+                      <span class="ms-2 text-muted">(25 reviews)</span>
                 </div>
               </div>
-              <p class="mb-4"><%= productData.description %></p>
+              <p class="mb-4">
+                <%= productData.description %>
+              </p>
               <div class="mb-4">
                 <h5>Key Features:</h5>
               </div>
               <div class="d-flex align-items-center mb-4">
-                <div class="input-group me-3" style="width: 130px;">
+                <!-- <div class="input-group me-3" style="width: 130px;">
                   <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(-1)">-</button>
                   <input type="text" class="form-control text-center" id="quantity" value="1" readonly>
                   <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(1)">+</button>
-                </div>
-                <button class="btn btn-primary me-2" onclick="addToCart()">Add to Cart</button>
-                <button class="btn btn-danger" onclick="buyNow()">Buy Now</button>
+                </div> -->
+                <a href="/cart/add/?productId=<%= productData._id %>"
+                  class="modern-btn btn btn-black bg-black hover:bg-opacity-80 text-light transition duration-300 add-to-cart-btn"
+                  data-product-id="<%= productData._id %>">
+                  Add to Cart
+                </a>
               </div>
+              <div id="toast"
+                style="position: fixed; bottom: 20px; right: 20px; background: #043703; color: #ffffff; padding: 10px 15px; border-radius: 5px; display: none; z-index: 1000;">
+              </div>
+
               <div class="mb-4">
-                <h5>Availability: <span class="text-success"><%= productData.inStock ? 'In Stock' : 'Out of Stock' %></span></h5>
+                <h5>Availability:
+                  <span class="<%= productData.status ? 'text-success' : 'text-danger' %>">
+                    <%= productData.status ? 'In Stock' : 'Out of Stock' %>
+                  </span>
+                </h5>
               </div>
             </div>
           </div>
@@ -110,18 +159,20 @@
         <div class="related-products mt-5">
           <h2 class="mb-4">Related Products</h2>
           <div class="row">
-            <% /*relatedProducts.forEach(product => { */%>
-              <div class="col-md-3 mb-4">
-                <div class="card h-100">
-                  <img src="/uploads/product-images/<%= productData.productImage[0] %>" class="card-img-top" alt="<%= productData.productName %>">
-                  <div class="card-body">
-                    <h5 class="card-title"><%= productData.productName %></h5>
-                    <p class="card-text">$<%= productData.salePrice.toFixed(2) %></p>
-                    <a href="/product/<%= productData.id %>" class="btn btn-outline-primary">View Details</a>
-                  </div>
+            <div class="col-md-3 mb-4">
+              <div class="card h-100">
+                <img src="/uploads/product-images/<%= productData.productImage[0] %>" class="card-img-top"
+                  alt="<%= productData.productName %>">
+                <div class="card-body">
+                  <h5 class="card-title">
+                    <%= productData.productName %>
+                  </h5>
+                  <p class="card-text">$<%= productData.salePrice.toFixed(2) %>
+                  </p>
+                  <a href="/product/<%= productData.id %>" class="btn btn-outline-primary">View Details</a>
                 </div>
               </div>
-            <%/* }); */%>
+            </div>
           </div>
         </div>
       </div>
@@ -129,6 +180,8 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
   <script>
     function changeMainImage(thumbnail, index) {
       const mainImages = document.querySelectorAll('.product-image-slider > div');
@@ -136,30 +189,81 @@
       mainImages[index].classList.add('active');
     }
 
-    function updateQuantity(change) {
-      const quantityInput = document.getElementById('quantity');
-      let newQuantity = parseInt(quantityInput.value) + change;
-      if (newQuantity < 1) newQuantity = 1;
-      quantityInput.value = newQuantity;
-    }
+    // function updateQuantity(change) {
+    //   const quantityInput = document.getElementById('quantity');
+    //   let newQuantity = parseInt(quantityInput.value) + change;
+    //   if (newQuantity < 1) newQuantity = 1;
+    //   quantityInput.value = newQuantity;
+    // }
 
-    function addToCart() {
-      const quantity = document.getElementById('quantity').value;
-      // Implement your add to cart logic here
-      alert(`Added ${quantity} item(s) to cart`);
-    }
-
-    function buyNow() {
-      const quantity = document.getElementById('quantity').value;
-      // Implement your buy now logic here
-      alert(`Proceeding to checkout with ${quantity} item(s)`);
-    }
-
-    ////
     function changeMainImage(imageSrc) {
+      const mainImage = document.getElementById('mainImage');
+      mainImage.src = `/uploads/product-images/${imageSrc}`;
+    }
+
     const mainImage = document.getElementById('mainImage');
-    mainImage.src = `/uploads/product-images/${imageSrc}`;
-  }
+    const zoomLens = document.getElementById('zoomLens');
+    const mainImageContainer = document.getElementById('mainImageContainer');
+
+    mainImageContainer.addEventListener('mousemove', (e) => {
+      const rect = mainImage.getBoundingClientRect();
+      const x = e.clientX - rect.left; // x-coordinate inside the image
+      const y = e.clientY - rect.top; // y-coordinate inside the image
+
+      const lensWidth = zoomLens.offsetWidth / 2;
+      const lensHeight = zoomLens.offsetHeight / 2;
+
+      let lensX = x - lensWidth;
+      let lensY = y - lensHeight;
+
+      // Constrain the lens within the image boundaries
+      lensX = Math.max(0, Math.min(lensX, rect.width - zoomLens.offsetWidth));
+      lensY = Math.max(0, Math.min(lensY, rect.height - zoomLens.offsetHeight));
+
+      zoomLens.style.left = lensX + 'px';
+      zoomLens.style.top = lensY + 'px';
+      zoomLens.style.display = 'block';
+      zoomLens.style.backgroundPosition = `-${lensX * 2}px -${lensY * 2}px`;
+
+      // Set the zoomed background
+      zoomLens.style.backgroundImage = `url(${mainImage.src})`;
+      zoomLens.style.backgroundSize = `${rect.width * 2}px ${rect.height * 2}px`;
+    });
+
+    mainImageContainer.addEventListener('mouseleave', () => {
+      zoomLens.style.display = 'none';
+    });
+
+    // Simple Toast Function
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.style.display = 'block';
+
+      // Hide after 3 seconds
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
+    }
+
+    // Add Event Listener for Add to Cart
+    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+      button.addEventListener('click', function (event) {
+        event.preventDefault(); // Prevent the default action
+        const productId = this.getAttribute('data-product-id');
+
+        fetch(`/cart/add/?productId=${productId}`)
+          .then(response => {
+            if (response.ok) {
+              showToast('Product added to cart!');
+            } else {
+              showToast('Failed to add product to cart.');
+            }
+          })
+          .catch(() => showToast('Something went wrong.'));
+      });
+    });
   </script>
 </body>
+
 </html>

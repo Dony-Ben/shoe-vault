@@ -299,19 +299,16 @@
    document.querySelector('.complete-purchase').addEventListener('click', function (e) {
     e.preventDefault();
 
-    // Example values, replace with actual values passed from the server
-    const cart = <%- JSON.stringify(cart) %>;
+    const cart = <%-JSON.stringify(cart) %>;
     const subtotal = <%= subtotal %>;
     const shipping = <%= shipping %>;
 
-    // Get selected delivery address
     const selectedAddressElement = document.querySelector('input[name="address"]:checked');
     if (!selectedAddressElement) {
         alert("Please select a delivery address.");
         return;
     }
 
-    // Extract address details from the parent container of the selected radio button
     const addressContainer = selectedAddressElement.closest('.address-card');
     const addressDetails = {
         id: selectedAddressElement.value,
@@ -320,14 +317,12 @@
         cityStatePincode: addressContainer.querySelector('p:nth-of-type(2)').innerText,
     };
 
-    // Get selected payment method
     const paymentMethod = document.querySelector('select[name="payment_method"]').value;
     if (!paymentMethod) {
         alert("Please select a payment method.");
         return;
     }
 
-    // Construct the order details
     const orderDetails = {
         products: cart.map(item => ({
             productId: item.productId._id,
@@ -340,7 +335,6 @@
 
     console.log(orderDetails);
 
-    // Send the order details to the server
     fetch('/checkout', {
         method: 'POST',
         headers: {

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="admin-container">
+        <img src="/image/icon.png "id="toggleSidebar" class="open-sidebar-icon">
+
+    </div>
+
+    <!-- Sidebar Modal -->
+    <div id="sidebar" class="sidebar-modal">
+        <div class="sidebar-content">
+            <button id="closeSidebar" class="close-sidebar-btn">×</button>
+            <h2>Admin panel </h2>
+            <ul>
+                <li><a href="/admin/dashboard">Dashboard</a></li>
+                <li><a href="/admin/customers">users</a></li>
+                <li><a href="/admin/orders">Orders</a></li>
+                <li><a href="/admin/Category">Category</a></li>
+                <li><a href="/admin/products">products</a></li>
+                <li><a href="/admin/addProducts">addproducts</a></li>
+                <li><a href="/admin/brands">Brands</a></li>
+
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+.admin-container {
+    padding: 20px;
+}
+
+.open-sidebar-icon {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+.sidebar-modal {
+    position: fixed;
+    top: 0;
+    left: -300px; /* Hidden initially */
+    width: 300px;
+    height: 100%;
+    background-color: #343a40;
+    color: #fff;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+    transition: left 0.3s ease;
+    z-index: 1000;
+}
+
+.sidebar-modal.open {
+    left: 0; /* Slide in */
+}
+
+.sidebar-content {
+    padding: 20px;
+}
+
+.sidebar-content h2 {
+    margin: 0 0 20px;
+}
+
+.sidebar-content ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar-content ul li {
+    margin-bottom: 10px;
+}
+
+.sidebar-content ul li a {
+    color: #fff;
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+
+.sidebar-content ul li a:hover {
+    background-color: #495057;
+}
+
+.close-sidebar-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px; /* Adjusted for left sidebar */
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #fff;
+    cursor: pointer;
+}
+</style>
+
+<script>
+   document.addEventListener('DOMContentLoaded', () => {
+    const toggleSidebarBtn = document.getElementById('toggleSidebar');
+    const sidebar = document.getElementById('sidebar');
+
+    toggleSidebarBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+    });
+
+    // Close sidebar if clicked outside
+    window.addEventListener('click', (event) => {
+        if (!sidebar.contains(event.target) && event.target !== toggleSidebarBtn) {
+            sidebar.classList.remove('open');
+        }
+    });
+});
+</script>

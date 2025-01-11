@@ -58,4 +58,22 @@ p a {
 p a:hover {
     text-decoration: underline;
 }
+
+/* Style for the input box */
+input#password {
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box; /* Ensure the input box width accounts for padding */
+    font-size: 16px;
+    padding-right: 40px; /* Space for the eye icon */
+  }
+  
+  /* Style for the toggle icon */
+  #togglePassword {
+    font-size: 18px;    
+    line-height: 1;
+    color: gray;
+    cursor: pointer;
+  }
+
     

@@ -16,45 +16,44 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="responsive.css">
-  <link rel="icon" href="images/fevicon.png" type="image/gif" />
   <link rel="stylesheet" href="jquery.mCustomScrollbar.min.css">
   <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/font-awesome.css">
   <link rel="stylesheet" href="owl.carousel.min.css">
   <link rel="stylesheet" href="owl.theme.default.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css"
     media="screen">
 </head>
 <%- include('../partials/user/header.ejs') %>
 
   <body>
-    
+
     <main class="py-40">
-      
+
       <style>
         .filter-section {
           display: flex;
           justify-content: flex-end;
-          margin-bottom: 20px;
-          color: #ff0000;
+          color: #0d8507;
+          height: 40px;
+          margin-right: 80px;
         }
-      
+
         select {
-          padding: 8px 12px;
+          padding: 8px -12px;
           border: 1px solid #ddd;
           border-radius: 4px;
-          background-color: white;
+          background-color: rgb(255, 255, 255);
           font-size: 14px;
+          padding-left: 51px;
           cursor: pointer;
           min-width: 200px;
         }
-      
+
         select:focus {
           outline: none;
           border-color: #1b5605;
-          box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
         }
-      
+
         .product-item {
           border: 1px solid #eee;
           padding: 15px;
@@ -62,62 +61,106 @@
           border-radius: 4px;
           transition: box-shadow 0.3s ease;
         }
-      
+
         .product-item:hover {
-          box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-      
+
         .product-item h3 {
           margin: 0 0 10px 0;
           font-size: 18px;
         }
-      
+
         .product-item p {
           margin: 0;
           color: #007bff;
           font-weight: bold;
         }
+
+        #product-list {
+          padding: 30px;
+        }
+
+
+        .search-container {
+          display: flex;
+          align-items: center;
+          border-radius: 4px;
+          margin-right: 10px;
+          padding: 5px;
+          width: 300px;
+        }
+
+        .search-input {
+          flex-grow: 1;
+          border-radius: 7px;
+          background-color: rgb(92, 85, 85);
+          outline: none;
+          padding: 5px;
+          font-size: 16px;
+        }
+
+        .search-button {
+          background: #ff7b00;
+          border: none;
+          cursor: pointer;
+          border-radius: 7px;
+          padding: 5px;
+          font-size: 16px;
+        }
       </style>
+      <div>
+        <input type="text" class="search-input" id="search-input" placeholder="Search...">
+        <button type="button" class="search-button" id="search-button" onclick="search()">🔍</button>
+      </div>
 
       <div class="filter-section">
         <select id="sort-filter" onchange="applyFilter()" aria-label="Sort products">
-          <option value="">Sort Products</option>
+          <option value="">Filter Products</option>
           <option value="price-asc">Price: Low to High</option>
           <option value="price-desc">Price: High to Low</option>
           <option value="name-asc">Name: A to Z</option>
           <option value="name-desc">Name: Z to A</option>
         </select>
       </div>
-      
+
       <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4" id="product-list">
-        <% if (Array.isArray(products) && products.length > 0) { %>
-          <% products.forEach((product) => { %>
-            <div class="col animate-on-scroll" data-price="<%= product.salePrice %>" data-name="<%= product.productName %>">
+        <% if (Array.isArray(products) && products.length> 0) { %>
+          <% products.forEach((product)=> { %>
+            <div class="col animate-on-scroll" data-price="<%= product.salePrice %>"
+              data-name="<%= product.productName %>">
               <div class="card h-100 glass border-0 shadow-md hover:shadow-lg transition duration-300">
                 <a href="/productDetails?product=<%= product._id %>" class="block">
-                  <img src="/uploads/product-images/<%= product.productImage[0] %>" class="card-img-top rounded-top" alt="<%= product.productName %>">
+                  <img src="/uploads/product-images/<%= product.productImage[0] %>" class="card-img-top rounded-top"
+                    alt="<%= product.productName %>">
                   <div class="card-body text-center">
-                    <h5 class="card-title text-lg font-semibold mb-2 text-black"><%= product.productName %></h5>
-                    <p class="card-text text-accent font-bold mb-4">₹<%= product.salePrice %></p>
-                    <p class="card-text text-accent font-bold mb-4"><%= product.brandName %></p>
+                    <h5 class="card-title text-lg font-semibold mb-2 text-black">
+                      <%= product.productName %>
+                    </h5>
+                    <p class="card-text text-accent font-bold mb-4">₹<%= product.salePrice %>
+                    </p>
+                    <p class="card-text text-accent font-bold mb-4">
+                      <%= product.brandName %>
+                    </p>
                     <a href="/cart/add/?productId=<%= product._id %>"
-                      class="modern-btn btn btn-black bg-black hover:bg-opacity-80 text-light transition duration-300">Add to Cart</a>
+                      class="modern-btn btn btn-black bg-black hover:bg-opacity-80 text-light transition duration-300">Add
+                      to Cart</a>
                   </div>
                 </a>
               </div>
             </div>
-          <% }) %>
-        <% } else { %>
-          <div class="col-12 text-center">
-            <p class="text-secondary font-medium text-xl">No products available at the moment. Please check back later!</p>
-          </div>
-        <% } %>
-      </div>     
+            <% }) %>
+              <% } else { %>
+                <div class="col-12 text-center">
+                  <p class="text-secondary font-medium text-xl">No products available at the moment. Please check back
+                    later!</p>
+                </div>
+                <% } %>
+      </div>
     </main>
 
     <%- include('../partials/user/footer.ejs') %>
   </body>
-
 
 </html>
 <script>
@@ -132,45 +175,6 @@
         },
         body: JSON.stringify({ productId })
       });
-    });
-  });
-
-
-
-  // dropdown
-  document.getElementById('profileButton').addEventListener('click', () => {
-    const dropdown = document.getElementById('profileDropdown');
-    dropdown.classList.toggle('hidden');
-  });
-
-  document.addEventListener('click', (event) => {
-    const profileButton = document.getElementById('profileButton');
-    const dropdown = document.getElementById('profileDropdown');
-    if (!profileButton.contains(event.target) && !dropdown.contains(event.target)) {
-      dropdown.classList.add('hidden');
-    }
-  });
-
-
-  document.getElementById('logoutButton').addEventListener('click', () => {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: "You will be logged out!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, log me out!'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire(
-          'Logged Out!',
-          'Logout successfull!.',
-          'success'
-        ).then(() => {
-          window.location.href = '/logout';
-        });
-      }
     });
   });
 
@@ -201,4 +205,7 @@
     });
     products.forEach(product => productList.appendChild(product));
   }
+  // search
+
+
 </script>

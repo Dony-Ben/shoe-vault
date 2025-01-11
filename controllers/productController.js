@@ -19,6 +19,7 @@ const getProductAddpage = async (req, res) => {
         res.redirect("/admin/pageError");
     }
 };
+
 const addProducts = async (req, res) => {
     try {
         const productData = req.body;
@@ -151,21 +152,29 @@ const getEditProduct = async (req, res) => {
     } catch (error) {
         res.render("admin/page-404")
     }
-}
+};
+
 const editProduct = async (req, res) => {
     try {
         const id = req.params.id;
+        console.log("Product ID:", id);
+        console.log("Form data:", req.body);
+
         const product = await Product.findOne({ _id: id });
+        if (!product) {
+            return res.status(404).send("Product not found.");
+        }
+
         const data = req.body;
         const category = await Category.findOne({ name: data.category });
         if (!category) {
             return res.status(400).send("Invalid category name.");
         }
-        const brand = await Brand.findOne({ brandName: data.brand });
+
+        const brand = await Brand.findOne({ brandName: new RegExp(`^${data.brand}$`, 'i') });
         if (!brand) {
             return res.status(400).send("Invalid brand name.");
         }
-
 
         const images = [];
         if (req.files && req.files.length > 0) {
@@ -176,23 +185,25 @@ const editProduct = async (req, res) => {
 
         const uploadFields = {
             productName: data.productName,
-            description: data.description,
-            brand: brand._id,
-            category: category._id,
+            description: data.descriptionData,
+             brand: brand._id,
+            category: category,
             regularPrice: data.regularPrice,
             salePrice: data.salePrice,
             quantity: data.quantity,
         };
+        console.log("Update fields:", uploadFields);
 
         if (images.length > 0) {
             uploadFields.productImage = images;
         }
 
-        await Product.findByIdAndUpdate(id, uploadFields, { new: true });
-        res.redirect("/admin/products");
+        const updatedProduct = await Product.findByIdAndUpdate(id, uploadFields, { new: true });
+        console.log("Updated product:", updatedProduct);
 
+        res.redirect("/admin/products");
     } catch (error) {
-        console.error(error);
+        console.error("Error updating product:", error);
         res.redirect("/pageError");
     }
 };

@@ -7,7 +7,7 @@ const Product = require('../models/product')
 const loadcheckout = async (req, res) => {
     try {
         if (!req.session.user) {
-            return res.redirect('/login'); 
+            return res.redirect('/login');
         }
         const userId = req.session.user.id;
         const cartData = await Cart.findOne({ userId }).populate({
@@ -48,87 +48,148 @@ const loadcheckout = async (req, res) => {
 const OrderConfirmation = async (req, res) => {
     try {
         const userId = req.session.user.id
+        console.log(userId);
+
         const { products, totalPrice, address, paymentMethod } = req.body;
 
-        // Log incoming data for debugging
         console.log('Received order data:', req.body);
 
         if (!products || !products.length || !totalPrice) {
             return res.status(400).json({ error: 'Invalid order data' });
         }
 
-        const user = req.user; 
-        const customerName = user ? user.name : 'Guest';
+        const user = req.user;
+        const customerName = user ? user.firstname : 'Guest';
 
-        // Create the order
         const order = new Orders({
-            userId:userId,
+            userId: userId,
             orderedItem: products.map(item => ({
                 productId: item.productId,
                 quantity: item.quantity,
             })),
-            totalPrice: 0, 
+            totalPrice: 0,
             finalAmount: totalPrice,
             orderDate: new Date(),
             deliveryAddress: {
-                name: address.name, 
-                cityStatePincode:address.cityStatePincode,
+                name: address.name,
+                cityStatePincode: address.cityStatePincode,
                 phone: address.phone,
             },
-            deliveryCharge: 50, // Example shipping cost (you can modify this based on address or region)
-            paymentMethod:paymentMethod,
+            deliveryCharge: 50,
+            paymentMethod: paymentMethod,
         });
 
-        // Calculate the total price for each item
         let calculatedTotalPrice = 0;
         for (const item of order.orderedItem) {
-            const product = await Product.findById(item.productId); // Fetch product details
+            const product = await Product.findById(item.productId);
             if (product) {
                 item.totalPrice = product.price * item.quantity;
-                calculatedTotalPrice += item.totalPrice; // Add each item's total price
+                calculatedTotalPrice += item.totalPrice;
             } else {
                 return res.status(404).json({ error: `Product not found: ${item.productId}` });
             }
         }
 
-        // Set total price (sum of item prices and delivery charge)
         order.totalPrice = calculatedTotalPrice;
 
-        // Save the order
         const savedOrder = await order.save();
 
-        // Populate the order for rendering (for details such as product names)
         const populatedOrder = await Orders.findById(savedOrder._id).populate('orderedItem.productId');
 
-        // Calculate the subtotal (sum of all item prices)
         const subtotal = populatedOrder.orderedItem.reduce((acc, item) => acc + item.totalPrice, 0);
 
-        // Render the confirmation page
-        res.json({orderDetails:populatedOrder})
+        res.json({ orderDetails: populatedOrder })
     } catch (error) {
         console.error('Error processing order:', error);
         res.status(500).send('Internal Server Error');
     }
 };
 
-const ordersuccess = async(req,res)=>{
+const ordersuccess = async (req, res) => {
     try {
-        const orderId = req.params.orderId; 
-        const orderDetails = await Orders.find({_id:orderId})
+        const orderId = req.params.orderId;
+        const orderDetails = await Orders.find({ _id: orderId })
 
-        res.render('user/OrderConfirmation',{orderDetails:orderDetails})
-        
+        res.render('user/OrderConfirmation', { orderDetails: orderDetails })
+
     } catch (error) {
-        console.log("error while getting order",error);
-        
+        console.log("error while getting order", error);
+
     }
-}
+};
+
+const getOrders = async (req, res) => {
+    try {
+        const userId = req.session.user.id;
+        console.log("Session Data:", userId);
+
+        const orders = await Orders.find({ userId })
+            .populate({
+                path: 'orderedItem.productId',
+                select: 'productName salePrice productImage'
+            })
+            .lean();
+
+        // console.log("Orders with populated products:", JSON.stringify(orders, null, 2));
+
+        const safeOrders = orders.map(order => ({
+            ...order,
+            items: (order.orderedItem || []).map(item => ({
+                productName: item.productId?.productName || 'Unknown Product',
+                price: item.productId?.salePrice || 0,
+                productImage: item.productId?.productImage?.[0] || '/placeholder.jpg',
+                quantity: item.quantity || 1
+            }))
+        }));
+
+        res.render("user/userorders", { orders: safeOrders, message: null });
+    } catch (error) {
+        console.error("An error occurred while fetching user orders:", error);
+        res.status(500).send("Error fetching user orders");
+    }
+};
+const OrderCancel = async (req, res) => {
+    try {
+        const orderId = req.params.orderId;
+        console.log("orderid", orderId);
+
+        const order = await Orders.findById(orderId);
+        console.log("this after orderid");
+
+        if (!order) {
+            console.log("one");
+            return res.render("user/userorders", { message: "order not found" });
+        }
+        console.log("after one");
+
+        if (order.orderStatus === 'Cancelled') {
+            console.log("two");
+            return res.render("user/userorders", { message: "Order already cancelled" });
+        }
+
+        order.orderStatus = 'Cancelled';
+        await order.save();
+        console.log('order cancelled');
 
 
-module.exports ={
+        for (const item of order.orderedItem) {
+            const product = await Product.findById(item.productId);
+            if (product) {
+                product.stock += item.quantity;
+                await product.save();
+            }
+        }
+        res.redirect('/orders');
+    } catch (error) {
+        console.error("Error cancelling order:", error);
+        res.status(500).send("Error cancelling order");
+    }
+};
+
+module.exports = {
     loadcheckout,
     OrderConfirmation,
     ordersuccess,
-
-
+    getOrders,
+    OrderCancel,
 }

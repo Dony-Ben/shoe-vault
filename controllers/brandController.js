@@ -1,7 +1,6 @@
 const Brand = require("../models/Brands");
 // const Product = require("../models/product");
 
-
 const getBrandpage = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -32,7 +31,6 @@ const getBrandpage = async (req, res) => {
     }
 };
 
-
 const addBrand = async (req, res) => {
     try {
         const brand = req.body.name;
@@ -50,40 +48,43 @@ const addBrand = async (req, res) => {
         res.redirect("/pageError")
     }
 }
-const blockBrand = async (req,res)=>{
+
+const blockBrand = async (req, res) => {
     try {
         const id = req.query.id;
-        await Brand.updateOne({_id:id},{$set:{isBlocked:true}});
+        await Brand.updateOne({ _id: id }, { $set: { isBlocked: true } });
         res.redirect("/admin/brands")
 
     } catch (error) {
-        
+
     }
 }
 
-const unBlockBrand =async (req,res)=>{
+const unBlockBrand = async (req, res) => {
     try {
         const id = req.query.id;
-        await Brand.updateOne({_id:id},{$set:{isBlocked:false}});
+        await Brand.updateOne({ _id: id }, { $set: { isBlocked: false } });
         res.redirect("/admin/brands");
     } catch (error) {
-      res.redirect("/pageError")  
+        res.redirect("/pageError")
     }
 }
-const deleteBrand =async (req,res)=>{
+
+const deleteBrand = async (req, res) => {
     try {
-       const {id}= req.query;
-       if(!id){
-        return res.status(400).redirect("/pageError")
-       } 
-       await Brand.deleteOne({_id:id});
-       res.redirect("/admin/brands")
+        const { id } = req.query;
+        if (!id) {
+            return res.status(400).redirect("/pageError")
+        }
+        await Brand.deleteOne({ _id: id });
+        res.redirect("/admin/brands")
     } catch (error) {
-       console.log("Error delete brand:",error);
-    res.status(500).redirect("/pageError")
-        
+        console.log("Error delete brand:", error);
+        res.status(500).redirect("/pageError")
+
     }
 }
+
 module.exports = {
     getBrandpage,
     addBrand,

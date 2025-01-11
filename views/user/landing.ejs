@@ -13,7 +13,7 @@
                 extend: {
                     colors: {
                         primary: '1d1716',
-                        secondary: '#402a23',
+                        secondary: '#000000 ',
                         accent: '#000000',
                         light: '#F9F5F4',
                     },
@@ -88,12 +88,11 @@
         <div class="container mx-auto flex justify-between items-center">
             <a href="#" class="text-2xl font-serif font-bold text-black">Shoe Vault</a>
             <ul class="flex space-x-6">
-                <li><a href="/home" class="text-black hover:text-accent transition duration-300">Home</a></li>
-                <li><a href="/shop" class="text-black hover:text-accent transition duration-300">SHOP</a></li>
-                <li><a href="/about" class="text-black hover:text-accent transition duration-300">ABOUT</a></li>
-                <!-- <li><a href="/kids" class="text-light hover:text-accent transition duration-300">KIDS</a></li> -->
-                <li><a href="/login" class="text-black hover:text-accent transition duration-300">LOGIN</a></li>
-                <li><a href="/signup" class="text-black hover:text-accent transition duration-300">SIGNUP</a></li>
+                <li><a href="/home" class="text-light hover:text-accent transition duration-300">Home</a></li>
+                <li><a href="/shop" class="text-light hover:text-accent transition duration-300">SHOP</a></li>
+                <li><a href="/about" class="text-light hover:text-accent transition duration-300">ABOUT</a></li>
+                <li><a href="/login" class="text-light hover:text-accent transition duration-300">LOGIN</a></li>
+                <li><a href="/signup" class="text-light hover:text-accent transition duration-300">SIGNUP</a></li>
 
 
             </ul>
@@ -101,9 +100,10 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="bg-secondary text-light py-48 relative overflow-hidden">
-        <div class="container mx-auto text-center relative z-10">
-            <h1 class="text-6xl font-serif font-bold mb-6 animate-fade-in-up">Experience the Elegance of Shoe Vault</h1>
+    <section class="bg-black text-black   ht py-48 relative overflow-hidden"
+        style="background-image: url('/image/Banner.jpg');">
+ <div class="container mx-auto text-center relative z-10">
+            <!-- <h1 class="text-6xl font-serif font-bold mb-6 animate-fade-in-up">Experience the Elegance of Shoe Vault</h1> -->
             <p class="text-xl mb-12 animate-fade-in-up" style="animation-delay: 0.2s;">
                 Discover exclusive products crafted for modern lifestyles.
             </p>
@@ -114,35 +114,47 @@
 
     <!-- Trending Products -->
     <section class="py-16 bg-light">
-        <div class="container mx-auto">
-            <h2 class="text-4xl font-bold text-center mb-12 font-serif text-black">Trending Products</h2>
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-                <% if (Array.isArray(products) && products.length > 0) { %>
-                  <% products.forEach((product) => { %>
-                      <div class="col animate-on-scroll">
-                          <div class="card h-100 glass border-0 shadow-md hover:shadow-lg transition duration-300">
-                            <a href="/productDetails?product=<%=product._id%>" class="block">
-                              <img src="/uploads/product-images/<%= product.productImage[0] %>" class="card-img-top rounded-top" alt="<%= product.productName %>">
-                              <div class="card-body text-center">
-                                  <h5 class="card-title text-lg font-semibold mb-2 text-black"><%= product.productName %></h5>
-                                  <p class="card-text text-accent font-bold mb-4">₹<%= product.salePrice %></p>
-                                  <a href="#" class="modern-btn btn btn-primary bg-primary hover:bg-opacity-80 text-light transition duration-300">Add to Cart</a>
-                              </div>
-                          </div>
+        <div class="container mx-auto px-4">
+          <h2 class="text-4xl font-bold text-center mb-12 font-serif text-black k">
+            Trending Products
+            <span class="absolute bottom-0 left-0 w-full h-1 transform scale-x-50 transition-transform duration-300 group-hover:scale-x-100"></span>
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <% if (Array.isArray(products) && products.length > 0) { %>
+              <% products.forEach((product) => { %>
+                <div class="group">
+                  <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
+                    <a href="/productDetails?product=<%=product._id%>" class="block">
+                      <div class="relative overflow-hidden rounded-t-lg">
+                        <img 
+                          src="/uploads/product-images/<%= product.productImage[0] %>" 
+                          class="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105" 
+                          alt="<%= product.productName %>"
+                        >
                       </div>
-                  <% }) %>
-              <% } else { %>
-                  <div class="col-12 text-center">
-                      <p class="text-secondary font-medium text-xl">No products available at the moment. Please check back later!</p>
+                      <div class="p-4">
+                        <h5 class="text-lg font-semibold mb-2 text-gray-800 truncate"><%= product.productName %></h5>
+                        <p class="text-gray-800 truncate font-bold mb-4">₹<%= product.salePrice %></p>
+                        <button class="w-40 py-1 px-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 mx-auto block">
+                            Add to Cart
+                          </button>
+                          
+                      </div>
+                    </a>
                   </div>
-              <% } %>
+                </div>
+              <% }) %>
+            <% } else { %>
+              <div class="col-span-full text-center">
+                <p class="text-gray-600 font-medium text-xl">No products available at the moment. Please check back later!</p>
+              </div>
+            <% } %>
           </div>
-          
         </div>
-    </section>
-
+      </section>
+    
     <!-- Footer -->
-    <footer class="bg-primary text-light py-12">
+    <footer class="bg-black text-light py-12">
         <div class="container mx-auto text-center">
             <p class="mb-4">&copy; 2024 Shoe Vault. All rights reserved.</p>
             <div class="flex justify-center space-x-6">
@@ -154,18 +166,22 @@
     </footer>
 
     <script>
-        // Navbar scroll effect
+        let lastScrollY = 0; // Keep track of the last scroll position
+        const navbar = document.getElementById('navbar');
+    
         window.addEventListener('scroll', () => {
-            const navbar = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('bg-primary', 'shadow-md');
-                navbar.classList.remove('bg-transparent');
+            const currentScrollY = window.scrollY;
+    
+            // Hide the navbar on scroll down and show on scroll up
+            if (currentScrollY > lastScrollY && currentScrollY > 50) {
+                navbar.classList.add('hidden'); // Add hidden class
             } else {
-                navbar.classList.remove('bg-primary', 'shadow-md');
-                navbar.classList.add('bg-transparent');
+                navbar.classList.remove('hidden'); // Remove hidden class
             }
+    
+            lastScrollY = currentScrollY; // Update last scroll position
         });
-
+    
         // Scroll animations
         const elements = document.querySelectorAll('.animate-on-scroll');
         const observer = new IntersectionObserver((entries) => {
@@ -175,8 +191,9 @@
                 }
             });
         }, { threshold: 0.1 });
-
+    
         elements.forEach(el => observer.observe(el));
     </script>
+    
 </body>
 </html>
