@@ -175,6 +175,11 @@ const userLogin = async (req, res) => {
       return res.render('user/login', { message: 'User not found. Please signup' });
     }
 
+    if (user.isblocked) {
+      console.warn("Login attempt failed: User is blocked with email:", email);
+      return res.render("user/login", { message: "You are blocked by admin." });
+    }
+
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
       console.warn("Login attempt failed: Invalid password for email:", email);

@@ -12,9 +12,16 @@
 <body>
     <div class="login-container">
         <h2>Login</h2>
-        <div class="error-message">
-            <%= message %>
-        </div>
+
+        <% if (typeof userBlocked !== 'undefined' && userBlocked) { %>
+            <div class="error-message" style="color: red;">
+                You are blocked by the admin.
+            </div> 
+        <% } else if (message) { %>
+            <div class="error-message" style="color: red;">
+                <%= message %>
+            </div>
+        <% } %>
 
         <form action="/login" method="POST">
             <div class="form-group">

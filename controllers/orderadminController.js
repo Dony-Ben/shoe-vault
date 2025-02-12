@@ -1,17 +1,19 @@
 const Orders = require("../models/order");
+
 const getOrderpage = async (req, res) => {
     try {
         const orders = await Orders.find()
-            .populate('userId', 'name email')
+            .populate('userId', 'firstname lastname email')
             .populate('orderedItem.productId', 'name price')
             .sort({ createdAt: -1 });
-        console.log("this is adminorder", orders);
+            console.log("Populated Orders:", orders);
         res.render('admin/ordermanage', { orders });
     } catch (error) {
         console.log("An error occurred while fetching user orders:", error);
         res.status(500).send("An error occurred");
     }
 };
+
 const updateOrderStatus = async (req, res) => {
     console.log('Received update request:', req.body);
     const { orderId, orderStatus } = req.body;

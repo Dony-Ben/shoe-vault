@@ -11,7 +11,7 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
+                    colors: {   
                         primary: '1d1716',
                         secondary: '#000000 ',
                         accent: '#000000',
@@ -24,7 +24,7 @@
                 }
             }
         }
-    </script>
+        </script>
     <style>
         /* Custom Animations */
         @keyframes fadeInUp {
@@ -121,13 +121,13 @@
           </h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             <% if (Array.isArray(products) && products.length > 0) { %>
-              <% products.forEach((product) => { %>
-                <div class="group">
+                <% products.slice(0, 8).forEach((product)=> { %>
+                    <div class="group">
                   <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
                     <a href="/productDetails?product=<%=product._id%>" class="block">
                       <div class="relative overflow-hidden rounded-t-lg">
                         <img 
-                          src="/uploads/product-images/<%= product.productImage[0] %>" 
+                          src="/uploads/re-image/<%= product.productImage[0] %>" 
                           class="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105" 
                           alt="<%= product.productName %>"
                         >

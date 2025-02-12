@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
     <style>
         :root {
             --primary: #6366f1;
@@ -171,6 +173,7 @@
         }
     </style>
 </head>
+<%- include('../partials/user/header.ejs') %>
 
 <body>
     <div class="container">
@@ -246,9 +249,6 @@
                                         <!-- Add New Address Link -->
                                         <a href="/address" class="add-address">+ Add New Address</a>
                 </div>
-
-
-
                 <div class="coupon-section">
                     <input type="text" class="input" placeholder="Enter Coupon">
                     <button class="btn btn-primary">Apply</button>
@@ -289,10 +289,13 @@
                         style="text-decoration: none; color: white; display: inline-block; padding: 10px 20px; background-color: #007bff; border-radius: 5px; text-align: center;">
                         Place Order
                     </a>
+                    <div class="loading-spinner" style="display: none; margin-top: 10px; text-align: center;">
                 </div>
             </div>
         </div>
     </div>
+    <button id="rzp-button1" class="complete-purchase">Pay with Razorpay</button>
+
 </body>
 
 <script>
@@ -305,7 +308,22 @@
 
     const selectedAddressElement = document.querySelector('input[name="address"]:checked');
     if (!selectedAddressElement) {
-        alert("Please select a delivery address.");
+        const toast = document.createElement('div');
+        toast.textContent = "Please select a delivery address";
+        toast.style.position = 'fixed';
+        toast.style.top = '20px';
+        toast.style.right = '20px';
+        toast.style.backgroundColor = '#ff0000';
+        toast.style.color = 'white';
+        toast.style.padding = '10px 20px';
+        toast.style.borderRadius = '5px';
+        toast.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+
         return;
     }
 
@@ -316,10 +334,24 @@
         phone: addressContainer.querySelector('p:nth-of-type(1)').innerText,
         cityStatePincode: addressContainer.querySelector('p:nth-of-type(2)').innerText,
     };
-
     const paymentMethod = document.querySelector('select[name="payment_method"]').value;
     if (!paymentMethod) {
-        alert("Please select a payment method.");
+        const toast = document.createElement('div');
+        toast.textContent = "Please select a payment method";
+        toast.style.position = 'fixed';
+        toast.style.top = '20px';
+        toast.style.right = '20px';
+        toast.style.backgroundColor = '#ff4d4d';
+        toast.style.color = 'white';
+        toast.style.padding = '10px 20px';
+        toast.style.borderRadius = '5px';
+        toast.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+
         return;
     }
 
@@ -346,6 +378,7 @@
         .then(data => {
             console.log('Order placed successfully:', data.orderDetails);
 
+
             window.location.href = `/order-success/${data.orderDetails._id}`;
         })
         .catch(error => {
@@ -353,6 +386,112 @@
         });
 });
 
-
 </script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+    const addressContainer = selectedAddressElement.closest('.address-card');
+    const addressDetails = {
+        id: selectedAddressElement.value,
+        name: addressContainer.querySelector('strong').innerText,
+        phone: addressContainer.querySelector('p:nth-of-type(1)').innerText,
+        cityStatePincode: addressContainer.querySelector('p:nth-of-type(2)').innerText,
+    };
+    const paymentMethod = document.querySelector('select[name="payment_method"]').value;
+    if (!paymentMethod) {
+        const toast = document.createElement('div');
+        toast.textContent = "Please select a payment method";
+        toast.style.position = 'fixed';
+        toast.style.top = '20px';
+        toast.style.right = '20px';
+        toast.style.backgroundColor = '#ff4d4d';
+        toast.style.color = 'white';
+        toast.style.padding = '10px 20px';
+        toast.style.borderRadius = '5px';
+        toast.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+        return;
+    }
+
+    console.log(orderDetails);
+
+    // Fetch the Razorpay order ID from your server
+    fetch('/create-order', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderDetails),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Razorpay order created successfully:', data);
+
+        var options = {
+            "key": "YOUR_RAZORPAY_KEY_ID", // Enter the Key ID generated from the Dashboard
+            "amount": data.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 means 50000 paise or ₹500.
+            "currency": "INR",
+            "name": "Your Company Name",
+            "description": "Test Transaction",
+            "image": "https://example.com/your_logo",
+            "order_id": data.id, // This is a sample Order ID. Pass the `id` obtained in the previous step
+            "handler": function (response){
+                console.log('Payment successful:', response);
+
+                // Send the payment details to your server
+                fetch('/checkout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        ...orderDetails,
+                        payment_id: response.razorpay_payment_id,
+                        order_id: response.razorpay_order_id,
+                        signature: response.razorpay_signature
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Order placed successfully:', data.orderDetails);
+                    window.location.href = `/order-success/${data.orderDetails._id}`;
+                })
+                .catch(error => {
+                    console.error('Error placing order:', error);
+                });
+            },
+            "prefill": {
+                "name": "Gaurav Kumar",
+                "email": "gaurav.kumar@example.com",
+                "contact": "9999999999"
+            },
+            "notes": {
+                "address": "Razorpay Corporate Office"
+            },
+            "theme": {
+                "color": "#F37254"
+            }
+        };
+        var rzp1 = new Razorpay(options);
+        rzp1.on('payment.failed', function (response){
+            console.error('Payment failed:', response.error);
+        });
+
+        // Trigger the payment on button click
+        document.getElementById('rzp-button1').onclick = function(e){
+            rzp1.open();
+            e.preventDefault();
+        }
+    })
+    .catch(error => {
+        console.error('Error creating Razorpay order:', error);
+    });
+</script>
+
+<!-- Add a button to trigger Razorpay payment -->
+
 </html>

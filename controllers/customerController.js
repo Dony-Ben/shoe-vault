@@ -53,7 +53,6 @@ const customerInfo = async (req, res) => {
 
 const customerBlocked = async (req, res) => {
     try {
-        console.log("it coming from customerblocked", req.query);
 
         let id = req.query.id;
 
@@ -67,7 +66,6 @@ const customerBlocked = async (req, res) => {
 
 const customerUnblocked = async (req, res) => {
     try {
-        console.log("it coming from customerunblocked", req.query);
 
         let id = req.query.id;
         await userModel.updateOne({ _id: id }, { isblocked: false });

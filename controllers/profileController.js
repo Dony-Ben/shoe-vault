@@ -2,7 +2,6 @@ const nodemailer = require('nodemailer');
 const User = require('../models/User');
 const bcrypt = require("bcrypt");
 const env = require("dotenv").config();
-const session = require("express-session");
 const crypto = require("crypto");
 const Address = require("../models/address")
 // OTP Generator
@@ -56,12 +55,19 @@ const getForgotPassPage = async (req, res) => {
 
 const forgotEmailValid = async (req, res) => {
     try {
-        const { email } = req.body;
+        const email = req.body.email.trim();
         const findUser = await User.findOne({ email });
-
+        
+        if (!findUser) {
+            res.render("user/forgotpassword", {
+                message: "User with this email does not exist."
+            });
+        }
+        
         if (findUser) {
             const otp = generateOTP();
             const emailSent = await sendVerificationEmail(email, otp);
+      
 
             if (emailSent) {
                 req.session.userOtp = otp;
@@ -73,10 +79,6 @@ const forgotEmailValid = async (req, res) => {
                     message: "Failed to send OTP. Please try again."
                 });
             }
-        } else {
-            res.render("user/forgotpassword", {
-                message: "User with this email does not exist."
-            });
         }
     } catch (error) {
         console.error("Error:", error);
@@ -115,8 +117,6 @@ const verifyOtp = async (req, res) => {
         res.render("user/page-404", { message: "Something went wrong. Please try again." });
     }
 };
-
-
 const resetPassword = async (req, res) => {
     try {
         const { email, isOtpVerified } = req.session;
@@ -204,9 +204,7 @@ const geteditprofile = async (req, res) => {
 const editprofile = async (req, res) => {
     try {
         const userId = req.session.user.id
-        console.log(userId);
         const { name, email, } = req.body;
-        console.log(req.body);
         const updatedUser = await User.findByIdAndUpdate(
             userId,
             { $set: { firstname: name } },
@@ -323,7 +321,7 @@ const deleteAddress = async (req, res) => {
 
         const result = await Address.deleteOne({ _id: addressId, userId });
         console.log("address deleted successfully");
-        
+
         res.redirect("/address")
     } catch (error) {
         console.error("Error deleting address:", error);
@@ -331,6 +329,14 @@ const deleteAddress = async (req, res) => {
     }
 }
 
+const loadWallet = async (req, res) => {
+    try {
+        res.render("user/wallet");
+    } catch (error) {
+        console.error("Error loading wallet:", error);
+        res.status(500).send("Internal Server Error");
+    }
+}
 module.exports = {
     sendVerificationEmail,
     getForgotPassPage,
@@ -345,4 +351,5 @@ module.exports = {
     editAddress,
     getAddressById,
     deleteAddress,
+    loadWallet,
 };

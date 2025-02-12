@@ -6,13 +6,13 @@ const sharp = require("sharp");
 const { query } = require("express");
 const Brand = require("../models/Brands");
 const { set } = require("mongoose");
+const { notifyClient, notifyAllClients } = require("../helpers/sse");
 
 
 const getProductAddpage = async (req, res) => {
     try {
         const categories = await Category.find({ isListed: true }).lean();
         const brands = await Brand.find({ isBlocked: false });
-        console.log(brands);
         res.render("admin/product-add", { cat: categories, brands });
     } catch (error) {
         console.error("Error in getProductAddPage:", error.message);
@@ -23,6 +23,8 @@ const getProductAddpage = async (req, res) => {
 const addProducts = async (req, res) => {
     try {
         const productData = req.body;
+        console.log("productData",req.body);
+        
         const productExists = await Product.findOne({ productName: productData.productName });
         if (productExists) {
             return res.status(400).json("Product already exists. Please use a different name.");
@@ -85,7 +87,7 @@ const getAllProducts = async (req, res) => {
                 .populate("category")
                 .populate("brands")
                 .lean(),
-
+            
             Product.countDocuments(searchQuery),
             Category.find({ isListed: true }).lean(),
             Brand.find({ isblocked: false }).lean(),
@@ -94,8 +96,6 @@ const getAllProducts = async (req, res) => {
         if (!productData.length) {
             return res.status(404).render("admin/page-404");
         }
-
-        console.log("this is product data", productData);
 
         res.render("admin/products", {
             data: productData,
@@ -181,16 +181,23 @@ const editProduct = async (req, res) => {
             for (let i = 0; i < req.files.length; i++) {
                 images.push(req.files[i].filename);
             }
+        }else {
+            // If no new images are uploaded, retain the existing images
+            images.push(...product.productImage);
         }
+
+        console.log("productImage",images);
+        
 
         const uploadFields = {
             productName: data.productName,
             description: data.descriptionData,
-             brand: brand._id,
-            category: category,
+            brands: brand._id,
+            category: category.id,
             regularPrice: data.regularPrice,
             salePrice: data.salePrice,
             quantity: data.quantity,
+            productImage: images
         };
         console.log("Update fields:", uploadFields);
 
@@ -200,6 +207,7 @@ const editProduct = async (req, res) => {
 
         const updatedProduct = await Product.findByIdAndUpdate(id, uploadFields, { new: true });
         console.log("Updated product:", updatedProduct);
+        notifyAllClients('StockUpdated')
 
         res.redirect("/admin/products");
     } catch (error) {

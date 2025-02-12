@@ -8,8 +8,10 @@ const {
   pageNotFound,
   loadOTP,
   shop,
+  searchRouter,
   about
 } = require("../controllers/loadingController.js");
+
 const {
   userLogin,
   userSignup,
@@ -21,9 +23,9 @@ const { productDetails } = require("../controllers/userproductController.js");
 const { userAuth, ensureGuest } = require("../middleware/auth.js");
 const { getcartpage, cartaddToCart, deleteProduct, quantityManage } = require("../controllers/cartController.js")
 const passport = require("passport");
-const { getForgotPassPage, forgotEmailValid, verifyOtp, resetPassword, loadProfile, geteditprofile, editprofile, loadAddresses, AddAddressForm, editAddress, getAddressById,deleteAddress } = require("../controllers/profileController.js")
-const { loadcheckout, OrderConfirmation, ordersuccess, getOrders ,OrderCancel} = require("../controllers/orderController.js");
-
+const { getForgotPassPage, forgotEmailValid, verifyOtp, resetPassword, loadProfile, geteditprofile, editprofile, loadAddresses, AddAddressForm, editAddress, getAddressById, deleteAddress,loadWallet } = require("../controllers/profileController.js")
+const { loadcheckout, OrderConfirmation, ordersuccess, getOrders, OrderCancel, razorpayment } = require("../controllers/orderController.js");
+const { wishlist }=require("../controllers/wishlistController.js")
 userRouter.get("/", loadhomepage);
 userRouter.get("/login", ensureGuest, loadlogin);
 userRouter.post("/login", userLogin);
@@ -44,7 +46,8 @@ userRouter.get('/address', loadAddresses);
 userRouter.post('/add-address', AddAddressForm);
 userRouter.post('/edit-address/:id', editAddress);
 userRouter.get('/edit-address/:id', getAddressById);
-userRouter.post('/user/delete-address/:id',deleteAddress);
+userRouter.post('/user/delete-address/:id', deleteAddress);
+userRouter.get("/wallet", loadWallet);
 
 
 // Authenticated routes (Require login)
@@ -52,6 +55,7 @@ userRouter.get("/home", userAuth, loadhome);
 userRouter.get("/logout", logout);
 userRouter.get("/pageNotFound", userAuth, pageNotFound);
 userRouter.get("/shop", userAuth, shop);
+userRouter.get('/search', searchRouter);
 userRouter.get("/about", about)
 
 // OTP Management
@@ -72,7 +76,7 @@ userRouter.get("/productDetails", productDetails);
 
 // cartmanagement
 userRouter.get("/cart", userAuth, getcartpage);
-userRouter.get("/cart/add", userAuth, cartaddToCart);
+userRouter.post("/cart/add", userAuth, cartaddToCart);
 userRouter.delete('/cart/delete/:productId', deleteProduct);
 userRouter.post('/api/cart/update/:itemId', quantityManage);
 
@@ -81,9 +85,12 @@ userRouter.post('/api/cart/update/:itemId', quantityManage);
 userRouter.get("/checkout", loadcheckout);
 userRouter.post("/checkout", OrderConfirmation);
 userRouter.get("/order-success/:orderId", ordersuccess);
+userRouter.post("/create-order",razorpayment);
 
 // userRouter.get("/orders",loadOrderpage)
 userRouter.get("/orders", getOrders)
 userRouter.post("/orders/:orderId/cancel", OrderCancel);
 
+//wishlist management
+userRouter.get("/wishlist",wishlist)
 module.exports = userRouter;  

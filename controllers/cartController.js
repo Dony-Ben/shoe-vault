@@ -15,7 +15,7 @@ const getcartpage = async (req, res) => {
             });
         }
         const subtotal = cart.items.reduce((total, item) => total + item.productId.salePrice * item.quantity, 0);
-        const total = +subtotal;
+        const total = + subtotal;
         console.log(total);
 
         res.render("user/cart", {
@@ -32,7 +32,10 @@ const getcartpage = async (req, res) => {
 const cartaddToCart = async (req, res) => {
     try {
         const userId = req.session.user?.id;
-        const productId = req.query.productId;
+        const { productId } = req.body;
+        console.log(req.body);
+
+        console.log("Product ID:", productId);
 
         if (!productId || !userId) {
             return res.render("user/shop", { message: "Missing product or user ID.", products: [] });
@@ -47,8 +50,7 @@ const cartaddToCart = async (req, res) => {
         }
         const existingItem = cart.items.find(item => item.productId.equals(productId));
         if (existingItem) {
-            existingItem.quantity += 1;
-            existingItem.totalprice = existingItem.quantity * product.salePrice;
+            return res.json({ message: "Item already in cart.", success: false });
         } else {
             cart.items.push({
                 productId,
@@ -59,10 +61,10 @@ const cartaddToCart = async (req, res) => {
         }
         await cart.save();
         const productList = await Product.find({});
-        res.render("user/shop", { products: productList });
+        res.json({ message: 'Product added to cart successfully.' });
     } catch (error) {
         console.error("Error in cartaddToCart:", error);
-        res.render("user/shop", { message: "Something went wrong. Please try again later.", products: [] });
+        res.redirect("/shop?message=An error occurred while adding the product to the cart.");
     }
 };
 
@@ -87,7 +89,6 @@ const deleteProduct = async (req, res) => {
         );
         return res.json({
             success: true,
-            message: "Product removed from cart",
             newTotal,
             newSubtotal: newTotal,
             items: cart.items,
@@ -117,8 +118,8 @@ const quantityManage = async (req, res) => {
         const currentQuantity = cart.items[itemIndex].quantity;
         const newQuantity = currentQuantity + change;
 
-        if (newQuantity < 0) {
-            return res.status(400).json({ success: false, message: 'Quantity cannot be less than 0' });
+        if (newQuantity < 1) {
+            return res.status(400).json({ success: false, message: 'Quantity cannot be less than 1' });
         }
 
         if (newQuantity > 5) {
@@ -132,7 +133,7 @@ const quantityManage = async (req, res) => {
             cart.items[itemIndex].quantity = newQuantity;
             cart.items[itemIndex].totalprice = cart.items[itemIndex].price * newQuantity;
         }
-
+    
         await cart.save();
 
         res.json({
@@ -146,6 +147,7 @@ const quantityManage = async (req, res) => {
         res.status(500).json({ success: false, message: 'Server error' });
     }
 };
+
 
 module.exports = {
     getcartpage,

@@ -8,180 +8,203 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
 </head>
 <%- include('../partials/user/header.ejs') %>
+<%- include('../partials/user/loader.ejs') %>
 
-<body class="bg-gray-100">
-    <div class="container mx-auto px-4 py-36">
-        <h1 class="text-3xl font-bold mb-8">Your Cart</h1>
+    <body class="bg-gray-100">
+        <div class="container mx-auto px-4 py-36">
+            <h1 class="text-3xl font-bold mb-8">Your Cart</h1>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Cart Items Section -->
-            <div class="md:col-span-2">
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-xl font-semibold mb-4">Cart Items</h2>
-                    <% if (cart.length> 0) { %>
-                        <% cart.forEach(function(item) { %>
-                            <div id="cart-item-<%= item.productId._id %>"
-                                class="flex items-center border-b border-gray-200 py-4">
-                                <!-- Product Image -->
-                                <img src="<%= item.productId.productImage && item.productId.productImage.length > 0 
-                                    ? '/uploads/product-images/' + item.productId.productImage[0] 
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Cart Items Section -->
+                <div class="md:col-span-2">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h2 class="text-xl font-semibold mb-4">Cart Items</h2>
+                        <% if (cart.length> 0) { %>
+                            <% cart.forEach(function(item) { %>
+                                <div id="cart-item-<%= item.productId._id %>"
+                                    class="flex items-center border-b border-gray-200 py-4">
+                                    <!-- Product Image -->
+                                    <img src="<%= item.productId.productImage && item.productId.productImage.length > 0 
+                                    ? '/uploads/re-image/' + item.productId.productImage[0] 
                                     : '/default-product-image.jpg' %>" alt="<%= item.productId.productName %>"
-                                    class="w-24 h-24 object-cover rounded-md mr-4">
-                                <!-- Product Details -->
-                                <div class="flex-grow">
-                                    <h3 class="font-semibold">
-                                        <%= item.productId.productName %>
-                                    </h3>
-                                    <p class="text-sm text-gray-500">
-                                        <% if (item.productId.salePrice < item.productId.regularPrice) { %>
-                                            ₹<%= item.productId.salePrice.toFixed(2) %> (Sale)
-                                                <% } else { %>
-                                                    ₹<%= item.productId.regularPrice.toFixed(2) %>
-                                                        <% } %>
-                                    </p>
-                                </div>
-                                <!-- Quantity Controls -->
-                                <div class="flex items-center space-x-2">
-                                    <button class="bg-gray-200 px-2 py-1 rounded-md"
-                                            onclick="updateQuantity('<%= item.productId._id %>', -1, this)">
-                                        -
-                                    </button>
-                                    <span class="font-semibold" id="quantity-<%= item.productId._id %>">
-                                        <%= item.quantity %>
-                                    </span>
-                                    <button class="bg-gray-200 px-2 py-1 rounded-md"
-                                            onclick="updateQuantity('<%= item.productId._id %>', 1, this)">
-                                        +
-                                    </button>
-                                </div>
+                                        class="w-24 h-24 object-cover rounded-md mr-4">
+                                    <!-- Product Details -->
+                                    <div class="flex-grow">
+                                        <h3 class="font-semibold">
+                                            <%= item.productId.productName %>
+                                        </h3>
+                                        <p class="text-sm text-gray-500">
+                                            <% if (item.productId.salePrice < item.productId.regularPrice) { %>
+                                                ₹<%= item.productId.salePrice.toFixed(2) %> (Sale)
+                                                    <% } else { %>
+                                                        ₹<%= item.productId.regularPrice.toFixed(2) %>
+                                                            <% } %>
+                                        </p>
+                                    </div>
+                                    <!-- Quantity Controls -->
+                                    <div class="flex items-center space-x-2">
+                                        <button class="bg-gray-200 px-2 py-1 rounded-md"
+                                            onclick="updateQuantity('<%= item.productId._id %>', -1, )">
+                                            <%= item.quantity === 0 ? 'disabled' : '' %>
+                                            -
+                                        </button>
+                                        <span class="font-semibold" id="quantity-<%= item.productId._id %>">
+                                            <%= item.quantity %>
+                                        </span>
+                                        <button class="bg-gray-200 px-2 py-1 rounded-md"
+                                            onclick="updateQuantity('<%= item.productId._id %>', 1, )">
+                                            <%= item.quantity === 0 ? 'disabled' : '' %>
+                                            +
+                                        </button>
+                                    </div>
 
-                                <!-- Remove Item Button -->
-                                <button class="ml-4 text-red-500" onclick="removeItem('<%= item.productId._id %>')">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
-                                </button>
-                            </div>
-                            <% }); %>
-                                <% } else { %>
-                                    <p class="text-gray-500">Your cart is empty!</p>
-                                    <% } %>
-                </div>
-            </div>
+                                    <!-- Remove Item Button -->
+                                    <button class="ml-4 text-red-500"
+                                        onclick="confirmRemoveItem('<%= item.productId._id %>')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
 
-            <!-- Order Summary Section -->
-            <div id="cart-summery">
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
-                    <div class="space-y-2">
-                        <div class="flex justify-between">
-                            <span>Subtotal</span>
-                            <span id="cart-subtotal">₹<%= subtotal.toFixed(2) %></span>
-                        </div>
-                        <div class="border-t border-gray-200 my-2"></div>
-                        <div class="flex justify-between font-bold">
-                            <span>Total</span>
-                            <span id="cart-total">₹<%= total.toFixed(2) %></span>
-                        </div>
+                               
+                                </div>
+                                <% }); %>
+                                    <% } else { %>
+                                        <p class="text-gray-500">Your cart is empty!</p>
+                                        <% } %>
                     </div>
-                    <a href="/checkout"
-                        class="w-full bg-blue-600 text-white py-2 px-4 rounded-md mt-4 hover:bg-blue-700 transition duration-300 text-center inline-block">
-                        Proceed to Checkout
-                    </a>
+                </div>
+
+                <!-- Order Summary Section -->
+                <div id="cart-summery">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span>Subtotal</span>
+                                <span id="cart-subtotal">₹<%= subtotal.toFixed(2) %></span>
+                            </div>
+                            <div class="border-t border-gray-200 my-2"></div>
+                            <div class="flex justify-between font-bold">
+                                <span>Total</span>
+                                <span id="cart-total">₹<%= total.toFixed(2) %></span>
+                            </div>
+                        </div>
+                        <a href="/checkout"
+                            class="w-full bg-blue-600 text-white py-2 px-4 rounded-md mt-4 hover:bg-blue-700 transition duration-300 text-center inline-block">
+                            Proceed to Checkout
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <script>
-        // Update Item Quantity
-        let isUpdating = false;
+        <script>
+            // Update Item Quantity
+            let isUpdating = false;
 
-function updateQuantity(itemId, change, buttonElement) {
-    if (isUpdating) return;
-    isUpdating = true;
+            function updateQuantity(itemId, change, buttonElement,quantity) {
+                if (isUpdating) return;
+                isUpdating = true;
 
-    const quantityElement = $(`#quantity-${itemId}`);
-    const currentQuantity = parseInt(quantityElement.text());
-    const newQuantity = currentQuantity + change;
+                const quantityElement = $(`#quantity-${itemId}`);
+                const currentQuantity = parseInt(quantityElement.text());
+                const newQuantity = currentQuantity + change;
 
-    if (newQuantity < 1) {
-        alert("Quantity cannot be less than 1.");
-        isUpdating = false;
-        return;
-    }
-    if (newQuantity > 5) {
-        alert("Quantity cannot be more than 5.");
-        isUpdating = false;
-        return;
-    }
-
-    $(buttonElement).prop('disabled', true);
-
-    $.ajax({
-        url: `/api/cart/update/${itemId}`,
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({ change: change }),
-        success: function (data) {
-            if (data.success) {
-                $("#cart-summery").load("/cart #cart-summery");
-                quantityElement.text(data.quantity);
-                const totalPriceElement = $(`#total-price-${itemId}`);
-                if (totalPriceElement.length) {
-                    totalPriceElement.text(data.totalprice.toFixed(2));
+                if (newQuantity < 1) {
+                    alert("Quantity cannot be less than 1.");
+                    isUpdating = false;
+                    return;
                 }
-            } else {
-                alert('Failed to update quantity: ' + data.message);
-            }
-        },
-        error: function (xhr, status, error) {
-            console.error('Error:', error, 'Status:', status, 'Response:', xhr.responseText);
-            alert('An error occurred while updating the quantity.');
-        },
-        complete: function () {
-            $(buttonElement).prop('disabled', false);
-            isUpdating = false;
-        }
-    });
-}
+                if (newQuantity > quantity) {
+                    alert("Quantity cannot be more than 5.");
+                    isUpdating = false;
+                    return;
+                }
 
- function removeItem(itemId) {
-            fetch(`/cart/delete/${itemId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const itemElement = document.getElementById(`cart-item-${itemId}`);
-                        alert(data.message)
+                $(buttonElement).prop('disabled', true);
 
-                        if (itemElement) itemElement.remove();
-
-                        // Update cart totals dynamically
-                        document.getElementById('cart-total').textContent = `₹${data.newTotal.toFixed(2)}`;
-                        document.getElementById('cart-subtotal').textContent = `₹${data.newSubtotal.toFixed(2)}`;
-                    } else {
-                        alert('Failed to remove item');
-                        console.log(data);
-
+                $.ajax({
+                    url: `/api/cart/update/${itemId}`,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ change: change }),
+                    success: function (data) {
+                        if (data.success) {
+                            $("#cart-summery").load("/cart #cart-summery");
+                            quantityElement.text(data.quantity);
+                            const totalPriceElement = $(`#total-price-${itemId}`);
+                            if (totalPriceElement.length) {
+                                totalPriceElement.text(data.totalprice.toFixed(2));
+                            }
+                        } else {
+                            alert('Failed to update quantity: ' + data.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error, 'Status:', status, 'Response:', xhr.responseText);
+                        alert('An error occurred while updating the quantity.');
+                    },
+                    complete: function () {
+                        $(buttonElement).prop('disabled', false);
+                        isUpdating = false;
                     }
-                })
-                .catch(error => {
-                    console.error("Error:", error);
-                    alert("An error occurred while removing the item......");
                 });
-        }
-    </script>
-</body>
+            }
+
+            function removeItem(itemId) {
+                fetch(`/cart/delete/${itemId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const itemElement = document.getElementById(`cart-item-${itemId}`);
+
+                            if (itemElement) itemElement.remove();
+
+                            // Update cart totals dynamically
+                            document.getElementById('cart-total').textContent = `₹${data.newTotal.toFixed(2)}`;
+                            document.getElementById('cart-subtotal').textContent = `₹${data.newSubtotal.toFixed(2)}`;
+                        } else {
+                            alert('Failed to remove item');
+                            console.log(data);
+
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        alert("An error occurred while removing the item......");
+                    });
+            }
+            function stockmanage() {
+
+            }
+        </script>
+             <script>
+                function confirmRemoveItem(itemId) {
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: 'Want to remove this item from the cart?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            removeItem(itemId);
+                        }
+                    })
+                }
+            </script>
+    </body>
 
 </html>

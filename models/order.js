@@ -1,36 +1,36 @@
 const mongoose = require("mongoose");
 const ordersSchema = new mongoose.Schema({
-    userId: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'User', 
-        required: true 
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     },
-    orderedItem : [{
+    orderedItem: [{
 
-        productId: { 
-            type: mongoose.Schema.Types.ObjectId, 
-            ref: 'Product', 
-            required: true 
+        productId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Product',
+            required: true
         },
-        quantity: { 
-            type: Number, 
-            required: true, 
-            default: 1 
+        quantity: {
+            type: Number,
+            required: true,
+            default: 1
         },
-        
+
     }],
-    deliveryAddress: { 
+    deliveryAddress: {
         name: { type: String, required: true },
-        cityStatePincode:{type: String, required:true},
-        phone: { 
-            type: String, 
-            required: true, 
+        cityStatePincode: { type: String, required: true },
+        phone: {
+            type: String,
+            required: true,
         }
     },
-    orderStatus: { 
-        type: String, 
-        enum: ['Pending', 'Processing', 'Shipped', 'Completed', 'Cancelled'], 
-        default: 'Pending' 
+    orderStatus: {
+        type: String,
+        enum: ['Pending', 'Processing', 'Shipped', 'Completed', 'Cancelled'],
+        default: 'Pending'
     },
     paymentStatus: {
         type: String,
@@ -38,29 +38,29 @@ const ordersSchema = new mongoose.Schema({
         enum: ['Pending', 'Success', 'Failed'],
         default: 'Pending'
     },
-    paymentMethod: { 
-        type: String, 
-        enum: ['cod', 'credit-card', 'paypal'], 
-        required: true 
+    paymentMethod: {
+        type: String,
+        enum: ['cod', 'credit-card',"razorpay", 'paypal'],
+        required: true
     },
-    offerDiscount: { 
-        type: Number, 
-        default: 0 
+    offerDiscount: {
+        type: Number,
+        default: 0
     },
-    couponDiscount: { 
-        type: Number, 
-        default: 0 
+    couponDiscount: {
+        type: Number,
+        default: 0
     },
-    totalDiscount: { 
-        type: Number, 
-        default: 0 
+    totalDiscount: {
+        type: Number,
+        default: 0
     },
-    deliveryCharge: { 
-        type: Number, 
-        default: 0 
+    deliveryCharge: {
+        type: Number,
+        default: 0
     },
-    finalAmount: { 
-        type: Number, 
+    finalAmount: {
+        type: Number,
     },
     cancelled: { type: Boolean, default: false },
     returned: { type: Boolean, default: false },

@@ -1,7 +1,8 @@
-const Address = require("../models/address");
+const Address = require("../models/address.js");
 const Cart = require("../models/cart");
 const Orders = require("../models/order");
 const Product = require('../models/product')
+const razorpay = require("../config/razorpay")
 
 
 const loadcheckout = async (req, res) => {
@@ -29,7 +30,8 @@ const loadcheckout = async (req, res) => {
             { id: 'cod', name: 'Cash on Delivery' },
             { id: 'card', name: 'Credit/Debit Card' },
             { id: 'upi', name: 'UPI' },
-            { id: 'netbanking', name: 'Net Banking' }
+            { id: 'netbanking', name: 'Net Banking' },  
+             {id:'razorpay',name:'Razorpay'}
         ];
 
         res.render("user/checkout", {
@@ -79,6 +81,7 @@ const OrderConfirmation = async (req, res) => {
             paymentMethod: paymentMethod,
         });
 
+        console.log("Ordered Items:", JSON.stringify(order.orderedItem, null, 2));
         let calculatedTotalPrice = 0;
         for (const item of order.orderedItem) {
             const product = await Product.findById(item.productId);
@@ -121,7 +124,7 @@ const ordersuccess = async (req, res) => {
 const getOrders = async (req, res) => {
     try {
         const userId = req.session.user.id;
-        console.log("Session Data:", userId);
+        // console.log("Session Data:", userId);
 
         const orders = await Orders.find({ userId })
             .populate({
@@ -130,17 +133,18 @@ const getOrders = async (req, res) => {
             })
             .lean();
 
-        // console.log("Orders with populated products:", JSON.stringify(orders, null, 2));
+        console.log("Orders with populated products:", JSON.stringify(orders, null, 2));
 
         const safeOrders = orders.map(order => ({
             ...order,
             items: (order.orderedItem || []).map(item => ({
-                productName: item.productId?.productName || 'Unknown Product',
+                productName: item.productId?.productName || null,
                 price: item.productId?.salePrice || 0,
                 productImage: item.productId?.productImage?.[0] || '/placeholder.jpg',
                 quantity: item.quantity || 1
             }))
         }));
+        console.log("Safe Orders:", JSON.stringify(safeOrders, null, 2));
 
         res.render("user/userorders", { orders: safeOrders, message: null });
     } catch (error) {
@@ -154,16 +158,12 @@ const OrderCancel = async (req, res) => {
         console.log("orderid", orderId);
 
         const order = await Orders.findById(orderId);
-        console.log("this after orderid");
 
         if (!order) {
-            console.log("one");
             return res.render("user/userorders", { message: "order not found" });
         }
-        console.log("after one");
 
         if (order.orderStatus === 'Cancelled') {
-            console.log("two");
             return res.render("user/userorders", { message: "Order already cancelled" });
         }
 
@@ -186,10 +186,27 @@ const OrderCancel = async (req, res) => {
     }
 };
 
+//razorpay
+const razorpayment = async (req, res) => {
+    try {
+        console.log('req body : ', req.body);
+        const options = {
+            amount: req.body.salePrice * 100,
+            currency: "INR",
+            receipt: `receipt_${Date.now()}`,
+        };
+
+        const order = await razorpay.orders.create(options);
+        res.json({ success: true, order });
+    } catch (error) {
+
+    }
+}
 module.exports = {
     loadcheckout,
     OrderConfirmation,
     ordersuccess,
     getOrders,
     OrderCancel,
+    razorpayment
 }

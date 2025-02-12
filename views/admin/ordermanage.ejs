@@ -74,8 +74,8 @@
                                 <td>#<%= order._id %>
                                 </td>
                                 <td>
-                                    <%= order.userId.name %>
-                                </td>
+                                    <%= order.userId.firstname %> <%= order.userId.lastname %>
+                                </td>   
                                 <td>
                                     <%= new Date(order.orderDate).toLocaleDateString() %>
                                 </td>

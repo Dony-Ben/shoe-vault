@@ -1,4 +1,3 @@
-
 <nav class="bg-transparent p-4 fixed w-full z-10 transition-all duration-300 ease-in-out" id="navbar">
     <div class="container mx-auto flex justify-between items-center">
         <a href="/home" class="text-2xl font-serif font-bold text-black">Shoe Vault </a>
@@ -9,16 +8,18 @@
         </ul>
         <div class="flex items-center space-x-6">
 
-            <a href="/wishlist" class="text-black hover:text-accent transition duration-300 flex items-center space-x-1">
+            <a href="/wishlist"
+                class="text-black hover:text-accent transition duration-300 flex items-center space-x-1">
                 <img src="/image/whishlist.svg" alt="Wishlist" class="w-6 h-6">
             </a>
 
             <a href="/cart" class="text-black hover:text-accent transition duration-300 flex items-center space-x-1">
                 <img src="/image/cart-icon.svg" alt="Cart" class="w-6 h-6">
             </a>
-            
+
             <div class="relative">
-                <button class="text-light hover:text-accent focus:outline-none flex items-center space-x-2" id="profileButton">
+                <button class="text-light hover:text-accent focus:outline-none flex items-center space-x-2"
+                    id="profileButton">
                     <img src="/image/profile.jpg" alt="Profile" class="w-8 h-8 rounded-full">
                 </button>
                 <!-- Dropdown -->
@@ -27,7 +28,8 @@
                     <a href="/settings" class="block px-4 py-2 text-gray-700 hover:bg-gray-200 transition">Settings</a>
                     <hr class="my-1">
                     <div class="flex justify-center">
-                        <button id="logoutButton" class="block px-4 py-2 text-gray-700 hover:bg-gray-200 transition" style="color: red;">
+                        <button id="logoutButton" class="block px-4 py-2 text-gray-700 hover:bg-gray-200 transition"
+                            style="color: red;">
                             Logout
                         </button>
                     </div>
@@ -39,42 +41,42 @@
 
 <script>
     let lastScrollY = window.scrollY;
-const navbar = document.getElementById('navbar');
+    const navbar = document.getElementById('navbar');
 
-window.addEventListener('scroll', () => {
-    const currentScrollY = window.scrollY;
+    window.addEventListener('scroll', () => {
+        const currentScrollY = window.scrollY;
 
-    if (currentScrollY > lastScrollY && currentScrollY > 50) {
-        // Scrolling down - hide the navbar
-        navbar.style.transform = 'translateY(-100%)';
-    } else if (currentScrollY < lastScrollY) {
-        // Scrolling up - show the navbar
-        navbar.style.transform = 'translateY(0)';
-    }
+        if (currentScrollY > lastScrollY && currentScrollY > 50) {
+            // Scrolling down - hide the navbar
+            navbar.style.transform = 'translateY(-100%)';
+        } else if (currentScrollY < lastScrollY) {
+            // Scrolling up - show the navbar
+            navbar.style.transform = 'translateY(0)';
+        }
 
-    lastScrollY = currentScrollY;
+        lastScrollY = currentScrollY;
 
-    // Add/remove background and shadow based on scroll position
-    if (currentScrollY > 50) {
-        navbar.classList.add('bg-grey', 'shadow-md');
-        navbar.classList.remove('bg-transparent');
-    } else {
-        navbar.classList.remove('bg-grey', 'shadow-md');
-        navbar.classList.add('bg-transparent');
-    }
-});
-
-// Scroll animations (unchanged)
-const elements = document.querySelectorAll('.animate-on-scroll');
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
+        // Add/remove background and shadow based on scroll position
+        if (currentScrollY > 50) {
+            navbar.classList.add('bg-grey', 'shadow-md');
+            navbar.classList.remove('bg-transparent');
+        } else {
+            navbar.classList.remove('bg-grey', 'shadow-md');
+            navbar.classList.add('bg-transparent');
         }
     });
-}, { threshold: 0.1 });
 
-elements.forEach(el => observer.observe(el));
+    // Scroll animations (unchanged)
+    const elements = document.querySelectorAll('.animate-on-scroll');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    elements.forEach(el => observer.observe(el));
 
     // dropdown
     document.getElementById('profileButton').addEventListener('click', () => {

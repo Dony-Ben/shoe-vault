@@ -68,13 +68,28 @@ const loadOTP = async (req, res) => {
 
 const shop = async (req, res) => {
     try {
-        let productData = await Product.find({ isblocked: false })
-        const message = req.query.message || '';
-        res.render("user/shop", { products: productData });
-
+        const currentPage = parseInt(req.query.page) || 1;
+        const productsPerPage = 12;
+        const productData = await Product.find({ isblocked: false })
+            .skip((currentPage - 1) * productsPerPage)
+            .limit(productsPerPage)
+            .populate('brands');
+        const totalProducts = await Product.countDocuments({ isblocked: false });
+        const totalPages = Math.ceil(totalProducts / productsPerPage);
+        res.render("user/shop", { products: productData, totalPages, currentPage });
     } catch (error) {
         console.error("Error while rendering shop page:", error);
         res.status(500).send("An error occurred while loading the page.");
+    }
+};
+
+const searchRouter = async (req, res) => {
+    try {
+        const query = req.query.query;
+        const products = await Product.find({ productName: { $regex: query} }).populate("brands")
+        res.json(products);
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while searching for products.' });
     }
 };
 
@@ -95,5 +110,6 @@ module.exports = {
     loadregister,
     loadOTP,
     shop,
+    searchRouter,
     about,
 }

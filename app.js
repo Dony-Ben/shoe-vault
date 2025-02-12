@@ -7,8 +7,10 @@ const nocache = require("nocache");
 const passport = require("./config/passport");
 const userRoutes = require("./routes/userRouter");
 const adminRouter = require("./routes/adminRouter");
+const { setupSSE } = require("./helpers/sse");
 
 const app = express();
+setupSSE(app)
 
 // Load Environment Variables
 dotenv.config();

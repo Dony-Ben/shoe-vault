@@ -1,3 +1,4 @@
+const { memoryStorage } = require("multer");
 const Category = require("../models/category");
 const Product = require("../models/product");
 
@@ -16,7 +17,7 @@ const categoryInfo = async (req, res) => {
         const totalPages = Math.ceil(totalCategories / limit);
 
         res.render("admin/category", {
-            cat: categoryData,
+            cat: categoryData, 
             currentPage: page,
             totalPages: totalPages,
             totalCategories: totalCategories
@@ -30,20 +31,28 @@ const categoryInfo = async (req, res) => {
 
 const addCategory = async (req, res) => {
     const { name, description } = req.body;
+    console.log("category info",name, description);
+    
 
     try {
         const existingCategory = await Category.findOne({ name });
         if (existingCategory) {
-            return res.status(400).json({ error: "Category alredy exist" })
+            const categories = await category.find({});
+            const totalCategories = await category.countDocuments();
+            const totalPages = Math.ceil(totalCategories / 4);
+            return res.render("admin/category", { cat: categories, message: "Category already exists", currentPage: 1, totalPages, totalCategories });
         }
         const newCategory = new Category({
             name,
             description,
-        })
+        });
         await newCategory.save();
-        return res.json({ message: "Category added successfully" })
+        const categories = await Category.find({});
+        const totalCategories = await Category.countDocuments();
+        const totalPages = Math.ceil(totalCategories / 4); // Assuming 4 is the limit per page
+        return res.render("admin/category", { cat: categories, message: "Category added successfully", currentPage: 1, totalPages, totalCategories });
     } catch (error) {
-        return res.status(500).json({ error: `Internal Server Error: ${error.message}` });
+        return res.status(500).send(`Internal Server Error: ${error.message}`);
     }
 };
 
@@ -125,13 +134,13 @@ const getEdiCategory = async (req, res) => {
 
         if (!category) {
             console.error(`Category with ID ${id} not found.`);
-            // return res.redirect('/pageError');
+            return res.redirect('/pageError');
         }
 
         res.render('admin/edit-category', { category });
     } catch (error) {
         console.error("Error in getEditCategory:", error.message);
-        // res.redirect('/pageError');
+        res.redirect('/pageError');
     }
 };
 
@@ -141,10 +150,9 @@ const editCategory = async (req, res) => {
 
         const { categoryName, description } = req.body;
 
-        let isExist = await Category.findOne({name:categoryName})
-        if(isExist){
-            return res.json({error:"category name already exist"})
-
+        let isExist = await Category.findOne({ name: categoryName, description: description });
+        if (isExist) {
+            return res.json({ error: "Category with this name and description already exists" });
         }
 
         const existingCategory = await Category.findById(id);

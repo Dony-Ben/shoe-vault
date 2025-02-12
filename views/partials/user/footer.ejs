@@ -7,4 +7,63 @@
             <a href="#" class="text-light hover:text-accent transition duration-300">Contact Us</a>
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        async function addToCart(event, productId) {
+            event.preventDefault();
+            // alert('Product added to cart');
+            $.ajax({
+                url: `/cart/add`,
+                type: 'POST',
+                data: { productId: productId },
+                success: function (response) {
+                    showToast(response.message);
+                },
+                error: function (xhr) {
+                    const response = xhr.responseJSON;
+                    showToast(response.message)
+                }
+            });
+        }
+
+        function showToast(message) {
+            const toastContainer = $('#toast-container');
+            const toast = $(`
+            <div class="toast">
+                <p>${message}</p>
+            </div>
+        `);
+            toastContainer.append(toast);
+            toast.addClass('show');
+            setTimeout(() => {
+                toast.removeClass('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+    </script>
+    <div id="toast-container" class="toast-container"></div>
+    <style>
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+    
+        .toast {
+            background: #155f01;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(3, 119, 26, 0.2);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+    
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+      </style>
 </footer>
