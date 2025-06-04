@@ -52,6 +52,13 @@
         button:hover {
             background-color: #45a049;
         }
+        #button{
+            width: 25%;
+            
+        }
+        #cancel{
+          width: 25%;  
+        }
     </style>
 </head>
 <body>
@@ -64,7 +71,8 @@
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" value="<%= user.email %>" disabled>
                 
-            <button type="submit">Update Profile</button>
+            <button  id="button"type="submit">Update Profile</button>
+            <button id="cancel" type="submit">cancel</button>
         </form>
     </div>
 </body>

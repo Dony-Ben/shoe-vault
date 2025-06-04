@@ -8,9 +8,9 @@ const wishlistSchema = new Schema({
  },
  product:[{
     productId:{
-        type:schema.Types,
+        type:Schema.Types.ObjectId, 
         ref:"Product",
-        required:true
+       
     },
     addedOn:{
         type:Date,
@@ -18,5 +18,5 @@ const wishlistSchema = new Schema({
     }
  }]
 })
-const wishlist =mongoose.model('wishlist',wishlistSchema);
+const wishlist =mongoose.model("wishlist",wishlistSchema);
 module.exports=wishlist;

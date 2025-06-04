@@ -1,16 +1,18 @@
 const express = require("express");
 const adminRouter = express.Router();
 const { loadlogin, loaddashboard, adminlogout, handleLogin } = require("../controllers/adminController");
-const { customerBlocked, customerInfo, customerUnblocked } = require("../controllers/customerController");
-const { categoryInfo, addCategory, addCategoryOffer, removeCategoryOffer, getEdiCategory, getListCategory, getUnlistCategory, editCategory } = require("../controllers/categoryController");
-const { getAllProducts, getEditProduct, getProductAddpage, addProducts, blockProduct, editProduct, unblockProduct, deleteSingleImage } = require("../controllers/productController");
+const { customerBlocked, customerInfo, customerUnblocked } = require("../controllers/adminUserController");
+const { categoryInfo, addCategory, addCategoryOffer, removeCategoryOffer, getEdiCategory, getListCategory, getUnlistCategory, editCategory } = require("../controllers/adminCategoryController");
+const { getAllProducts, getEditProduct, getProductAddpage, addProducts, blockProduct, editProduct, unblockProduct, deleteSingleImage } = require("../controllers/adminProductController");
 const { getBrandpage, addBrand, blockBrand, unBlockBrand, deleteBrand } = require("../controllers/brandController");
-const { getOrderpage,updateOrderStatus } = require("../controllers/orderadminController");
+const { getOrderpage,updateOrderStatus } = require("../controllers/adminOrderController");
 const { adminAuth } = require("../middleware/auth");
-
 const multer = require("multer");
 const storage = require("../helpers/multer");
 const uploads = multer({ storage: storage });
+const { loadcouponpage,createCoupon,deleteCoupon,editCoupon } = require("../controllers/admincouponController");
+const { addOffer, GetOfferpage } = require("../controllers/offerController");
+const {  Generatesales, getsalespage } = require("../controllers/sales.js");
 
 
 // loginmanagement
@@ -59,4 +61,17 @@ adminRouter.post("/deleteImage", deleteSingleImage);
 adminRouter.get("/orders", getOrderpage);
 adminRouter.post('/orders/update-status',updateOrderStatus);
 
+// coupon management
+adminRouter.get("/coupons",loadcouponpage);
+adminRouter.post("/coupons/add",createCoupon);
+adminRouter.post("/coupons/delete/:id",deleteCoupon);
+adminRouter.post("/coupons/edit/:id",editCoupon);
+
+//offer management
+adminRouter.get("/offer",GetOfferpage)
+adminRouter.post("/offers/create",addOffer);
+
+// sales report 
+adminRouter.get("/sales-report",getsalespage);
+adminRouter.get('/sales-reports/report/:period', Generatesales);
 module.exports = adminRouter;

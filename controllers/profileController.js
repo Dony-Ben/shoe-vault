@@ -44,7 +44,6 @@ const sendVerificationEmail = async (email, otp) => {
     }
 };
 
-// Render Forgot Password Page
 const getForgotPassPage = async (req, res) => {
     try {
         res.render("user/forgotpassword", { message: null });
@@ -57,7 +56,6 @@ const forgotEmailValid = async (req, res) => {
     try {
         const email = req.body.email.trim();
         const findUser = await User.findOne({ email });
-        
         if (!findUser) {
             res.render("user/forgotpassword", {
                 message: "User with this email does not exist."
@@ -67,13 +65,11 @@ const forgotEmailValid = async (req, res) => {
         if (findUser) {
             const otp = generateOTP();
             const emailSent = await sendVerificationEmail(email, otp);
-      
 
             if (emailSent) {
                 req.session.userOtp = otp;
                 req.session.email = email;
                 res.render("user/otpforgotpass", { message: null });
-                console.log("OTP:", otp);
             } else {
                 res.render("user/forgotpassword", {
                     message: "Failed to send OTP. Please try again."
@@ -86,29 +82,19 @@ const forgotEmailValid = async (req, res) => {
     }
 };
 
-// Verify OTP
 const verifyOtp = async (req, res) => {
     try {
         const { userOtp, email } = req.session;
-        console.log("Session Data:", req.session);
         const enteredOtp = Object.values(req.body).join("").trim();
 
-        // Check if session has expired
         if (!userOtp || !email) {
-            console.log("Session expired or OTP not found in session.");
             return res.render("user/forgotpassword", { message: "Session expired. Please request a new OTP." });
         }
 
-        console.log("Entered OTP:", enteredOtp);
-        console.log("Stored OTP:", userOtp);
-
-        // Verify the OTP
         if (userOtp.trim() === enteredOtp) {
-            console.log("OTP Verified for email:", email);
             req.session.isOtpVerified = true;
             res.render("user/newpassword");
         } else {
-            console.log("Invalid OTP entered.");
             req.session.message = "Invalid OTP. Please try again.";
             res.redirect("/passwordreset");
         }
@@ -121,38 +107,24 @@ const resetPassword = async (req, res) => {
     try {
         const { email, isOtpVerified } = req.session;
         const { newPassword, confirmPassword } = req.body;
-
-        console.log("resetPassword request body:", req.body);
-
         if (!isOtpVerified) {
             return res.render("user/forgotpassword", { message: "OTP verification required." });
         }
-
         if (!newPassword || !confirmPassword) {
             return res.render("user/newpassword", { message: "Both password fields are required." });
         }
         if (newPassword !== confirmPassword) {
             return res.render("user/newpassword", { message: "Passwords do not match." });
         }
-
         const user = await User.findOne({ email });
         if (!user) {
             return res.render("user/newpassword", { message: "User not found." });
         }
-
         const hashedPassword = await bcrypt.hash(newPassword, 10);
-        console.log("Hashed password:", hashedPassword);
-        console.log("Updating password...");
-
         const result = await User.updateOne({ email }, { $set: { password: hashedPassword } });
-        console.log("Update result:", result);
-
         if (result.modifiedCount === 0) {
             return res.render("user/newpassword", { message: "Failed to update password." });
         }
-
-        console.log("Password updated successfully.");
-
         req.session.destroy();
         res.render("user/login", { message: "Password reset successful. Please log in." });
     } catch (error) {
@@ -329,14 +301,6 @@ const deleteAddress = async (req, res) => {
     }
 }
 
-const loadWallet = async (req, res) => {
-    try {
-        res.render("user/wallet");
-    } catch (error) {
-        console.error("Error loading wallet:", error);
-        res.status(500).send("Internal Server Error");
-    }
-}
 module.exports = {
     sendVerificationEmail,
     getForgotPassPage,
@@ -351,5 +315,5 @@ module.exports = {
     editAddress,
     getAddressById,
     deleteAddress,
-    loadWallet,
+   
 };

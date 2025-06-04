@@ -8,15 +8,16 @@ const passport = require("./config/passport");
 const userRoutes = require("./routes/userRouter");
 const adminRouter = require("./routes/adminRouter");
 const { setupSSE } = require("./helpers/sse");
-
+const cloudinary = require("cloudinary").v2;
 const app = express();
-setupSSE(app)
+setupSSE(app);
 
 // Load Environment Variables
 dotenv.config();
 
 // Database Connection
 connectDB();
+
 
 // Configure Application Settings
 app.set("view engine", "ejs");
@@ -43,6 +44,13 @@ app.use(nocache());
 // Initialize Passport for Authentication
 app.use(passport.initialize());
 app.use(passport.session());
+
+// cloudinary configuration
+cloudinary.config({
+  cloud_name: process.env.cloud_name,
+  api_key: process.env.API_key,
+  api_secret: process.env.API_secret,
+});
 
 // Routes
 app.use("/", userRoutes);

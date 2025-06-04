@@ -4,9 +4,9 @@ const userModel = require("../models/User.js");
 const ensureGuest = (req, res, next) => {
   // Check if the user is already logged in
   if (req.session.user && req.session.user.id && req.session.user.email) {
-    return res.redirect("/home"); 
+    return res.redirect("/home");
   }
-  next(); 
+  next();
 };
 
 const userAuth = (req, res, next) => {
@@ -17,7 +17,7 @@ const userAuth = (req, res, next) => {
           return next();
         }
         console.log('no session stored on user so cant access other routes.')
-        req.session.user = null; 
+        req.session.user = null;
         res.redirect("/login");
       })
       .catch(error => {
@@ -31,8 +31,7 @@ const userAuth = (req, res, next) => {
 };
 
 
-
 module.exports = {
   userAuth,
-  ensureGuest, 
+  ensureGuest,
 };

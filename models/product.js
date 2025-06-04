@@ -1,26 +1,26 @@
 const mongoose = require("mongoose");
-const { Schema,Types } = mongoose;
+const { Schema, Types } = mongoose;
 
 const productSchema = new Schema(
   {
     productName: {
       type: String,
       required: true,
-      
+
     },
     description: {
       type: String,
       required: true,
     },
     category: {
-      type: Types.ObjectId,
+      type:  mongoose.Schema.Types.ObjectId,
       ref: "Category", 
       required: true,
     },
-    brands:{
-      type: Types.ObjectId,
-      ref:'Brand',
-      required:true,
+    brands: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Brand',
+      required: true
     },
     regularPrice: {
       type: Number,
@@ -31,24 +31,24 @@ const productSchema = new Schema(
       required: true,
     },
     productOffer: {
-      type: Number, 
+      type: Number,
       default: 0,
     },
     quantity: {
       type: Number,
       min: [0, 'Quantity cannot be negative'],
     },
-    isblocked:{
-      type:Boolean,
-      default:false
-       },
-       subtotal:{
-        type:Number,
-        require:true,
-       },
+    isblocked: {
+      type: Boolean,
+      default: false
+    },
+    subtotal: {
+      type: Number,
+      require: true,
+    },
     productImage: {
       type: [String],
-      default: [], 
+      default: [],
     },
     status: {
       type: String,
@@ -56,8 +56,12 @@ const productSchema = new Schema(
       default: "Available",
       required: true,
     },
+    sizes: {
+      type: [String],
+      required: true,
+    }
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Product = mongoose.model("Product", productSchema);

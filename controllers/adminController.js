@@ -5,25 +5,18 @@ const userModel = require("../models/User");
 const pageError = async (req, res) => {
     res.render("/pageError")
 }
-
 const loadlogin = (req, res) => {
     if (req.session.admin) {
         return res.redirect("/admin/dashboard")
     }
-
     res.render('admin/login', { message: null });
 };
 
 const handleLogin = async (req, res) => {
     try {
-        // console.log("res in admin", req.body);
-
         const { email, password } = req.body;
         const admin = await userModel.findOne({ email, isadmin: true });
-        console.log(admin);
-
         if (admin) {
-
             const passwordmatch = await bcrypt.compare(password, admin.password);
             if (passwordmatch) {
 
@@ -61,9 +54,7 @@ const adminlogout = async (req, res) => {
         req.session.destroy((err) => {
             if (err) {
                 console.error("Error destroying session:", err);
-
             }
-
             res.redirect("/admin");
         });
     } catch (error) {

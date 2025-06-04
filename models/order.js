@@ -5,6 +5,9 @@ const ordersSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
+    razorpayOrderId: {
+        type: String,
+    },
     orderedItem: [{
 
         productId: {
@@ -40,17 +43,14 @@ const ordersSchema = new mongoose.Schema({
     },
     paymentMethod: {
         type: String,
-        enum: ['cod', 'credit-card',"razorpay", 'paypal'],
+        enum: ['cod', "razorpay", 'Wallet'],
         required: true
     },
     offerDiscount: {
         type: Number,
         default: 0
     },
-    couponDiscount: {
-        type: Number,
-        default: 0
-    },
+    discount: { type: Number, default: 0 },
     totalDiscount: {
         type: Number,
         default: 0

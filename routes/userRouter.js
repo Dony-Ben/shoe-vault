@@ -1,5 +1,6 @@
 const express = require("express");
 const userRouter = express.Router();
+const passport = require("passport");
 const {
   loadhomepage,
   loadhome,
@@ -8,7 +9,7 @@ const {
   pageNotFound,
   loadOTP,
   shop,
-  searchRouter,
+  // category,  
   about
 } = require("../controllers/loadingController.js");
 
@@ -21,11 +22,12 @@ const {
 } = require('../controllers/userController.js');
 const { productDetails } = require("../controllers/userproductController.js");
 const { userAuth, ensureGuest } = require("../middleware/auth.js");
-const { getcartpage, cartaddToCart, deleteProduct, quantityManage } = require("../controllers/cartController.js")
-const passport = require("passport");
-const { getForgotPassPage, forgotEmailValid, verifyOtp, resetPassword, loadProfile, geteditprofile, editprofile, loadAddresses, AddAddressForm, editAddress, getAddressById, deleteAddress,loadWallet } = require("../controllers/profileController.js")
-const { loadcheckout, OrderConfirmation, ordersuccess, getOrders, OrderCancel, razorpayment } = require("../controllers/orderController.js");
-const { wishlist }=require("../controllers/wishlistController.js")
+const { getcartpage, cartaddToCart, deleteProduct, quantityManage } = require("../controllers/cartController.js");
+const { getForgotPassPage, forgotEmailValid, verifyOtp, resetPassword, loadProfile, geteditprofile, editprofile, loadAddresses, AddAddressForm, editAddress, getAddressById, deleteAddress } = require("../controllers/profileController.js");
+const { loadcheckout, OrderConfirmation, ordersuccess, getOrders, OrderCancel, razorpayment, verifypayment, razorpaySuccessPage, payWithWallet } = require("../controllers/orderController.js");
+const { wishlist, wishlistadd, ProductRemove } = require("../controllers/wishlistController.js");
+const { loadWallet, addFunds } = require("../controllers/walletController.js");
+const { couponValidation } = require("../controllers/userCouponController.js");
 userRouter.get("/", loadhomepage);
 userRouter.get("/login", ensureGuest, loadlogin);
 userRouter.post("/login", userLogin);
@@ -47,7 +49,6 @@ userRouter.post('/add-address', AddAddressForm);
 userRouter.post('/edit-address/:id', editAddress);
 userRouter.get('/edit-address/:id', getAddressById);
 userRouter.post('/user/delete-address/:id', deleteAddress);
-userRouter.get("/wallet", loadWallet);
 
 
 // Authenticated routes (Require login)
@@ -55,7 +56,7 @@ userRouter.get("/home", userAuth, loadhome);
 userRouter.get("/logout", logout);
 userRouter.get("/pageNotFound", userAuth, pageNotFound);
 userRouter.get("/shop", userAuth, shop);
-userRouter.get('/search', searchRouter);
+// userRouter.get("/shop", category);
 userRouter.get("/about", about)
 
 // OTP Management
@@ -85,12 +86,21 @@ userRouter.post('/api/cart/update/:itemId', quantityManage);
 userRouter.get("/checkout", loadcheckout);
 userRouter.post("/checkout", OrderConfirmation);
 userRouter.get("/order-success/:orderId", ordersuccess);
-userRouter.post("/create-order",razorpayment);
-
-// userRouter.get("/orders",loadOrderpage)
-userRouter.get("/orders", getOrders)
+userRouter.get("/orders", getOrders);
+userRouter.post("/create-order", razorpayment);
+userRouter.post("/place-order", verifypayment);
+userRouter.get("/razorpay-successpage/:orderId", razorpaySuccessPage);
 userRouter.post("/orders/:orderId/cancel", OrderCancel);
+userRouter.post("/paywallet", payWithWallet)
+userRouter.post("/validate-coupon", couponValidation);
 
 //wishlist management
-userRouter.get("/wishlist",wishlist)
+userRouter.get("/wishlist", wishlist);
+userRouter.post("/wishlist-add", wishlistadd);
+userRouter.delete("/wishlist/remove/:productId", ProductRemove);
+
+//wallet management
+userRouter.get("/wallet", loadWallet);
+userRouter.post("/addfunds", addFunds);
+
 module.exports = userRouter;  

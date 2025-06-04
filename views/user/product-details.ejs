@@ -14,9 +14,9 @@
   <link rel="stylesheet" href="jquery.mCustomScrollbar.min.css">
   <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/font-awesome.css">
   <link rel="stylesheet" href="owl.carousel.min.css">
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" 
-    media="screen"> 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css"
+    media="screen">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
     .product-image-slider img {
@@ -78,6 +78,37 @@
       position: relative;
       cursor: crosshair;
     }
+
+    .size-options {
+      display: flex;
+      gap: 10px;
+    }
+
+    .size-btn {
+      padding: 10px 15px;
+      border: 1px solid #000;
+      background-color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .size-btn:hover {
+      background-color: #000;
+      color: white;
+    }
+
+    .size-btn {
+      padding: 10px 15px;
+      border: 1px solid #000;
+      background-color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .size-btn.selected {
+      background-color: black;
+      color: white;
+    }
   </style>
 </head>
 
@@ -103,7 +134,7 @@
             <div class="product-image-slider mb-4 position-relative">
               <!-- Main Image -->
               <div id="mainImageContainer" class="image-zoom-container">
-                <img id="mainImage" src="/uploads/re-image/<%= productData.productImage[0] %>"
+                <img id="mainImage" src="<%= productData.productImage[0] %>"
                   alt="<%= productData.productName %> - Main Image" class="img-fluid">
                 <div id="zoomLens" class="zoom-lens"></div>
               </div>
@@ -111,7 +142,7 @@
             <div class="slider-nav-thumbnails d-flex justify-content-center">
               <% productData.productImage.forEach((image, index)=> { %>
                 <div class="mx-2">
-                  <img src="/uploads/re-image/<%= image %>" alt="Thumbnail <%= index + 1 %>" class="thumbnail"
+                  <img src="<%= image %>" alt="Thumbnail <%= index + 1 %>" class="thumbnail"
                     onclick="changeMainImage('<%= image %>')" style="cursor: pointer; width: 80px; height: 80px;">
                 </div>
                 <% }); %>
@@ -119,9 +150,9 @@
           </div>
           <div class="col-lg-6">
             <div class="product-details">
-                <h1 class="mb-4" style="color: black; font-weight: bold; font-size: 28px;">
-                  <%= productData.productName %>
-                </h1>
+              <h1 class="mb-4" style="color: black; font-weight: bold; font-size: 28px;">
+                <%= productData.productName %>
+              </h1>
               <div class="d-flex justify-content-between align-items-center mb-4">
                 <div class="product-price">
                   <span class="h3 text-success">₹<%= productData.salePrice.toFixed(2) %></span>
@@ -133,64 +164,73 @@
                       <span class="ms-2 text-muted">(25 reviews)</span>
                 </div>
               </div>
-              <p class="mb-4">
-                <%= productData.description %>
-              </p>
-              <div class="mb-4">
+              <p class="mb-4"></p>
+              <%= productData.description %>
+                </p>
+                <h3>Select Size:</h3>
+
+                <div class="size-options">
+                  <% if (productData && productData.sizes && productData.sizes.length> 0) { %>
+                    <% productData.sizes.forEach((item)=> { %>
+                      <button class="size-btn" onclick="selectSize('<%= item %>')" id="size-<%= item %>">
+                        <%= item %>
+                      </button>
+                      <% }); %>
+                        <% } else { %>
+                          <p>No sizes available.</p>
+                          <% } %>
+                </div>
+                <input type="hidden" id="selectedSize" name="selectedSize">
+
                 <h5>Key Features:</h5>
+            </div>
+            <% if(productData.quantity>0) { %>
+              <div class="d-flex align-items-center mb-4">
+                <a onclick="addToCart(event, `<%= productData._id %>`)"
+                  class="modern-btn btn btn-black bg-black hover:bg-opacity-80 text-light transition duration-300 add-to-cart-btn"
+                  data-product-id="<%= productData._id %>">
+                  Add to Cart
+                </a>
               </div>
-              <% if(productData.quantity>0) { %>
-                <div class="d-flex align-items-center mb-4">     
-                  <a onclick="addToCart(event, `<%= productData._id %>`)"
-                    class="modern-btn btn btn-black bg-black hover:bg-opacity-80 text-light transition duration-300 add-to-cart-btn"
-                    data-product-id="<%= productData._id %>">
-                    Add to Cart
-                  </a>
-                </div>
               <%}else{%>
-                <div class="d-flex align-items-center mb-4">
-                  <button class="btn btn-black bg-black hover:bg-opacity-80 text-light transition duration-300 add-to-cart-btn"
-                    disabled>
-                    Out of Stock
-                  </button>
-                </div>
-             <% } %>
-              
-              <div id="toast"
-                style="position: fixed; bottom: 20px; right: 20px; background: #043703; color: #ffffff; padding: 10px 15px; border-radius: 5px; display: none; z-index: 1000;">
-              </div>
+                <span class="out-of-stock-msg text-red-500">Out of Stock</span>
+                <% } %>
 
-              <div class="mb-4">
-                <h5>Stock:
-                  <sp an class="<%= productData.status ? 'text-success' : 'text-danger' %>">
-                    <%= productData.status ? productData.quantity : 'Out of Stock' %>
-                  </span>
+                  <div id="toast"
+                    style="position: fixed; bottom: 20px; right: 20px; background: #043703; color: #ffffff; padding: 10px 15px; border-radius: 5px; display: none; z-index: 1000;">
+                  </div>
+
+                  <div class="mb-4">
+                    <h5>Stock:
+                      <sp an class="<%= productData.status ? 'text-success' : 'text-danger' %>">
+                        <%= productData.status ? productData.quantity : 'Out of Stock' %>
+                          </span>
+                    </h5>
+                  </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Related Products Section -->
+      <div class="related-products mt-5">
+        <h2 class="mb-4">Related Products</h2>
+        <div class="row">
+          <div class="col-md-3 mb-4">
+            <div class="card h-100">
+              <img src="/uploads/re-image<%= productData.productImage[0] %>" class="card-img-top"
+                alt="<%= productData.productName %>">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <%= productData.productName %>
                 </h5>
+                <p class="card-text">$<%= productData.salePrice.toFixed(2) %>
+                </p>
+                <a href="/product/<%= productData.id %>" class="btn btn-outline-primary">View Details</a>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- Related Products Section -->
-        <div class="related-products mt-5">
-          <h2 class="mb-4">Related Products</h2>
-          <div class="row">
-            <div class="col-md-3 mb-4">
-              <div class="card h-100">
-                <img src="/uploads/re-image<%= productData.productImage[0] %>" class="card-img-top"
-                  alt="<%= productData.productName %>">
-                <div class="card-body">
-                  <h5 class="card-title">
-                    <%= productData.productName %>
-                  </h5>
-                  <p class="card-text">$<%= productData.salePrice.toFixed(2) %>
-                  </p>
-                  <a href="/product/<%= productData.id %>" class="btn btn-outline-primary">View Details</a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      </div>
       </div>
     </section>
   </main>
@@ -201,8 +241,8 @@
     const eventSource = new EventSource('/events');
     eventSource.onmessage = (event) => {
       if (event.data === 'StockUpdated') {
-      console.log('Stock updated, refreshing...');
-      window.location.reload();
+        console.log('Stock updated, refreshing...');
+        window.location.reload();
       }
     };
 
@@ -212,17 +252,9 @@
       mainImages.forEach(img => img.classList.remove('active'));
       mainImages[index].classList.add('active');
     }
-
-    // function updateQuantity(change) {
-    //   const quantityInput = document.getElementById('quantity');
-    //   let newQuantity = parseInt(quantityInput.value) + change;
-    //   if (newQuantity < 1) newQuantity = 1;
-    //   quantityInput.value = newQuantity;
-    // }
-
     function changeMainImage(imageSrc) {
       const mainImage = document.getElementById('mainImage');
-      mainImage.src = `/uploads/product-images/${imageSrc}`;
+      mainImage.src = `${imageSrc}`;
     }
 
     const mainImage = document.getElementById('mainImage');
@@ -257,17 +289,16 @@
     mainImageContainer.addEventListener('mouseleave', () => {
       zoomLens.style.display = 'none';
     });
+    // size selection
+    function selectSize(size) {
+      // Remove 'selected' class from all buttons
+      document.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('selected'));
 
-    // Simple Toast Function
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      toast.textContent = message;
-      toast.style.display = 'block';
+      // Add 'selected' class to the clicked button
+      document.getElementById('size-' + size).classList.add('selected');
 
-      // Hide after 3 seconds
-      setTimeout(() => {
-        toast.style.display = 'none';
-      }, 3000);
+      // Store the selected size in the hidden input
+      document.getElementById('selectedSize').value = size;
     }
   </script>
   <%- include('../partials/user/footer.ejs') %>

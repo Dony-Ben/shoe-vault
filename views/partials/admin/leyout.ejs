@@ -1,127 +1,243 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="admin-container">
-        <img src="/image/icon.png "id="toggleSidebar" class="open-sidebar-icon">
-
-    </div>
-
-    <!-- Sidebar Modal -->
-    <div id="sidebar" class="sidebar-modal">
-        <div class="sidebar-content">
-            <button id="closeSidebar" class="close-sidebar-btn">×</button>
-            <h2>Admin panel </h2>
-            <ul>
-                <li><a href="/admin/dashboard">Dashboard</a></li>
-                <li><a href="/admin/customers">users</a></li>
-                <li><a href="/admin/orders">Orders</a></li>
-                <li><a href="/admin/Category">Category</a></li>
-                <li><a href="/admin/products">products</a></li>
-                <li><a href="/admin/addProducts">addproducts</a></li>
-                <li><a href="/admin/brands">Brands</a></li>
-
-            </ul>
-        </div>
-    </div>
-</body>
-</html>
-
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-}
+    /* Base styles */
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
 
-.admin-container {
-    padding: 20px;
-}
+    .admin-container {
+        padding: 15px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 100;
+    }
 
-.open-sidebar-icon {
-    width: 30px;
-    height: 30px;
-    cursor: pointer;
-}
+    .open-sidebar-icon {
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+        display: block;
+    }
 
-.sidebar-modal {
-    position: fixed;
-    top: 0;
-    left: -300px; /* Hidden initially */
-    width: 300px;
-    height: 100%;
-    background-color: #343a40;
-    color: #fff;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
-    transition: left 0.3s ease;
-    z-index: 1000;
-}
+    /* Sidebar styles */
+    .sidebar-modal {
+        position: fixed;
+        top: 0;
+        left: -85%;
+        width: 85%;
+        max-width: 300px;
+        height: 100%;
+        background-color: #343a40;
+        color: #fff;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+        transition: left 0.3s ease;
+        z-index: 1000;
+        overflow-y: auto;
+    }
 
-.sidebar-modal.open {
-    left: 0; /* Slide in */
-}
+    .sidebar-modal.open {
+        left: 0;
+    }
 
-.sidebar-content {
-    padding: 20px;
-}
+    .sidebar-content {
+        padding: 20px;
+    }
 
-.sidebar-content h2 {
-    margin: 0 0 20px;
-}
+    .sidebar-content h2 {
+        margin: 0 0 20px;
+        font-size: 1.5rem;
+    }
 
-.sidebar-content ul {
-    list-style: none;
-    padding: 0;
-}
+    .sidebar-content ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
 
-.sidebar-content ul li {
-    margin-bottom: 10px;
-}
+    .sidebar-content ul li {
+        margin-bottom: 8px;
+    }
 
-.sidebar-content ul li a {
-    color: #fff;
-    text-decoration: none;
-    display: block;
-    padding: 10px;
-    border-radius: 5px;
-    transition: background 0.3s ease;
-}
+    .sidebar-content ul li a {
+        color: #fff;
+        text-decoration: none;
+        display: block;
+        padding: 12px 15px;
+        border-radius: 5px;
+        transition: background 0.3s ease;
+        font-size: 16px;
+    }
 
-.sidebar-content ul li a:hover {
-    background-color: #495057;
-}
+    .sidebar-content ul li a:hover {
+        background-color: #495057;
+    }
 
-.close-sidebar-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px; /* Adjusted for left sidebar */
-    background: none;
-    border: none;
-    font-size: 20px;
-    color: #fff;
-    cursor: pointer;
-}
+    .close-sidebar-btn {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: #fff;
+        cursor: pointer;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Overlay for mobile */
+    .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        display: none;
+    }
+
+    .sidebar-overlay.active {
+        display: block;
+    }
+
+    /* Media queries for better responsiveness */
+    @media (min-width: 768px) {
+        .sidebar-modal {
+            left: -300px;
+            width: 300px;
+        }
+
+        .admin-container {
+            padding: 20px;
+        }
+    }
+
+    /* For very small screens */
+    @media (max-width: 320px) {
+        .sidebar-modal {
+            width: 100%;
+        }
+    }
+
+    /* Improved touch targets for mobile */
+    @media (max-width: 768px) {
+        .sidebar-content ul li a {
+            padding: 15px;
+        }
+
+        .close-sidebar-btn {
+            width: 40px;
+            height: 40px;
+        }
+
+        .open-sidebar-icon {
+            width: 35px;
+            height: 35px;
+        }
+    }
 </style>
 
+<div class="admin-container">
+    <img src="/image/icon.png" id="toggleSidebar" class="open-sidebar-icon" alt="Menu">
+</div>
+
+<!-- Sidebar Modal -->
+<div id="sidebar" class="sidebar-modal">
+    <div class="sidebar-content">
+        <button id="closeSidebar" class="close-sidebar-btn">×</button>
+        <h2>Admin panel</h2>
+        <ul>
+            <li><a href="/admin/dashboard">Dashboard</a></li>
+            <li><a href="/admin/customers">Users</a></li>
+            <li><a href="/admin/orders">Orders</a></li>
+            <li><a href="/admin/Category">Category</a></li>
+            <li><a href="/admin/products">Products</a></li>
+            <li><a href="/admin/addProducts">Add Products</a></li>
+            <li><a href="/admin/brands">Brands</a></li>
+            <li><a href="/admin/coupons">Coupons</a></li>
+            <li><a href="/admin/sales-report">Sales Report</a></li>
+            <li><a href="/admin/offer">offers</a></li>
+        </ul>
+    </div>
+</div>
+
+<div id="sidebarOverlay" class="sidebar-overlay"></div>
+
 <script>
-   document.addEventListener('DOMContentLoaded', () => {
-    const toggleSidebarBtn = document.getElementById('toggleSidebar');
-    const sidebar = document.getElementById('sidebar');
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get elements
+        const toggleSidebarBtn = document.getElementById('toggleSidebar');
+        const closeSidebarBtn = document.getElementById('closeSidebar');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
 
-    toggleSidebarBtn.addEventListener('click', () => {
-        sidebar.classList.toggle('open');
-    });
-
-    // Close sidebar if clicked outside
-    window.addEventListener('click', (event) => {
-        if (!sidebar.contains(event.target) && event.target !== toggleSidebarBtn) {
-            sidebar.classList.remove('open');
+        // Function to open sidebar
+        function openSidebar() {
+            sidebar.classList.add('open');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling when sidebar is open
         }
+
+        // Function to close sidebar
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        toggleSidebarBtn.addEventListener('click', function (event) {
+            event.stopPropagation();
+            if (sidebar.classList.contains('open')) {
+                closeSidebar();
+            } else {
+                openSidebar();
+            }
+        });
+
+        closeSidebarBtn.addEventListener('click', closeSidebar);
+        overlay.addEventListener('click', closeSidebar);
+        document.addEventListener('click', function (event) {
+            if (!sidebar.contains(event.target) && event.target !== toggleSidebarBtn) {
+                closeSidebar();
+            }
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                closeSidebar();
+            }
+        });
+
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', function (event) {
+            touchStartX = event.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', function (event) {
+            touchEndX = event.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            if (touchEndX - touchStartX > 100 && !sidebar.classList.contains('open')) {
+                openSidebar();
+            }
+            if (touchStartX - touchEndX > 100 && sidebar.classList.contains('open')) {
+                closeSidebar();
+            }
+        }
+        sidebar.addEventListener('click', function (event) {
+            event.stopPropagation();
+        });
     });
-});
 </script>

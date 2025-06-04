@@ -1,132 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Wishlist</title>
+    <title>Wishlist - Footwear App</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f0f0;
-            color: #333;
-            line-height: 1.6;
-            padding: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #6a1b9a;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        form {
-            background-color: #e1bee7;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-        }
-        input, button {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: none;
-            border-radius: 4px;
-        }
-        button {
-            background-color: #00897b;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        button:hover {
-            background-color: #00695c;
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        li {
-            background-color: #e0f2f1;
-            margin-bottom: 10px;
-            padding: 15px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: transform 0.2s ease;
-        }
-        li:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-        .remove-btn {
-            background-color: #ff7043;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .remove-btn:hover {
-            background-color: #f4511e;
+            font-family: 'Poppins', sans-serif;
         }
     </style>
 </head>
-<%- include('../partials/user/header.ejs') %>
-<body>
-    <div class="container">
-        <h1>My Wishlist</h1>
-        
-        <form id="add-item-form">
-            <input type="text" id="item-name" placeholder="Enter product name" required>
-            <input type="number" id="item-price" placeholder="Enter price" step="0.01" required>
-            <button type="submit">Add to Wishlist</button>
-        </form>
-        
-        <ul id="wishlist">
-            <% /*wishlistItems.forEach(function(item) {*/ %>
-                <li>
-                    <span><%= /*item.name %> - $<%= item.price.toFixed(2) */%></span>
-                    <button class="remove-btn" data-id="<%=/* item.id */%>">Remove</button>
-                </li>
-            <%/* }); */%>
-        </ul>
+
+<body class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+    <!-- Header with fixed navigation -->
+    <div class="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
+        <%- include('../partials/user/header.ejs') %>
     </div>
 
-    <script>
-        document.getElementById('add-item-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('item-name').value;
-            const price = document.getElementById('item-price').value;
-            
-            // Here you would typically send this data to your server
-            // For this example, we'll just add it to the list directly
-            const wishlist = document.getElementById('wishlist');
-            const li = document.createElement('li');
-            li.innerHTML = `
-                <span>${name} - $${Number(price).toFixed(2)}</span>
-                <button class="remove-btn">Remove</button>
-            `;
-            wishlist.appendChild(li);
-            
-            // Clear the form
-            document.getElementById('item-name').value = '';
-            document.getElementById('item-price').value = '';
-        });
+    <!-- Page content with padding for fixed header -->
+    <div class="pt-20 pb-16">
+        <!-- Wishlist Header -->
+        <div class="bg-white py-12 mb-8 shadow-sm">
+            <div class="container mx-auto px-4">
+                <div class="flex items-center justify-center mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-rose-500 mr-2" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                    </svg>
+                    <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Your Wishlist</h1>
+                </div>
+                <p class="text-center text-gray-600">Save your favorite footwear for later</p>
+            </div>
+        </div>
 
-        document.getElementById('wishlist').addEventListener('click', function(e) {
-            if (e.target.classList.contains('remove-btn')) {
-                e.target.closest('li').remove();
-            }
-        });
-    </script>
+        <!-- Wishlist Content -->
+        <div class="container mx-auto px-4">
+            <% if (wishlistItems.length> 0) { %>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <% wishlistItems.forEach(item=> { %>
+                        <div
+                            class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                            <div class="relative h-64 overflow-hidden group">
+                                <img src="<%= item.productImage[0] %>" alt="<%= item.productName %>"
+                                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                                <div
+                                    class="absolute inset-0 bg-black bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                </div>
+                            </div>
+                            <div class="p-5">
+                                <h3 class="font-medium text-lg text-gray-800 mb-2">
+                                    <%= item.productName %>
+                                </h3>
+                                <p class="text-rose-600 font-semibold mb-4">$<%= item.salePrice %>
+                                </p>
+                                <div class="flex space-x-2">
+                                    <% if(item.quantity>0){ %>
+                                        <a onclick="addToCart(event, `<%= item._id %>`)"
+                                            class="modern-btn btn btn-black bg-black hover:bg-opacity-80 text-light transition duration-300 add-to-cart-btn"
+                                            data-product-id="<%= item._id %>">Add to Cart</a>
+                                        <% }else { %>
+                                            <span class="out-of-stock-msg text-red-500">Out of Stock</span>
+                                            <% } %>
+
+                                                <button
+                                                    class="bg-rose-100 hover:bg-rose-200 text-rose-600 p-2 rounded-md transition-colors duration-200"
+                                                    onclick="removeFromWishlist('<%= item._id %>')">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                        viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                </div>
+                            </div>
+                        </div>
+                        <% }) %>
+                </div>
+                <% } else { %>
+                    <div class="py-16 text-center">
+                        <div class="bg-white rounded-lg shadow-md p-8 max-w-md mx-auto">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400 mx-auto mb-4"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                            <p class="text-lg text-gray-600">Your wishlist is empty. Start adding your favorite
+                                footwear!</p>
+                            <button onclick="window.location.href='/shop'"
+                                class="mt-4 bg-gray-800 hover:bg-gray-900 text-white py-2 px-6 rounded-md transition-colors duration-200">
+                                Browse Products
+                            </button>
+                        </div>
+                    </div>
+                    <% } %>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <%- include('../partials/user/footer.ejs') %>
+
 </body>
+<script>
+    // remove the item from the wishlist
+    async function removeFromWishlist(productId) {
+        try {
+            const response = await fetch(`/wishlist/remove/${productId}`, {
+                method: 'DELETE'
+            });
+            const data = await response.json();
+            if (data.success) {
+                window.location.reload();
+            }
+
+        } catch (error) {
+            console.error('Error removing item from wishlist:', error);
+        }
+    }
+
+</script>
+
 </html>

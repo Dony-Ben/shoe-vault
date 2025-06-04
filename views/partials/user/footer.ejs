@@ -1,21 +1,51 @@
-<footer class="bg-black text-light py-12">
+<style>
+    .toast-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+
+    .toast {
+        background: #04650b;
+        color: #ffffff;
+        padding: 10px 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(3, 119, 26, 0.2);
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.3s, transform 0.3s;
+    }
+
+    .toast.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>
+<footer class="bg-black text-white py-12">
     <div class="container mx-auto text-center">
         <p class="mb-4">&copy; 2024 Shoe Vault. All rights reserved.</p>
         <div class="flex justify-center space-x-6">
-            <a href="#" class="text-light hover:text-accent transition duration-300">Privacy Policy</a>
-            <a href="#" class="text-light hover:text-accent transition duration-300">Terms of Service</a>
-            <a href="#" class="text-light hover:text-accent transition duration-300">Contact Us</a>
+            <a href="#" class="text-white hover:text-accent transition duration-300">Privacy Policy</a>
+            <a href="#" class="text-white hover:text-accent transition duration-300">Terms of Service</a>
+            <a href="#" class="text-white hover:text-accent transition duration-300">Contact Us</a>
         </div>
     </div>
+</footer>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         async function addToCart(event, productId) {
             event.preventDefault();
-            // alert('Product added to cart');
+            const selectedSize = $('#selectedSize').val();
+
+            if (!selectedSize) {
+                showToast('Please select a size before adding to the cart.');
+                return;
+            }
             $.ajax({
                 url: `/cart/add`,
                 type: 'POST',
-                data: { productId: productId },
+                data: { productId: productId,size:selectedSize },
                 success: function (response) {
                     showToast(response.message);
                 },
@@ -42,28 +72,4 @@
         }
     </script>
     <div id="toast-container" class="toast-container"></div>
-    <style>
-        .toast-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
-    
-        .toast {
-            background: #155f01;
-            color: #ffffff;
-            padding: 10px 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(3, 119, 26, 0.2);
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.3s, transform 0.3s;
-        }
-    
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-      </style>
-</footer>
+   

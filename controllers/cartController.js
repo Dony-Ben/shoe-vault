@@ -16,8 +16,7 @@ const getcartpage = async (req, res) => {
         }
         const subtotal = cart.items.reduce((total, item) => total + item.productId.salePrice * item.quantity, 0);
         const total = + subtotal;
-        console.log(total);
-
+        
         res.render("user/cart", {
             cart: cart.items,
             subtotal,
@@ -32,13 +31,10 @@ const getcartpage = async (req, res) => {
 const cartaddToCart = async (req, res) => {
     try {
         const userId = req.session.user?.id;
-        const { productId } = req.body;
-        console.log(req.body);
+        const { productId,size } = req.body;
 
-        console.log("Product ID:", productId);
-
-        if (!productId || !userId) {
-            return res.render("user/shop", { message: "Missing product or user ID.", products: [] });
+        if (!productId || !userId || !size) {
+            return res.status(400).json({ message: "Missing product ID, user ID, or size.", success: false });
         }
         const product = await Product.findById(productId);
         if (!product) {
@@ -54,13 +50,13 @@ const cartaddToCart = async (req, res) => {
         } else {
             cart.items.push({
                 productId,
+                size,
                 quantity: 1,
                 price: product.salePrice,
                 totalprice: product.salePrice,
             });
         }
         await cart.save();
-        const productList = await Product.find({});
         res.json({ message: 'Product added to cart successfully.' });
     } catch (error) {
         console.error("Error in cartaddToCart:", error);

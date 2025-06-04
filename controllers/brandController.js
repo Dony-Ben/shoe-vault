@@ -1,5 +1,4 @@
 const Brand = require("../models/Brands");
-// const Product = require("../models/product");
 
 const getBrandpage = async (req, res) => {
     try {
@@ -7,19 +6,16 @@ const getBrandpage = async (req, res) => {
         const limit = 4;
         const skip = (page - 1) * limit;
 
-        // Fetch paginated brand data
         const brandData = await Brand.find({})
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
 
-        // Calculate total pages for pagination
         const totalBrands = await Brand.countDocuments({});
         const totalPages = Math.ceil(totalBrands / limit);
 
-        // Render the brand page
         res.render("admin/Brand", {
-            data: brandData, // No need for reverse if already sorted
+            data: brandData, 
             currentpages: page,
             totalPages: totalPages,
             totalBrands: totalBrands,

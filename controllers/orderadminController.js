@@ -6,7 +6,6 @@ const getOrderpage = async (req, res) => {
             .populate('userId', 'firstname lastname email')
             .populate('orderedItem.productId', 'name price')
             .sort({ createdAt: -1 });
-            console.log("Populated Orders:", orders);
         res.render('admin/ordermanage', { orders });
     } catch (error) {
         console.log("An error occurred while fetching user orders:", error);
@@ -15,14 +14,13 @@ const getOrderpage = async (req, res) => {
 };
 
 const updateOrderStatus = async (req, res) => {
-    console.log('Received update request:', req.body);
     const { orderId, orderStatus } = req.body;
 
     try {
         const updatedOrder = await Orders.findOneAndUpdate(
-            { _id: orderId }, // Query to find the order
-            { orderStatus: orderStatus }, // Update operation
-            { new: true } // Options: return the updated document
+            { _id: orderId }, 
+            { orderStatus: orderStatus }, 
+            { new: true } 
         );
 
         if (updatedOrder) {

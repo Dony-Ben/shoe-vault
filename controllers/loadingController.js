@@ -1,7 +1,6 @@
 const Category = require("../models/category");
+const Offer = require("../models/offers");
 const Product = require("../models/product");
-const userModel = require("../models/User");
-const session = require("express-session")
 
 const pageNotFound = async (req, res) => {
     try {
@@ -59,7 +58,6 @@ const loadregister = async (req, res) => {
 
 const loadOTP = async (req, res) => {
     try {
-        console.log('OTP PAGE loading... ')
         res.render('user/otp')
     } catch (error) {
         console.log('error while loading otp page... ', error)
@@ -76,20 +74,31 @@ const shop = async (req, res) => {
             .populate('brands');
         const totalProducts = await Product.countDocuments({ isblocked: false });
         const totalPages = Math.ceil(totalProducts / productsPerPage);
-        res.render("user/shop", { products: productData, totalPages, currentPage });
+        const categories = await Category.find({});
+        const offers = await Offer.find({ isActive: true }).populate("categories").populate("products");
+        productData.forEach((product) => {
+            const productCategoryIds = Array.isArray(product.categories)
+                ? product.categories.map(c => c.toString())
+                : [product.categories?.toString()];
+
+            const matchingOffer = offers.find(offer => {
+                if (offer.offerType === 'product') {
+                    return offer.products.some(p => p._id.toString() === product._id.toString());
+                } else if (offer.offerType === 'category') {
+                    return offer.categories.some(c => productCategoryIds.includes(c._id.toString()));
+                }  
+                return false;
+            });
+
+            if (matchingOffer) {
+                const discountSymbol = matchingOffer.discountType === 'percentage' ? '%' : '₹';
+                product.offer = `${matchingOffer.discountValue}${discountSymbol} OFF`;
+            }
+        });
+        res.render("user/shop", { products: productData, totalPages, currentPage, categories, offers });
     } catch (error) {
         console.error("Error while rendering shop page:", error);
         res.status(500).send("An error occurred while loading the page.");
-    }
-};
-
-const searchRouter = async (req, res) => {
-    try {
-        const query = req.query.query;
-        const products = await Product.find({ productName: { $regex: query} }).populate("brands")
-        res.json(products);
-    } catch (error) {
-        res.status(500).json({ error: 'An error occurred while searching for products.' });
     }
 };
 
@@ -102,6 +111,7 @@ const about = async (req, res) => {
     }
 };
 
+
 module.exports = {
     loadhomepage,
     loadhome,
@@ -110,6 +120,6 @@ module.exports = {
     loadregister,
     loadOTP,
     shop,
-    searchRouter,
-    about,
+    // category,
+    about
 }

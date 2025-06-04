@@ -1,26 +1,4 @@
 <head>
-
-    <style>
-        .thumbnails-container {
-            display: flex;
-            overflow-x: auto;
-        }
-
-
-        .thumbnail {
-            margin-right: 10px;
-        }
-
-        .input-upload {
-            position: relative;
-        }
-
-
-        .error-message {
-            color: red;
-            display: none;
-        }
-    </style>
     <link rel="stylesheet" href="/editproduct.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
 </head>
@@ -30,8 +8,6 @@
             <div class="col-9">
                 <div class="content-header">
                     <h2 class="content-title">Edit Product</h2>
-
-
                 </div>
             </div>
             <div class="col-lg-6">
@@ -50,8 +26,8 @@
                                 <label class="form-label">Brand</label>
                                 <select class="form-select border" name="brand">
                                     <% for (let i=0; i < brand.length; i++) { %>
-                                        <option value="<%= brand[i].brandName %>" <%=product.brand===brand[i].brandName
-                                            ? 'selected' : '' %>>
+                                        <option value="<%= brand[i].brandName %>" <%=product.brands &&
+                                            product.brands.brandName===brand[i].brandName ? 'selected' : '' %>>
                                             <%= brand[i].brandName %>
                                         </option>
                                         <% } %>
@@ -99,15 +75,31 @@
                                             <label class="form-label">Category</label>
                                             <select class="form-select border" style="width: 150px;" name="category">
                                                 <% for (let i=0; i < cat.length; i++) { %>
-                                                    <option value="<%= cat[i].name %>">
-                                                        <%= cat[i].name %>
+                                                    <option value="<%= cat[i].name %>" <% if (product.category &&
+                                                        cat[i]._id.toString()===product.category.toString()) { %>
+                                                        selected <% } %>>
+                                                            <%= cat[i].name %>
                                                     </option>
                                                     <% } %>
                                             </select>
+
                                             <div id="category-error" class="error-message"></div>
                                         </div>
                                     </div>
                                 </div>
+                                <label>Available Sizes:</label><br>
+                                <% const sizesArray=Array.isArray(product.sizes) ? product.sizes : []; %>
+                                    <input type="checkbox" name="availableSizes[]" value="6" <% if
+                                        (sizesArray.includes("6")) { %> checked <% } %>> 6
+                                        <input type="checkbox" name="availableSizes[]" value="7" <% if
+                                            (sizesArray.includes("7")) { %> checked <% } %>> 7
+                                            <input type="checkbox" name="availableSizes[]" value="8" <% if
+                                                (sizesArray.includes("8")) { %> checked <% } %>> 8
+                                                <input type="checkbox" name="availableSizes[]" value="9" <% if
+                                                    (sizesArray.includes("9")) { %> checked <% } %>> 9
+                                                    <input type="checkbox" name="availableSizes[]" value="10" <% if
+                                                        (sizesArray.includes("10")) { %> checked <% } %>> 10
+
                             </div>
                             <div class="card mb-2">
                                 <div class="card-header">
@@ -116,27 +108,23 @@
                                 <% for(let i=0;i<product.productImage.length;i++) {%>
                                     <div class="col-md-12">
                                         <div class="mb-4">
-                                            <div class="col-12">
-                                                <td>
-                                                    <label for=""></label>
-                                                    <input type="hidden" value="<%= product.productImage[i]%>"
-                                                        id="imageDatas">
-                                                    <img class="rounded" style="width: 50px; height: 60px;"
-                                                        src="/uploads/re-image/<%= product.productImage[i] %>"
-                                                        alt="">
-                                                    <i onclick="deleteSingleImage('<%= product.productImage[i]%>','<%= product._id %>')"
-                                                        style="position: absolute; margin-left: .5rem; cursor: pointer;"
-                                                        class="fa-thin fa-x"></i>
-                                                </td>
+                                            <div class="col-12 position-relative" style="width: 60px; height: 60px;">
+                                                <input type="hidden" value="<%= product.productImage[i] %>">
+                                                <img class="rounded" style="width: 50px; height: 60px;"
+                                                    src="<%= product.productImage[i] %>" alt="">
+                                                <i onclick="deleteSingleImage('<%= product.productImage[i] %>', '<%= product._id %>')"
+                                                    class="fa-solid fa-xmark"
+                                                    style="position: absolute; top: -8px; right: -8px; background: white; border-radius: 50%; padding: 4px; font-size: 14px; color: red; cursor: pointer;"></i>
                                             </div>
-
                                         </div>
                                     </div>
+
                                     <% }%>
 
                                         <div class="card-body">
                                             <div class="card-body align-items-center" style="margin-bottom: 20px;">
-                                                <img src="/uploads/re-image/" alt="" id="imgView1">
+                                                <img src="<%= product.productImage[0] ? product.productImage[0] : '' %>"
+                                                    alt="" id="imgView1">
                                                 <input class="form-control" type="file" name="images" id="input1"
                                                     accept=" image/jpeg, image/jpg"
                                                     onchange="viewImage1(event), viewImage(event, 1)">
@@ -150,7 +138,8 @@
                                             </div>
                                             <div class="row">
                                                 <div class="card-body align-items-center" style="margin-bottom: 20px;">
-                                                    <img src="/uploads/re-image/" alt="" id="imgView2">
+                                                    <img src="<%= product.productImage[1] ? product.productImage[1] : '' %>"
+                                                        alt="" id="imgView2">
                                                     <input class="form-control" type="file" name="images" id="input2"
                                                         accept="image/png, image/jpeg, image/jpg"
                                                         onchange="viewImage2(event),viewImage(event, 2)">
@@ -165,7 +154,8 @@
 
                                             <div class="row">
                                                 <div class="card-body align-items-center" style="margin-bottom: 20px;">
-                                                    <img src="/uploads/re-image/" alt="" id="imgView3">
+                                                    <img src="<%= product.productImage[2] ? product.productImage[2] : '' %>"
+                                                        alt="" id="imgView3">
                                                     <input class="form-control" type="file" name="images" id="input3"
                                                         accept="image/png, image/jpeg, image/jpg"
                                                         onchange="viewImage3(event),viewImage(event, 3)">
@@ -176,7 +166,7 @@
                                                     <button type="button" id="saveButton3"
                                                         class="btn-sm btn-primary">Save</button>
                                                 </div>
-                                            </div> 
+                                            </div>
 
                                         </div>
                             </div>
@@ -312,14 +302,48 @@
         };
         function deleteSingleImage(imageId, productId) {
             $.ajax({
-                url: "/admin/deleteImage",
-                method: "post",
-                data: { imageNametoserver: imageId, productIdToerver: productId },
-                success: ((response) => {
+                url: "/deleteImage",
+                method: "POST",
+                data: {
+                    imageNameToserver: imageId,
+                    productIdTosever: productId
+                },
+                success: function (response) {
                     if (response.status === true) {
                         window.location.reload();
+                    } else {
+                        alert("Failed to delete image.");
                     }
-                })
-            })
+                },
+                error: function () {
+                    alert("Server error while deleting image.");
+                }
+            });
         }
+        document.addEventListener('DOMContentLoaded', function () {
+            const sizeCheckboxes = document.querySelectorAll('input[name="availableSizes"]');
+            const sizeInventoryContainer = document.getElementById('sizeInventory');
+
+            function updateSizeInventory() {
+                sizeInventoryContainer.innerHTML = '';
+                sizeCheckboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        const size = checkbox.value;
+                        const sizeField = document.createElement('div');
+                        sizeField.className = 'col-md-4 mb-3';
+                        sizeField.innerHTML = `
+                    <div class="form-group">
+                        <label>Size ${size} Quantity</label>
+                        <input type="number" name="sizeQuantity[${size}]" class="form-control border" value="1" min="1" required>
+                    </div>
+                `;
+                        sizeInventoryContainer.appendChild(sizeField);
+                    }
+                });
+            }
+            sizeCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateSizeInventory);
+            });
+            updateSizeInventory();
+        });
     </script>

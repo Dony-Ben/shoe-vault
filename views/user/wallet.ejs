@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Wallet - Footwear E-commerce</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <style>
         .bg-primary {
             background-color: #3498db;
@@ -25,7 +27,10 @@
     </style>
 
 </head>
-<%- include('../partials/user/profile.ejs') %>
+<%- include('../partials/user/profile.ejs') %> 
+ <%- include('../partials/user/profile.ejs') %>
+
+
 <body class="bg-gray-100 font-sans">
     <div class="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
         <%- include('../partials/user/header.ejs') %>
@@ -37,7 +42,7 @@
             <!-- Balance Card -->
             <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-primary">
                 <h2 class="text-xl font-semibold text-gray-700 mb-4">Current Balance</h2>
-                <p class="text-4xl font-bold text-primary">₹<%= /*balance */%>
+                <p class="text-4xl font-bold text-primary">₹<%= wallet ? wallet.balance : '0.00' %>
                 </p>
             </div>
 
@@ -45,21 +50,14 @@
             <div class="bg-white rounded-lg shadow-md p-6">
                 <h2 class="text-xl font-semibold text-gray-700 mb-4">Quick Actions</h2>
                 <div class="grid grid-cols-2 gap-4">
-                    <button
-                        class="bg-primary text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300">Add
-                        Funds</button>
+                    <input type="number" id="amountInput" placeholder="Enter amount" />
+                    <button onclick="handleAddFunds()">Add Funds</button>
                     <button
                         class="bg-secondary text-white py-2 px-4 rounded hover:bg-green-600 transition duration-300">Withdraw</button>
                 </div>
             </div>
 
-            <!-- Rewards -->
-            <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-secondary">
-                <h2 class="text-xl font-semibold text-gray-700 mb-4">Rewards Points</h2>
-                <p class="text-4xl font-bold text-secondary">
-                    <%= /* rewardsPoints */%>
-                </p>
-            </div>
+
         </div>
 
         <!-- Recent Transactions -->
@@ -100,13 +98,68 @@
                             </tr>
                             <% /* });*/ %>
                     </tbody>
+
                 </table>
             </div>
         </div>
     </div>
 
     <script>
-        // You can add any client-side JavaScript here
+
+        function handleAddFunds() {
+            const amount = document.getElementById('amountInput').value;
+            if (!amount || isNaN(amount) || amount <= 0) {
+                Toastify({
+                    text: "Please enter a valid amount.",
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#f44336"
+                }).showToast();
+                return;
+            }
+
+            fetch('/addfunds', {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    amount: parseFloat(amount)
+                })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to add funds.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    Toastify({
+                        text: "Funds added successfully!",
+                        duration: 3000,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "#4caf50"
+                    }).showToast();
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                })
+                .finally(() => {
+                    document.getElementById('amountInput').value = ''; 
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Toastify({
+                        text: "An error occurred. Please try again.",
+                        duration: 3000,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "#f44336"
+                    }).showToast();
+                });
+        }
     </script>
 </body>
 

@@ -1,5 +1,3 @@
-const mongoose = require('mongoose');
-const product = require("../models/product.js");
 const userModel = require('../models/User.js');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
@@ -44,12 +42,11 @@ async function sendVerificationEmail(email, otp) {
         </div>
       `,
     });
-
+console.log("Email sent:", info);
     return info.accepted.length > 0;
   } catch (error) {
     console.error("Error sending email:", error);
     throw new Error("Failed to send verification email.");
-    // return false;
   }
 }
 
@@ -71,9 +68,8 @@ const userSignup = async (req, res) => {
     }
 
     const otp = generateOTP();
+    console.log("Generated OTP:", otp);
     req.session.userOtp = otp;
-    console.log("generateOTP", req.session.userOtp);
-
     const emailSent = await sendVerificationEmail(email, otp);
     if (!emailSent) {
       return res.json("email-error")
@@ -180,6 +176,11 @@ const userLogin = async (req, res) => {
       return res.render("user/login", { message: "You are blocked by admin." });
     }
 
+    if (!user.password) {
+      console.error("Login error: User password is missing in the database for email:", email);
+      return res.render("user/login", { message: "Something went wrong. Please try again later." });
+    }
+
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
       console.warn("Login attempt failed: Invalid password for email:", email);
@@ -195,7 +196,7 @@ const userLogin = async (req, res) => {
 
   } catch (error) {
     console.error("Error during login process:", error.message, error.stack);
-    return res.status(500).send("Something went wrong. Please try again later.");
+    return res.render.send("user.login", { message: "Something went wrong. Please try again later." });
   }
 };
 
@@ -204,10 +205,9 @@ const logout = async (req, res) => {
   try {
     req.session.user.id = null;
     req.session.user.email = null;
-
     console.log("Session after logout:", req.session);
-
     return res.redirect("/");
+
   } catch (error) {
     console.log("Logout error", error);
     return res.redirect("/pageNotFound");
