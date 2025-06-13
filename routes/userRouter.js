@@ -28,6 +28,7 @@ const { loadcheckout, OrderConfirmation, ordersuccess, getOrders, OrderCancel, r
 const { wishlist, wishlistadd, ProductRemove } = require("../controllers/wishlistController.js");
 const { loadWallet, addFunds } = require("../controllers/walletController.js");
 const { couponValidation } = require("../controllers/userCouponController.js");
+const { downloadInvoice } = require("../controllers/invoice.js");
 userRouter.get("/", loadhomepage);
 userRouter.get("/login", ensureGuest, loadlogin);
 userRouter.post("/login", userLogin);
@@ -103,4 +104,5 @@ userRouter.delete("/wishlist/remove/:productId", ProductRemove);
 userRouter.get("/wallet", loadWallet);
 userRouter.post("/addfunds", addFunds);
 
+userRouter.get("/download-invoice/:orderId",downloadInvoice);
 module.exports = userRouter;  

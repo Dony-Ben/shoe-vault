@@ -1,97 +1,103 @@
 <style>
-      .hamburger-menu {
-        cursor: pointer;
-        padding: 15px;
-        position: fixed;
-        top: 10px;
-        left: 10px;
-        z-index: 1000;
-    }
+    .user-header {
+  background-color: #ffffff;
+  padding: 1rem 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+}
 
-    .bar {
-        width: 25px;
-        height: 3px;
-        background-color: #333;
-        margin: 5px 0;
-        transition: 0.4s;
-    }
+.nav-bar {
+  max-width: 1000px;
+  margin: 0 auto;
+}
 
-    .sidebar {
-        width: 250px;
-        height: 100%;
-        background-color: #f8f9fa;
-        position: fixed;
-        top: 0;
-        left: 0;
-        padding: 20px;
-        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        transition: 0.3s;
-    }
+.nav-links {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-wrap: wrap;
+}
 
-    .sidebar-header {
-        margin-bottom: 30px;
-        text-align: center;
-    }
+.nav-links li {
+  margin: 0.5rem 1rem;
+}
 
-    .menu-item {
-        display: block;
-        padding: 15px;
-        color: #333;
-        text-decoration: none;
-        transition: 0.2s;
-        margin-bottom: 10px;
-    }
+.nav-links a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: color 0.3s ease, border-bottom 0.3s ease;
+  padding-bottom: 2px;
+  border-bottom: 2px solid transparent;
+}
 
-    .menu-item:hover {
-        background-color: #e9ecef;
-        border-radius: 5px;
-    }
+.nav-links a:hover,
+.nav-links a.active {
+  color: #0d6efd;
+  border-bottom: 2px solid #0d6efd;
+}
 
-    .menu-item i {
-        margin-right: 10px;
-    }
+@media (max-width: 600px) {
+  .nav-links {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
 
-    @media (max-width: 768px) {
-        /* No need for .hamburger-menu here anymore */
-        .sidebar {
-            left: -250px;
-        }
+  .nav-links li {
+    margin: 0.3rem 0;
+  }
+}
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
 
-        .sidebar.active {
-            left: 0;
-        }
-    }
+@media (max-width: 600px) {
+  .menu-toggle {
+    display: block;
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+  }
+
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+    margin-top: 1rem;
+  }
+
+  .nav-links.show {
+    display: flex;
+  }
+}
+
 </style>
-
-<div class="hamburger-menu" onclick="toggleSidebar()">
-    <div class="bar"></div>
-    <div class="bar"></div>
-    <div class="bar"></div>
-</div>
-
-<div class="sidebar" id="sidebar">
-    <div class="sidebar-menu">
-        <a href="/profile" class="menu-item">
-            <i class="fas fa-user"></i>
-            Profile
-        </a>
-        <a href="/address" class="menu-item">
-            <i class="fas fa-map-marker-alt"></i>
-            Address
-        </a>
-        <a href="/orders" class="menu-item">
-            <i class="fas fa-shopping-bag"></i>
-            Orders
-        </a>
-        <a href="/wallet" class="menu-item">
-            <i class="fas fa-wallet"></i>
-            Wallet
-        </a>
-    </div>
-</div>
-
+<header class="user-header">
+  <nav class="nav-bar">
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+  </nav>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="/profile">Profile</a></li>
+    <li><a href="/address">Address</a></li>
+    <li><a href="/orders">Orders</a></li>
+    <li><a href="/wallet">Wallet</a></li>
+    <li><a href="/shop">shop</a></li>
+  </ul>
+</header>
 <script>
-    function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('active');
-    }
+function toggleMenu() {
+  const nav = document.getElementById('navLinks');
+  nav.classList.toggle('show');
+}
 </script>
+

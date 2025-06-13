@@ -17,20 +17,17 @@
                 <h1 class="text-3xl font-bold mb-8">Your Cart</h1>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- Cart Items Section -->
                     <div class="md:col-span-2">
                         <div class="bg-white rounded-lg shadow-md p-6">
                             <h2 class="text-xl font-semibold mb-4">Cart Items</h2>
                             <% if (cart.length> 0) { %>
                                 <% cart.forEach(function(item) { %>
-                                     <div id="cart-item-<%= item.productId._id %>"
+                                    <div id="cart-item-<%= item.productId._id %>"
                                         class="flex items-center border-b border-gray-200 py-4">
-                                        <!-- Product Image -->
                                         <img src="<%= item.productId.productImage && item.productId.productImage.length > 0 
                                     ? item.productId.productImage[0] 
                                     : '/default-product-image.jpg' %>" alt="<%= item.productId.productName %>"
                                             class="w-24 h-24 object-cover rounded-md mr-4">
-                                        <!-- Product Details -->
                                         <div class="flex-grow">
                                             <h3 class="font-semibold">
                                                 <%= item.productId.productName %>
@@ -43,7 +40,6 @@
                                                                 <% } %>
                                             </p>
                                         </div>
-                                        <!-- Quantity Controls -->
                                         <div class="flex items-center space-x-2">
                                             <button class="bg-gray-200 px-2 py-1 rounded-md"
                                                 onclick="updateQuantity('<%= item.productId._id %>', -1, )">
@@ -59,8 +55,6 @@
                                                     +
                                             </button>
                                         </div>
-
-                                        <!-- Remove Item Button -->
                                         <button class="ml-4 text-red-500"
                                             onclick="confirmRemoveItem('<%= item.productId._id %>')">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
@@ -76,8 +70,6 @@
                                             <% } %>
                         </div>
                     </div>
-
-                    <!-- Order Summary Section -->
                     <div id="cart-summery">
                         <div class="bg-white rounded-lg shadow-md p-6">
                             <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
@@ -102,7 +94,6 @@
             </div>
             <%- include('../partials/user/footer.ejs') %>
                 <script>
-                    // Update Item Quantity
                     let isUpdating = false;
 
                     function updateQuantity(itemId, change, buttonElement, quantity) {
@@ -122,7 +113,7 @@
                             isUpdating = false;
                             return;
                         }
-                        if (newQuantity > quantity) {
+                        if (newQuantity > 5) {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Oops...',
@@ -175,8 +166,6 @@
                                     const itemElement = document.getElementById(`cart-item-${itemId}`);
 
                                     if (itemElement) itemElement.remove();
-
-                                    // Update cart totals dynamically
                                     document.getElementById('cart-total').textContent = `₹${data.newTotal.toFixed(2)}`;
                                     document.getElementById('cart-subtotal').textContent = `₹${data.newSubtotal.toFixed(2)}`;
                                 } else {

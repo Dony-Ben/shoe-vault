@@ -1,7 +1,7 @@
 const Category = require("../models/category");
 const Offer = require("../models/offers");
 const Product = require("../models/product");
-
+const Wishlist = require("../models/wishlist");
 const pageNotFound = async (req, res) => {
     try {
         res.status(404).render("user/page-404")
@@ -13,7 +13,6 @@ const pageNotFound = async (req, res) => {
 const loadhome = async (req, res) => {
     try {
         let productData = await Product.find({ isblocked: false })
-
         res.render('user/home', { products: productData });
     } catch (error) {
         console.error(error);
@@ -26,7 +25,6 @@ const loadhomepage = async (req, res) => {
         if (req.session.user && req.session.user.id && req.session.user.email) {
             return res.redirect("/home");
         }
-
         let productData = await Product.find({ isblocked: false });
         res.render("user/landing", { products: productData });
 
@@ -66,15 +64,17 @@ const loadOTP = async (req, res) => {
 
 const shop = async (req, res) => {
     try {
+        const userId = req.session.user?.id;
         const currentPage = parseInt(req.query.page) || 1;
         const productsPerPage = 12;
-        const productData = await Product.find({ isblocked: false })
+        const productData = await Product.find({ isblocked: false }).populate("category")
             .skip((currentPage - 1) * productsPerPage)
             .limit(productsPerPage)
             .populate('brands');
         const totalProducts = await Product.countDocuments({ isblocked: false });
         const totalPages = Math.ceil(totalProducts / productsPerPage);
-        const categories = await Category.find({});
+
+        const categories = await Category.find({isListed:true});
         const offers = await Offer.find({ isActive: true }).populate("categories").populate("products");
         productData.forEach((product) => {
             const productCategoryIds = Array.isArray(product.categories)
@@ -86,7 +86,7 @@ const shop = async (req, res) => {
                     return offer.products.some(p => p._id.toString() === product._id.toString());
                 } else if (offer.offerType === 'category') {
                     return offer.categories.some(c => productCategoryIds.includes(c._id.toString()));
-                }  
+                }
                 return false;
             });
 
@@ -95,7 +95,15 @@ const shop = async (req, res) => {
                 product.offer = `${matchingOffer.discountValue}${discountSymbol} OFF`;
             }
         });
-        res.render("user/shop", { products: productData, totalPages, currentPage, categories, offers });
+
+           let wishlistProductIds = [];
+        if (userId) {
+            const wishlist = await Wishlist.findOne({ userId });
+            if (wishlist) {
+                wishlistProductIds = wishlist.product.map(item => item.productId.toString());
+            }
+        }
+        res.render("user/shop", { products: productData, totalPages, currentPage, categories, offers, wishlistProductIds });
     } catch (error) {
         console.error("Error while rendering shop page:", error);
         res.status(500).send("An error occurred while loading the page.");
@@ -111,7 +119,6 @@ const about = async (req, res) => {
     }
 };
 
-
 module.exports = {
     loadhomepage,
     loadhome,
@@ -120,6 +127,5 @@ module.exports = {
     loadregister,
     loadOTP,
     shop,
-    // category,
     about
 }
