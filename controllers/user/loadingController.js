@@ -1,7 +1,9 @@
-const Category = require("../models/category");
-const Offer = require("../models/offers");
-const Product = require("../models/product");
-const Wishlist = require("../models/wishlist");
+const Category = require("../../models/category");
+const Offer = require("../../models/offers");
+const Product = require("../../models/product");
+const Wishlist = require("../../models/wishlist");
+const User = require("../../models/User");
+
 const pageNotFound = async (req, res) => {
     try {
         res.status(404).render("user/page-404")
@@ -12,21 +14,22 @@ const pageNotFound = async (req, res) => {
 
 const loadhome = async (req, res) => {
     try {
+        let user = null;
+        if (req.session.user && req.session.user.id) {
+            user = await User.findById(req.session.user.id).lean();
+        } 
         let productData = await Product.find({ isblocked: false })
-        res.render('user/home', { products: productData });
+        res.render('user/home', { products: productData, user });
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
     }
 };
 
-const loadhomepage = async (req, res) => {
+const landingpage = async (req, res) => {
     try {
-        if (req.session.user && req.session.user.id && req.session.user.email) {
-            return res.redirect("/home");
-        }
         let productData = await Product.find({ isblocked: false });
-        res.render("user/landing", { products: productData });
+        res.render("user/landing", { products: productData, });
 
     } catch (error) {
         console.error("Error loading home page:", error);
@@ -65,6 +68,10 @@ const loadOTP = async (req, res) => {
 const shop = async (req, res) => {
     try {
         const userId = req.session.user?.id;
+        let user = null;
+        if (req.session.user && req.session.user.id) {
+            user = await User.findById(req.session.user.id).lean();
+        }
         const currentPage = parseInt(req.query.page) || 1;
         const productsPerPage = 12;
         const productData = await Product.find({ isblocked: false }).populate("category")
@@ -74,7 +81,7 @@ const shop = async (req, res) => {
         const totalProducts = await Product.countDocuments({ isblocked: false });
         const totalPages = Math.ceil(totalProducts / productsPerPage);
 
-        const categories = await Category.find({isListed:true});
+        const categories = await Category.find({ isListed: true });
         const offers = await Offer.find({ isActive: true }).populate("categories").populate("products");
         productData.forEach((product) => {
             const productCategoryIds = Array.isArray(product.categories)
@@ -96,14 +103,14 @@ const shop = async (req, res) => {
             }
         });
 
-           let wishlistProductIds = [];
+        let wishlistProductIds = [];
         if (userId) {
             const wishlist = await Wishlist.findOne({ userId });
             if (wishlist) {
                 wishlistProductIds = wishlist.product.map(item => item.productId.toString());
             }
         }
-        res.render("user/shop", { products: productData, totalPages, currentPage, categories, offers, wishlistProductIds });
+        res.render("user/shop", { products: productData, totalPages, currentPage, categories, offers, wishlistProductIds, user });
     } catch (error) {
         console.error("Error while rendering shop page:", error);
         res.status(500).send("An error occurred while loading the page.");
@@ -120,7 +127,7 @@ const about = async (req, res) => {
 };
 
 module.exports = {
-    loadhomepage,
+    landingpage,
     loadhome,
     pageNotFound,
     loadlogin,

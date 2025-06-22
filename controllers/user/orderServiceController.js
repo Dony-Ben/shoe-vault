@@ -1,5 +1,5 @@
-const Orders = require("../models/order");
-const Product = require('../models/product')
+const Orders = require("../../models/order");
+const Product = require('../../models/product')
 const crypto = require("crypto");
 // const Wallet = require("../models/wallet.js");
 

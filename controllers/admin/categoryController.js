@@ -1,6 +1,6 @@
 const { memoryStorage } = require("multer");
-const Category = require("../models/category");
-const Product = require("../models/product");
+const Category = require("../../models/category");
+const product = require("../../models/product");
 
 const categoryInfo = async (req, res) => {
     try {
@@ -31,9 +31,6 @@ const categoryInfo = async (req, res) => {
 
 const addCategory = async (req, res) => {
     const { name, description } = req.body;
-    console.log("category info",name, description);
-    
-
     try {
         const existingCategory = await Category.findOne({ name });
         if (existingCategory) {
@@ -133,10 +130,8 @@ const getEdiCategory = async (req, res) => {
         const category = await Category.findById({ _id: id });
 
         if (!category) {
-            console.error(`Category with ID ${id} not found.`);
             return res.redirect('/pageError');
         }
-
         res.render('admin/edit-category', { category });
     } catch (error) {
         console.error("Error in getEditCategory:", error.message);

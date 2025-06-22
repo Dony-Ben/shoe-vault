@@ -1,0 +1,59 @@
+<select id="chartFilter" onchange="updateChart()">
+  <option value="monthly">Monthly</option>
+  <option value="yearly">Yearly</option>
+</select>
+
+<canvas id="productChart"></canvas>
+<canvas id="categoryChart"></canvas>
+<canvas id="brandChart"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  let productChart, categoryChart, brandChart;
+
+  async function updateChart() {
+    const filter = document.getElementById("chartFilter").value;
+
+    const res = await fetch(`/admin/dashboard/charts?filter=${filter}`);
+    const { topProducts, topCategories, topBrands } = await res.json();
+
+    const productLabels = topProducts.map(p => p.name);
+    const productData = topProducts.map(p => p.totalSold);
+
+    const categoryLabels = topCategories.map(c => c.name);
+    const categoryData = topCategories.map(c => c.totalSold);
+
+    const brandLabels = topBrands.map(b => b._id || 'Unknown');
+    const brandData = topBrands.map(b => b.totalSold);
+
+    if (productChart) productChart.destroy();
+    if (categoryChart) categoryChart.destroy();
+    if (brandChart) brandChart.destroy();
+
+    productChart = new Chart(document.getElementById("productChart"), {
+      type: "bar",
+      data: {
+        labels: productLabels,
+        datasets: [{ label: "Top Products", data: productData, backgroundColor: "rgba(75,192,192,0.6)" }]
+      }
+    });
+
+    categoryChart = new Chart(document.getElementById("categoryChart"), {
+      type: "bar",
+      data: {
+        labels: categoryLabels,
+        datasets: [{ label: "Top Categories", data: categoryData, backgroundColor: "rgba(153,102,255,0.6)" }]
+      }
+    });
+
+    brandChart = new Chart(document.getElementById("brandChart"), {
+      type: "bar",
+      data: {
+        labels: brandLabels,
+        datasets: [{ label: "Top Brands", data: brandData, backgroundColor: "rgba(255,159,64,0.6)" }]
+      }
+    });
+  }
+
+  updateChart(); // Initial load
+</script>

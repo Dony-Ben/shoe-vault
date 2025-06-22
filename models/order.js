@@ -20,7 +20,10 @@ const ordersSchema = new mongoose.Schema({
             required: true,
             default: 1
         },
-
+         cancelled: {
+        type: Boolean,
+        default: false
+    }
     }],
     deliveryAddress: {
         name: { type: String, required: true },

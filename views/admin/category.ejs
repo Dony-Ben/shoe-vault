@@ -110,8 +110,6 @@
                   <tr>
                     <th>Name</th>
                     <th>Description</th>
-                    <th>Offer Price</th>
-                    <th>Offer</th>
                     <th>Status</th>
                     <th>Actions</th>
                   </tr>
@@ -122,14 +120,6 @@
                       <tr>
                         <td><%= category.name %></td>
                         <td><%= category.description %></td>
-                        <td><%= category.categoryOffer ? `${category.categoryOffer}%` : '0%' %></td>
-                        <td>
-                          <% if (category.categoryOffer === 0) { %>
-                            <button class="btn btn-sm btn-outline-info" onclick="addOffer('<%= category._id %>')">Add Offer</button>
-                          <% } else { %>
-                            <button class="btn btn-sm btn-outline-danger" onclick="removeOffer('<%= category._id %>')">Remove Offer</button>
-                          <% } %>
-                        </td>
                         <td>
                           <span class="badge <%= category.isListed ? 'bg-success' : 'bg-danger' %>">
                             <%= category.isListed ? 'Listed' : 'Unlisted' %>

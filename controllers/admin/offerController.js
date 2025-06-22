@@ -1,6 +1,6 @@
-const Category = require("../models/category.js");
-const Offer = require("../models/offers.js");
-const Product = require("../models/product.js");
+const Category = require("../../models/category.js");
+const Offer = require("../../models/offers.js");
+const Product = require("../../models/product.js");
 
 const GetOfferpage = async (req, res) => {
     console.log("enter into get offer page")

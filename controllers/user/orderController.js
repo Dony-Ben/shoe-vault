@@ -1,10 +1,10 @@
-const Address = require("../models/address.js");
-const Cart = require("../models/cart");
-const Orders = require("../models/order");
-const Coupon = require("../models/coupon.js");
-const Wallet = require("../models/wallet.js");
-const razorpay = require("../config/razorpay.js");
-const { createOrder, verifyRazorpayPayment } = require('../controllers/orderServiceController.js');
+const Address = require("../../models/address.js");
+const Cart = require("../../models/cart.js");
+const Orders = require("../../models/order.js");
+const Coupon = require("../../models/coupon.js");
+const Wallet = require("../../models/wallet.js");
+const razorpay = require("../../config/razorpay.js");
+const { createOrder, verifyRazorpayPayment } = require('../user/orderServiceController.js');
 
 const loadcheckout = async (req, res) => {
     try {
@@ -70,11 +70,11 @@ const ordersuccess = async (req, res) => {
 const getOrders = async (req, res) => {
     try {
         const userId = req.session.user.id;
-        const page = parseInt(req.query.page)||1;
+        const page = parseInt(req.query.page) || 1;
         const limit = 3;
-        const skip = (page-1)* limit;
-        const totalOrders = await Orders.countDocuments({userId});
-        const totalPages = Math.ceil(totalOrders/limit);
+        const skip = (page - 1) * limit;
+        const totalOrders = await Orders.countDocuments({ userId });
+        const totalPages = Math.ceil(totalOrders / limit);
 
         const orders = await Orders.find({ userId })
             .populate({
@@ -87,14 +87,17 @@ const getOrders = async (req, res) => {
         const safeOrders = orders.map(order => ({
             ...order,
             items: (order.orderedItem || []).map(item => ({
-                productName: item.productId?.productName || null,
+              itemId: item._id, // Important for individual cancellation
+                productId: item.productId?._id,
+                productName: item.productId?.productName || 'N/A',
                 price: item.productId?.salePrice || 0,
                 productImage: item.productId?.productImage?.[0] || '/placeholder.jpg',
-                quantity: item.quantity || 1
+                quantity: item.quantity || 1,
+                cancelled: item.cancelled || false
             }))
         }));
 
-        res.render("user/userorders", { orders: safeOrders,currentPage:page,totalPages, message: null });
+        res.render("user/userorders", { orders: safeOrders, currentPage: page, totalPages, message: null });
     } catch (error) {
         console.error("An error occurred while fetching user orders:", error);
         res.status(500).send("Error fetching user orders");
@@ -102,26 +105,42 @@ const getOrders = async (req, res) => {
 };
 
 const OrderCancel = async (req, res) => {
+    console.log("Cancelling item in order");
     try {
-        const orderId = req.params.orderId;
-
+        const { orderId, productId } = req.params;
+    console.log("Cancelling item:", orderId, productId);
         const order = await Orders.findById(orderId);
-
         if (!order) {
-            return res.render("user/userorders", { message: "order not found" });
+          return res.render("user/userorders", { message: "Order not found" });
         }
 
-        if (order.orderStatus === 'Cancelled') {
-            return res.render("user/userorders", { message: "Order already cancelled" });
+        // Find the specific item in the order
+        const item = order.orderedItem.find(
+            item => item.productId.toString() === productId
+        );
+
+        if (!item) {
+            return res.render("user/userorders", { message: "Product not found in order" });
         }
 
-        order.orderStatus = 'Cancelled';
+        // Add 'cancelled' field to schema or handle logically here
+        if (item.cancelled) {
+            return res.render("user/userorders", { message: "Item already cancelled" });
+        }
+
+        item.cancelled = true; // You must make sure `cancelled: Boolean` is added in the schema under orderedItem
+
+        // If all items cancelled, update full order status
+        const allCancelled = order.orderedItem.every(i => i.cancelled);
+        if (allCancelled) {
+            order.orderStatus = 'Cancelled';
+        }
+
         await order.save();
-
         res.redirect('/orders');
     } catch (error) {
-        console.error("Error cancelling order:", error);
-        res.status(500).send("Error cancelling order");
+        console.error("Error cancelling item:", error);
+        res.status(500).send("Error cancelling item");
     }
 };
 

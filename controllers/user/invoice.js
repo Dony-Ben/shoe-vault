@@ -1,4 +1,4 @@
-const Order = require("../models/order.js");
+const Order = require("../../models/order.js");
 const PDFDocument = require('pdfkit');
 
 const downloadInvoice = async (req, res) => {

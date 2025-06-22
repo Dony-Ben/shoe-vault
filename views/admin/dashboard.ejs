@@ -1,174 +1,619 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Admin Dashboard - Shoe Vault</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --light-bg: #f8f9fa;
+            --dark-bg: #2c3e50;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .sidebar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            min-height: 100vh;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 12px 20px;
+            margin: 5px 0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .main-content {
+            padding: 20px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 20px;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .stats-card.success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .stats-card.warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .stats-card.info {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .filter-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .btn-filter {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-filter:hover,
+        .btn-filter.active {
+            background: var(--primary-color);
+            transform: scale(1.05);
+        }
+
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table thead th {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+
+        .progress {
+            height: 8px;
+            border-radius: 10px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 20px 0;
+        }
+
+        .top-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .top-item:hover {
+            background: rgba(52, 152, 219, 0.2);
+            transform: translateX(5px);
+        }
+
+        .rank-badge {
+            background: var(--accent-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .rank-badge.top3 {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #333;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .recent-order-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+        }
+
+        .recent-order-item:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+
+        .recent-order-item:last-child {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .status-pending { background-color: #fff3cd; color: #856404; }
+        .status-shipped { background-color: #d1ecf1; color: #0c5460; }
+        .status-delivered { background-color: #d4edda; color: #155724; }
+        .status-completed { background-color: #d4edda; color: #155724; }
+    </style>
 </head>
 <%- include('../partials/admin/leyout.ejs') %>
-<body class="bg-gray-100 font-sans">
-    <div class="flex h-screen bg-gray-100">
 
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Top Navbar -->
-            <header class="flex items-center justify-between px-6 py-4 bg-white border-b-4 border-indigo-600">
-                <div class="flex items-center">
-                    <button class="text-gray-500 focus:outline-none sm:hidden">
-                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M4 6H20M4 12H20M4 18H11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
-                </div>
-                
-                <div class="flex items-center">
-                    <div class="relative">
-                        <button class="relative block w-8 h-8 overflow-hidden rounded-full shadow focus:outline-none">
-                            <img class="object-cover w-full h-full" src="/image/profile.jpg" alt="Your avatar">
-                        </button>
+    <body>
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Main Content -->
+                <div class="col-md-9 col-lg-10 main-content">
+                    <!-- Header -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2 class="mb-1">Admin Dashboard</h2>
+                            <p class="text-muted">Welcome back, Admin! Here's what's happening today.</p>
+                        </div>
+                        <div class="user-profile">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold">Admin User</div>
+                                <small class="text-muted">Administrator</small>
+                            </div>
+                        </div>
                     </div>
-                    <span class="ml-4 font-medium text-gray-800">karimpara</span>
-                    <button class="ml-4 text-sm font-medium text-gray-800 focus:outline-none hover:text-red-600" onclick="window.location.href='/admin/logout'">Logout</button>
-                </div>
-            </header>
 
-            <!-- Dashboard Content -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
-                <div class="container mx-auto px-6 py-8">
-                    <h3 class="text-3xl font-medium text-gray-700">Dashboard</h3>
-                    
-                    <div class="mt-8">
-                        <div class="flex flex-wrap -mx-6">
-                            <div class="w-full px-6 sm:w-1/2 xl:w-1/4">
-                                <div class="flex items-center px-5 py-6 bg-white rounded-md shadow-sm">
-                                    <div class="p-3 bg-indigo-600 bg-opacity-75 rounded-full">
-                                        <svg class="w-8 h-8 text-white" viewBox="0 0 28 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M18.2 9.08889C18.2 11.5373 16.3196 13.5222 14 13.5222C11.6804 13.5222 9.79999 11.5373 9.79999 9.08889C9.79999 6.64043 11.6804 4.65556 14 4.65556C16.3196 4.65556 18.2 6.64043 18.2 9.08889Z" fill="currentColor"/>
-                                            <path d="M25.2 12.0444C25.2 13.6768 23.9464 15 22.4 15C20.8536 15 19.6 13.6768 19.6 12.0444C19.6 10.4121 20.8536 9.08889 22.4 9.08889C23.9464 9.08889 25.2 10.4121 25.2 12.0444Z" fill="currentColor"/>
-                                            <path d="M19.6 22.3889C19.6 19.1243 17.0927 16.4778 14 16.4778C10.9072 16.4778 8.39999 19.1243 8.39999 22.3889V26.8222H19.6V22.3889Z" fill="currentColor"/>
-                                            <path d="M8.39999 12.0444C8.39999 13.6768 7.14639 15 5.59999 15C4.05359 15 2.79999 13.6768 2.79999 12.0444C2.79999 10.4121 4.05359 9.08889 5.59999 9.08889C7.14639 9.08889 8.39999 10.4121 8.39999 12.0444Z" fill="currentColor"/>
-                                            <path d="M22.4 26.8222V22.3889C22.4 20.8312 22.0195 19.3671 21.351 18.0949C21.6863 18.0039 22.0378 17.9556 22.4 17.9556C24.7197 17.9556 26.6 19.9404 26.6 22.3889V26.8222H22.4Z" fill="currentColor"/>
-                                            <path d="M6.64896 18.0949C5.98058 19.3671 5.59999 20.8312 5.59999 22.3889V26.8222H1.39999V22.3889C1.39999 19.9404 3.2804 17.9556 5.59999 17.9556C5.96219 17.9556 6.31367 18.0039 6.64896 18.0949Z" fill="currentColor"/>
-                                        </svg>
+                    <!-- Stats Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="stats-card">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h3 class="mb-0">₹<%= totalRevenue.toLocaleString() %></h3>
+                                        <p class="mb-0">Total Revenue</p>
                                     </div>
-
-                                    <div class="mx-5">
-                                        <h4 class="text-2xl font-semibold text-gray-700"><%= totalUsers %></h4>
-                                        <div class="text-gray-500">Total Users</div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-dollar-sign fa-2x"></i>
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="w-full px-6 mt-6 sm:w-1/2 xl:w-1/4 sm:mt-0">
-                                <div class="flex items-center px-5 py-6 bg-white rounded-md shadow-sm">
-                                    <div class="p-3 bg-green-600 bg-opacity-75 rounded-full">
-                                        <svg class="w-8 h-8 text-white" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M4.19999 1.4C3.4268 1.4 2.79999 2.02681 2.79999 2.8C2.79999 3.57319 3.4268 4.2 4.19999 4.2H5.9069L6.33468 5.91114C6.33917 5.93092 6.34409 5.95055 6.34941 5.97001L8.24953 13.5705L6.99992 14.8201C5.23602 16.584 6.48528 19.6 8.97981 19.6H21C21.7731 19.6 22.4 18.9732 22.4 18.2C22.4 17.4268 21.7731 16.8 21 16.8H8.97983L10.3798 15.4H19.6C20.1303 15.4 20.615 15.1004 20.8521 14.6261L25.0521 6.22609C25.2691 5.79212 25.246 5.27673 24.991 4.86398C24.7357 4.45123 24.2852 4.2 23.8 4.2H8.79308L8.35818 2.46044C8.20238 1.83722 7.64241 1.4 6.99999 1.4H4.19999Z" fill="currentColor"/>
-                                            <path d="M22.4 23.1C22.4 24.2598 21.4598 25.2 20.3 25.2C19.1403 25.2 18.2 24.2598 18.2 23.1C18.2 21.9402 19.1403 21 20.3 21C21.4598 21 22.4 21.9402 22.4 23.1Z" fill="currentColor"/>
-                                            <path d="M9.1 25.2C10.2598 25.2 11.2 24.2598 11.2 23.1C11.2 21.9402 10.2598 21 9.1 21C7.9402 21 7 21.9402 7 23.1C7 24.2598 7.9402 25.2 9.1 25.2Z" fill="currentColor"/>
-                                        </svg>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-card success">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h3 class="mb-0"><%= totalOrders.toLocaleString() %></h3>
+                                        <p class="mb-0">Total Orders</p>
                                     </div>
-
-                                    <div class="mx-5">
-                                        <h4 class="text-2xl font-semibold text-gray-700">$30,000</h4>
-                                        <div class="text-gray-500">Total Revenue</div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-shopping-bag fa-2x"></i>
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="w-full px-6 mt-6 sm:w-1/2 xl:w-1/4 xl:mt-0">
-                                <div class="flex items-center px-5 py-6 bg-white rounded-md shadow-sm">
-                                    <div class="p-3 bg-pink-600 bg-opacity-75 rounded-full">
-                                        <svg class="w-8 h-8 text-white" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M6.99998 11.2H21L22.4 23.8H5.59998L6.99998 11.2Z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                                            <path d="M9.79999 8.4C9.79999 6.08041 11.6804 4.2 14 4.2C16.3196 4.2 18.2 6.08041 18.2 8.4V12.6C18.2 14.9197 16.3196 16.8 14 16.8C11.6804 16.8 9.79999 14.9197 9.79999 12.6V8.4Z" fill="currentColor"/>
-                                        </svg>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-card warning">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h3 class="mb-0"><%= totalProducts.toLocaleString() %></h3>
+                                        <p class="mb-0">Products</p>
                                     </div>
-
-                                    <div class="mx-5">
-                                        <h4 class="text-2xl font-semibold text-gray-700">15</h4>
-                                        <div class="text-gray-500">Active Projects</div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-box fa-2x"></i>
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="w-full px-6 mt-6 sm:w-1/2 xl:w-1/4 xl:mt-0">
-                                <div class="flex items-center px-5 py-6 bg-white rounded-md shadow-sm">
-                                    <div class="p-3 bg-blue-600 bg-opacity-75 rounded-full">
-                                        <svg class="w-8 h-8 text-white" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M4.19999 1.4C3.4268 1.4 2.79999 2.02681 2.79999 2.8C2.79999 3.57319 3.4268 4.2 4.19999 4.2H5.9069L6.33468 5.91114C6.33917 5.93092 6.34409 5.95055 6.34941 5.97001L8.24953 13.5705L6.99992 14.8201C5.23602 16.584 6.48528 19.6 8.97981 19.6H21C21.7731 19.6 22.4 18.9732 22.4 18.2C22.4 17.4268 21.7731 16.8 21 16.8H8.97983L10.3798 15.4H19.6C20.1303 15.4 20.615 15.1004 20.8521 14.6261L25.0521 6.22609C25.2691 5.79212 25.246 5.27673 24.991 4.86398C24.7357 4.45123 24.2852 4.2 23.8 4.2H8.79308L8.35818 2.46044C8.20238 1.83722 7.64241 1.4 6.99999 1.4H4.19999Z" fill="currentColor"/>
-                                        </svg>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-card info">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h3 class="mb-0"><%= totalCustomers.toLocaleString() %></h3>
+                                        <p class="mb-0">Customers</p>
                                     </div>
-
-                                    <div class="mx-5">
-                                        <h4 class="text-2xl font-semibold text-gray-700">8.5%</h4>
-                                        <div class="text-gray-500">Conversion Rate</div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-users fa-2x"></i>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-8">
-                        <div class="flex flex-col mt-8">
-                            <div class="py-2 -my-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-                                <div class="inline-block min-w-full overflow-hidden align-middle border-b border-gray-200 shadow sm:rounded-lg">
-                                    <table class="min-w-full">
-                                        <thead>
-                                            <tr>
-                                                <th class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">Name</th>
-                                                <th class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">Email</th>
-                                                <th class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">Status</th>
-                                                <th class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">Role</th>
-                                                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50"></th>
-                                            </tr>
-                                        </thead>
-                        
-                                        <tbody class="bg-white">
-                                            <tr>
-                                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                                    <div class="flex items-center">
-                                                        <div class="flex-shrink-0 w-10 h-10">
-                                                            <img class="w-10 h-10 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="" />
+                    <!-- Filter Section -->
+                    <div class="filter-section">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">Sales Analytics</h5>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-filter <%= filter === 'yearly' ? 'active' : '' %>" data-period="yearly">Yearly</button>
+                                <button type="button" class="btn btn-filter <%= filter === 'monthly' ? 'active' : '' %>" data-period="monthly">Monthly</button>
+                                <button type="button" class="btn btn-filter <%= filter === 'weekly' ? 'active' : '' %>" data-period="weekly">Weekly</button>
+                                <button type="button" class="btn btn-filter <%= filter === 'daily' ? 'active' : '' %>" data-period="daily">Daily</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="salesChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Analytics Grid -->
+                    <div class="row">
+                        <!-- Best Selling Products -->
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-star me-2"></i>
+                                        Best Selling Products
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="topProducts">
+                                        <% if (topProducts && topProducts.length > 0) { %>
+                                            <% topProducts.forEach(function(item, index) { %>
+                                                <div class="top-item">
+                                                    <div class="rank-badge <%= index < 3 ? 'top3' : '' %>">
+                                                        <%= index + 1 %>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <div class="fw-bold">
+                                                            <%= item.product.productName %>
                                                         </div>
-                        
-                                                        <div class="ml-4">
-                                                            <div class="text-sm font-medium leading-5 text-gray-900">John Doe</div>
+                                                        <small class="text-muted">
+                                                            <%= item.totalSold %> units sold
+                                                        </small>
+                                                    </div>
+                                                    <div class="text-end">
+                                                        <div class="fw-bold">
+                                                            ₹<%= item.totalRevenue ? item.totalRevenue.toLocaleString() : '0' %>
                                                         </div>
                                                     </div>
-                                                </td>
-                        
-                                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                                    <div class="text-sm leading-5 text-gray-900">john@example.com</div>
-                                                </td>
-                        
-                                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                                    <span class="inline-flex px-2 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">Active</span>
-                                                </td>
-                        
-                                                <td class="px-6 py-4 text-sm leading-5 text-gray-500 whitespace-no-wrap border-b border-gray-200">Admin</td>
-                        
-                                                <td class="px-6 py-4 text-sm font-medium leading-5 text-right whitespace-no-wrap border-b border-gray-200">
-                                                    <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>
-                                                </td>
-                                            </tr>
-                                            <!-- More rows... -->
-                                        </tbody>
-                                    </table>
+                                                </div>
+                                            <% }) %>
+                                        <% } else { %>
+                                            <p class="text-muted text-center">No products sold yet</p>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Best Selling Categories -->
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-tags me-2"></i>
+                                        Product Categories
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="topCategories">
+                                        <% if (topCategories && topCategories.length > 0) { %>
+                                            <% const maxCount = topCategories[0].count; %>
+                                            <% topCategories.forEach(function(item, index) { %>
+                                                <div class="top-item">
+                                                    <div class="rank-badge <%= index < 3 ? 'top3' : '' %>">
+                                                        <%= index + 1 %>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <div class="fw-bold">
+                                                            <%= item.category.name %>
+                                                        </div>
+                                                        <div class="progress mt-1">
+                                                            <div class="progress-bar bg-success" 
+                                                             <%= Math.round((item.count / maxCount) * 100) %>%">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-end">
+                                                        <div class="fw-bold">
+                                                            <%= item.count %>
+                                                        </div>
+                                                        <small class="text-muted">
+                                                            <%= Math.round((item.count / maxCount) * 100) %>%
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            <% }) %>
+                                        <% } else { %>
+                                            <p class="text-muted text-center">No categories available</p>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Best Selling Brands -->
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-copyright me-2"></i>
+                                        Product Brands
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="topBrands">
+                                        <% if (topBrands && topBrands.length > 0) { %>
+                                            <% const maxBrandCount = topBrands[0].count; %>
+                                            <% topBrands.forEach(function(item, index) { %>
+                                                <div class="top-item">
+                                                    <div class="rank-badge <%= index < 3 ? 'top3' : '' %>">
+                                                        <%= index + 1 %>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <div class="fw-bold">
+                                                            <%= item.brand.brandName %>
+                                                        </div>
+                                                        <div class="progress mt-1">
+                                                            <div class="progress-bar bg-info" 
+                                                                <%= Math.round((item.count / maxBrandCount) * 100) %>%">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-end">
+                                                        <div class="fw-bold">
+                                                            <%= item.count %>
+                                                        </div>
+                                                        <small class="text-muted">
+                                                            <%= Math.round((item.count / maxBrandCount) * 100) %>%
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            <% }) %>
+                                        <% } else { %>
+                                            <p class="text-muted text-center">No brands available</p>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Orders -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-clock me-2"></i>
+                                        Recent Orders
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <% if (recentOrders && recentOrders.length > 0) { %>
+                                        <% recentOrders.forEach(function(order) { %>
+                                            <div class="recent-order-item">
+                                                <div class="row align-items-center">
+                                                    <div class="col-md-3">
+                                                        <div class="fw-bold">Order #<%= order._id.toString().slice(-6) %></div>
+                                                        <small class="text-muted">
+                                                            <%= order.userId ? order.userId.name : 'Guest' %>
+                                                        </small>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="fw-bold">₹<%= order.finalAmount.toLocaleString() %></div>
+                                                        <small class="text-muted">
+                                                            <%= order.orderedItem ? order.orderedItem.length : 0 %> items
+                                                        </small>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <span class="status-badge status-<%= order.orderStatus.toLowerCase() %>">
+                                                            <%= order.orderStatus %>
+                                                        </span>
+                                                    </div>
+                                                    <div class="col-md-3 text-end">
+                                                        <small class="text-muted">
+                                                            <%= new Date(order.orderDate).toLocaleDateString() %>
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <% }) %>
+                                    <% } else { %>
+                                        <p class="text-muted text-center">No recent orders</p>
+                                    <% } %>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </main>
+            </div>
         </div>
-    </div>
 
-    <script>
-    </script>
-</body>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            // Chart data from backend
+            const chartData =  `<%- JSON.stringify(chartData) %>`;
+            let salesChart;
+
+            // Initialize chart
+            function initChart() {
+                const ctx = document.getElementById('salesChart').getContext('2d');
+
+                if (salesChart) {
+                    salesChart.destroy();
+                }
+
+                salesChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: chartData.labels,
+                        datasets: [{
+                            label: 'Sales Revenue (₹)',
+                            data: chartData.sales,
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#3498db',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 6
+                        }, {
+                            label: 'Number of Orders',
+                            data: chartData.orders,
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.4,
+                            pointBackgroundColor: '#e74c3c',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 6,
+                            yAxisID: 'y1'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                grid: {
+                                    color: 'rgba(0,0,0,0.1)'
+                                },
+                                ticks: {
+                                    callback: function (value) {
+                                        return '₹' + value.toLocaleString();
+                                    }
+                                }
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                grid: {
+                                    drawOnChartArea: false,
+                                },
+                                ticks: {
+                                    callback: function (value) {
+                                        return value.toLocaleString();
+                                    }
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    color: 'rgba(0,0,0,0.1)'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Filter button functionality
+            document.querySelectorAll('.btn-filter').forEach(button => {
+                button.addEventListener('click', function () {
+                    document.querySelectorAll('.btn-filter').forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    const period = this.getAttribute('data-period');
+                    
+                    // Reload page with new filter
+                    window.location.href = `/admin/dashboard?filter=${period}`;
+                });
+            });
+
+            // Initialize chart when page loads
+            document.addEventListener('DOMContentLoaded', function () {
+                initChart();
+            });
+        </script>
+    </body>
+
 </html>
-

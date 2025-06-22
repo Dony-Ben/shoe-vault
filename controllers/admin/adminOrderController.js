@@ -1,12 +1,22 @@
-const Orders = require("../models/order");
-
+const Orders = require("../../models/order");
 const getOrderpage = async (req, res) => {
     try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = 3;
+        const skip = (page - 1) * limit;
+        const totalOrders = await Orders.countDocuments();
+        const totalPages = Math.ceil(totalOrders / limit);
         const orders = await Orders.find()
             .populate('userId', 'firstname lastname email')
             .populate('orderedItem.productId', 'name price')
-            .sort({ createdAt: -1 });
-        res.render('admin/ordermanage', { orders });
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .lean();
+        res.render('admin/ordermanage', {
+            orders, currentPage: page,
+            totalPages
+        });
     } catch (error) {
         console.log("An error occurred while fetching user orders:", error);
         res.status(500).send("An error occurred");
@@ -18,9 +28,9 @@ const updateOrderStatus = async (req, res) => {
 
     try {
         const updatedOrder = await Orders.findOneAndUpdate(
-            { _id: orderId }, 
-            { orderStatus: orderStatus }, 
-            { new: true } 
+            { _id: orderId },
+            { orderStatus: orderStatus },
+            { new: true }
         );
 
         if (updatedOrder) {
@@ -47,4 +57,7 @@ const updateOrderStatus = async (req, res) => {
 module.exports = {
     getOrderpage,
     updateOrderStatus,
+
+
 }
+

@@ -1,4 +1,4 @@
-const Brand = require("../models/Brands");
+const Brand = require("../../models/Brands");
 
 const getBrandpage = async (req, res) => {
     try {
@@ -10,7 +10,7 @@ const getBrandpage = async (req, res) => {
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
-
+ 
         const totalBrands = await Brand.countDocuments({});
         const totalPages = Math.ceil(totalBrands / limit);
 

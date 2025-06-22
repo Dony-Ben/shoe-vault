@@ -1,9 +1,9 @@
 const nodemailer = require('nodemailer');
-const User = require('../models/User');
+const User = require('../../models/User');
 const bcrypt = require("bcrypt");
 const env = require("dotenv").config();
 const crypto = require("crypto");
-const Address = require("../models/address")
+const Address = require("../../models/address")
 // OTP Generator
 function generateOTP() {
     const digits = "123456789";

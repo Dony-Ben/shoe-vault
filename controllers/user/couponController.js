@@ -1,5 +1,5 @@
-const Order = require("../models/order.js");
-const Coupon = require("../models/coupon.js");
+const Order = require("../../models/order.js");
+const Coupon = require("../../models/coupon.js");
 
 const couponValidation = async (req, res) => {
     try {
@@ -41,7 +41,7 @@ const couponValidation = async (req, res) => {
             success: true,
             discount,
             newTotal,
-            message: "Coupon apli ayiii."
+            message: "Coupon applied successfull."
         }); 
 
     } catch (error) {

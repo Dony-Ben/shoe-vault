@@ -1,24 +1,27 @@
 const express = require("express");
 const adminRouter = express.Router();
-const { loadlogin, loaddashboard, adminlogout, handleLogin } = require("../controllers/adminController");
-const { customerBlocked, customerInfo, customerUnblocked } = require("../controllers/adminUserController");
-const { categoryInfo, addCategory, addCategoryOffer, removeCategoryOffer, getEdiCategory, getListCategory, getUnlistCategory, editCategory } = require("../controllers/adminCategoryController");
-const { getAllProducts, getEditProduct, getProductAddpage, addProducts, blockProduct, editProduct, unblockProduct, deleteSingleImage } = require("../controllers/adminProductController");
-const { getBrandpage, addBrand, blockBrand, unBlockBrand, deleteBrand } = require("../controllers/brandController");
-const { getOrderpage,updateOrderStatus } = require("../controllers/adminOrderController");
+const { loaddashboard,getSalesChartData } = require("../controllers/admin/dashboard.js");
+const { loadlogin,adminlogout, handleLogin } = require("../controllers/admin/adminAuth.js");
+const { customerBlocked, customerInfo, customerUnblocked } = require("../controllers/admin/UserController.js");
+const { categoryInfo, addCategory, addCategoryOffer, removeCategoryOffer, getEdiCategory, getListCategory, getUnlistCategory, editCategory } = require("../controllers/admin/categoryController.js");
+const { getAllProducts, getEditProduct, getProductAddpage, addProducts, blockProduct, editProduct, unblockProduct, deleteSingleImage } = require("../controllers/admin/adminproductController.js");
+const { getBrandpage, addBrand, blockBrand, unBlockBrand, deleteBrand } = require("../controllers/admin/brandController");
+const { getOrderpage,updateOrderStatus } = require("../controllers/admin/adminOrderController.js");
 const { adminAuth } = require("../middleware/auth");
 const multer = require("multer");
 const storage = require("../helpers/multer");
 const uploads = multer({ storage: storage });
-const { loadcouponpage,createCoupon,deleteCoupon,editCoupon } = require("../controllers/admincouponController");
-const { addOffer, GetOfferpage } = require("../controllers/offerController");
-const {  Generatesales, getsalespage } = require("../controllers/sales.js");
+const { loadcouponpage,createCoupon,deleteCoupon,editCoupon } = require("../controllers/admin/admincouponController.js");
+const { addOffer, GetOfferpage } = require("../controllers/admin/offerController.js");
+const {  Generatesales, getsalespage } = require("../controllers/admin/sales.js");
 
+// dashboard.
+// adminRouter.get("/dashboard",loaddashboard);
+adminRouter.get('/dashboard',getSalesChartData);
 
 // loginmanagement
 adminRouter.get("/", loadlogin);
 adminRouter.post("/login", handleLogin);
-adminRouter.get("/dashboard",loaddashboard);
 adminRouter.get("/logout", adminlogout);
 
 

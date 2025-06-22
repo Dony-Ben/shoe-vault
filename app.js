@@ -9,7 +9,7 @@ const userRoutes = require("./routes/userRouter");
 const adminRouter = require("./routes/adminRouter");
 const { setupSSE } = require("./helpers/sse");
 const cloudinary = require("cloudinary").v2;
-const app = express();
+  const app = express();
 setupSSE(app);
 
 // Load Environment Variables
@@ -55,7 +55,6 @@ cloudinary.config({
 // Routes
 app.use("/", userRoutes);
 app.use("/admin", adminRouter);
-
 // Start the Server
 const PORT = process.env.PORT || 7000;
 app.listen(PORT, () => {

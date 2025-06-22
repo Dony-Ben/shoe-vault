@@ -1,4 +1,4 @@
-const Order = require('../models/order.js');
+const Order = require('../../models/order.js');
 
 const getDateRange = (period, customStart = null, customEnd = null) => {
     const now = new Date();
