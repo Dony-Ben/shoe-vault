@@ -57,7 +57,6 @@ userRouter.get("/home", userAuth, loadhome);
 userRouter.get("/logout", logout);
 userRouter.get("/pageNotFound", userAuth, pageNotFound);
 userRouter.get("/shop", userAuth, shop);
-// userRouter.get("/shop", category);
 userRouter.get("/about", about)
 
 // OTP Management

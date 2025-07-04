@@ -14,12 +14,9 @@ const pageNotFound = async (req, res) => {
 
 const loadhome = async (req, res) => {
     try {
-        let user = null;
-        if (req.session.user && req.session.user.id) {
-            user = await User.findById(req.session.user.id).lean();
-        } 
+
         let productData = await Product.find({ isblocked: false })
-        res.render('user/home', { products: productData, user });
+        res.render('user/home', { products: productData });
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -64,53 +61,80 @@ const loadOTP = async (req, res) => {
         console.log('error while loading otp page... ', error)
     }
 };
+const getPaginatedProducts = async (page, limit) => {
+    return Product.find({ isblocked: false })
+        .populate({ path: "category", match: { isListed: true } }).populate({ path: "brands", match: { isBlocked: false } })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean();
+};
+
+const getTotalPages = async (limit) => {
+    const totalProducts = await Product.countDocuments({ isblocked: false });
+    return Math.ceil(totalProducts / limit);
+};
+
+const getActiveOffers = async () => {
+    return Offer.find({ isActive: true })
+        .populate("categories")
+        .populate("products")
+        .lean();
+};
+
+const applyOffersToProducts = (products, offers) => {
+    return products.map(product => {
+        const productCategoryIds = Array.isArray(product.categories)
+            ? product.categories.map(c => c._id?.toString())
+            : [product.category?._id?.toString()];
+
+        const offer = offers.find(offer => {
+            if (offer.offerType === 'product') {
+                return offer.products.some(p => p._id.toString() === product._id.toString());
+            }
+            if (offer.offerType === 'category') {
+                return offer.categories.some(c => productCategoryIds.includes(c._id.toString()));
+            }
+            return false;
+        });
+
+        if (offer) {
+            const symbol = offer.discountType === 'percentage' ? '%' : '₹';
+            product.offer = `${offer.discountValue}${symbol} OFF`;
+        }
+
+        return product;
+    });
+};
+
+const getWishlistProductIds = async (userId) => {
+    const wishlist = await Wishlist.findOne({ userId });
+    return wishlist ? wishlist.product.map(p => p.productId.toString()) : [];
+};
 
 const shop = async (req, res) => {
     try {
         const userId = req.session.user?.id;
-        let user = null;
-        if (req.session.user && req.session.user.id) {
-            user = await User.findById(req.session.user.id).lean();
-        }
         const currentPage = parseInt(req.query.page) || 1;
         const productsPerPage = 12;
-        const productData = await Product.find({ isblocked: false }).populate("category")
-            .skip((currentPage - 1) * productsPerPage)
-            .limit(productsPerPage)
-            .populate('brands');
-        const totalProducts = await Product.countDocuments({ isblocked: false });
-        const totalPages = Math.ceil(totalProducts / productsPerPage);
 
-        const categories = await Category.find({ isListed: true });
-        const offers = await Offer.find({ isActive: true }).populate("categories").populate("products");
-        productData.forEach((product) => {
-            const productCategoryIds = Array.isArray(product.categories)
-                ? product.categories.map(c => c.toString())
-                : [product.categories?.toString()];
+        const [products, totalPages, categories, offers, wishlistProductIds] = await Promise.all([
+            getPaginatedProducts(currentPage, productsPerPage),
+            getTotalPages(productsPerPage),
+            Category.find({ isListed: true }),
+            getActiveOffers(),
+            userId ? getWishlistProductIds(userId) : [],
+        ]);
 
-            const matchingOffer = offers.find(offer => {
-                if (offer.offerType === 'product') {
-                    return offer.products.some(p => p._id.toString() === product._id.toString());
-                } else if (offer.offerType === 'category') {
-                    return offer.categories.some(c => productCategoryIds.includes(c._id.toString()));
-                }
-                return false;
-            });
+        const updatedProducts = applyOffersToProducts(products, offers);
 
-            if (matchingOffer) {
-                const discountSymbol = matchingOffer.discountType === 'percentage' ? '%' : '₹';
-                product.offer = `${matchingOffer.discountValue}${discountSymbol} OFF`;
-            }
+        res.render("user/shop", {
+            products: updatedProducts,
+            totalPages,
+            currentPage,
+            categories,
+            offers,
+            wishlistProductIds,
         });
-
-        let wishlistProductIds = [];
-        if (userId) {
-            const wishlist = await Wishlist.findOne({ userId });
-            if (wishlist) {
-                wishlistProductIds = wishlist.product.map(item => item.productId.toString());
-            }
-        }
-        res.render("user/shop", { products: productData, totalPages, currentPage, categories, offers, wishlistProductIds, user });
     } catch (error) {
         console.error("Error while rendering shop page:", error);
         res.status(500).send("An error occurred while loading the page.");

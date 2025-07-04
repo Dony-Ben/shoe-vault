@@ -20,10 +20,10 @@ const ordersSchema = new mongoose.Schema({
             required: true,
             default: 1
         },
-         cancelled: {
-        type: Boolean,
-        default: false
-    }
+        cancelled: {
+            type: Boolean,
+            default: false
+        }
     }],
     deliveryAddress: {
         name: { type: String, required: true },
@@ -35,8 +35,8 @@ const ordersSchema = new mongoose.Schema({
     },
     orderStatus: {
         type: String,
-        enum: ['Pending', 'Processing', 'Shipped', 'Completed', 'Cancelled'],
-        default: 'Pending'
+        enum: ['pending', 'processing', 'shipped', 'completed', 'cancelled'],
+        default: 'pending'
     },
     paymentStatus: {
         type: String,

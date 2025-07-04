@@ -4,18 +4,51 @@ const getOrderpage = async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = 3;
         const skip = (page - 1) * limit;
-        const totalOrders = await Orders.countDocuments();
+
+        // Filters
+        const { orderStatus, paymentStatus, dateFrom, dateTo, paymentMethod, sortBy } = req.query;
+        const query = {};
+
+        if (orderStatus) query.orderStatus = orderStatus;
+        if (paymentStatus) query.paymentStatus = paymentStatus;
+        if (paymentMethod) query.paymentMethod = paymentMethod;
+        if (dateFrom || dateTo) {
+            query.orderDate = {};
+            if (dateFrom) query.orderDate.$gte = new Date(dateFrom);
+            if (dateTo) {
+                const toDate = new Date(dateTo);
+                toDate.setHours(23, 59, 59, 999);
+                query.orderDate.$lte = toDate;
+            }
+        }
+
+        // Sorting
+        let sort = { createdAt: -1 }; // Default: newest
+        if (sortBy === 'highest') {
+            sort = { finalAmount: -1 };
+        }
+
+        const totalOrders = await Orders.countDocuments(query);
         const totalPages = Math.ceil(totalOrders / limit);
-        const orders = await Orders.find()
+
+        const orders = await Orders.find(query)
             .populate('userId', 'firstname lastname email')
             .populate('orderedItem.productId', 'name price')
-            .sort({ createdAt: -1 })
+            .sort(sort)
             .skip(skip)
             .limit(limit)
             .lean();
+
         res.render('admin/ordermanage', {
-            orders, currentPage: page,
-            totalPages
+            orders,
+            currentPage: page,
+            totalPages,
+            orderStatus,
+            paymentStatus,
+            dateFrom,
+            dateTo,
+            paymentMethod,
+            sortBy
         });
     } catch (error) {
         console.log("An error occurred while fetching user orders:", error);

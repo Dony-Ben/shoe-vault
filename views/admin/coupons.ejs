@@ -10,7 +10,7 @@
 
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Inter', Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f9f9f9;
@@ -117,6 +117,13 @@
             text-decoration: none;
             cursor: pointer;
         }
+
+        .error-message {
+            color: #d32f2f;
+            font-size: 0.95em;
+            margin-bottom: 5px;
+            min-height: 18px;
+        }
     </style>
 </head>
 <%- include('../partials/admin/leyout.ejs') %>
@@ -129,19 +136,23 @@
             <form id="addCouponForm" action="/admin/coupons/add" method="POST">
                 <h2>Add New Coupon</h2>
                 <label for="code">Coupon Code:</label>
-                <input type="text" id="code" name="code" required>
+                <input type="text" id="code" name="code">
+                <div class="error-message" id="codeError"></div>
 
                 <label for="type">Discount Type:</label>
-                <select id="type" name="type" required>
+                <select id="type" name="type">
                     <option value="percentage">Percentage</option>
                     <option value="flat">Flat</option>
                 </select>
+                <div class="error-message" id="typeError"></div>
 
                 <label for="value">Discount Value:</label>
-                <input type="number" id="value" name="discount" min="1" required>
+                <input type="number" id="value" name="discount" min="1">
+                <div class="error-message" id="discountError"></div>
 
                 <label for="expiryDate">Expiry Date:</label>
-                <input type="date" id="expiryDate" name="expiryDate" required>
+                <input type="date" id="expiryDate" name="expiryDate">
+                <div class="error-message" id="expiryDateError"></div>
 
                 <button type="submit">Add Coupon</button>
             </form>
@@ -293,6 +304,60 @@
         function closeModal() {
             document.getElementById('editCouponModal').style.display = 'none';
         }
+
+        document.getElementById('addCouponForm').addEventListener('submit', function(e) {
+            // Clear previous errors
+            document.getElementById('codeError').textContent = '';
+            document.getElementById('typeError').textContent = '';
+            document.getElementById('discountError').textContent = '';
+            document.getElementById('expiryDateError').textContent = '';
+
+            let hasError = false;
+
+            const code = document.getElementById('code').value.trim();
+            const type = document.getElementById('type').value;
+            const discount = parseFloat(document.getElementById('value').value);
+            const expiryDate = document.getElementById('expiryDate').value;
+            const today = new Date().toISOString().split('T')[0];
+
+            // Validate required fields
+            if (!code) {
+                document.getElementById('codeError').textContent = 'Coupon code is required.';
+                hasError = true;
+            }
+            if (!type) {
+                document.getElementById('typeError').textContent = 'Discount type is required.';
+                hasError = true;
+            }
+            if (!discount || isNaN(discount)) {
+                document.getElementById('discountError').textContent = 'Discount value is required.';
+                hasError = true;
+            }
+            if (!expiryDate) {
+                document.getElementById('expiryDateError').textContent = 'Expiry date is required.';
+                hasError = true;
+            }
+
+            // Discount value validation
+            if (type === 'percentage' && (discount < 1 || discount > 100)) {
+                document.getElementById('discountError').textContent = 'Percentage discount must be between 1 and 100.';
+                hasError = true;
+            }
+            if (type === 'flat' && discount < 1) {
+                document.getElementById('discountError').textContent = 'Flat discount must be at least 1.';
+                hasError = true;
+            }
+
+            // Expiry date validation
+            if (expiryDate && expiryDate < today) {
+                document.getElementById('expiryDateError').textContent = 'Expiry date cannot be in the past.';
+                hasError = true;
+            }
+
+            if (hasError) {
+                e.preventDefault();
+            }
+        });
     </script>
 
 </html>

@@ -90,11 +90,11 @@
     }
 
     #toast {
-      visibility: hidden;
+      visibility: visible;
       position: fixed;
       bottom: 30px;
       right: 30px;
-      background-color: #2b6cb0;
+      background-color: #056605;
       color: white;
       padding: 12px 20px;
       border-radius: 6px;
@@ -141,69 +141,176 @@
 
 <%- include('../partials/admin/leyout.ejs') %>
 
-<body>
-  <div class="container">
-    <h1 class="mb-4 text-center">Order Management</h1>
+  <body>
+    <div class="container">
+      <h1 class="mb-4 text-center">Order Management</h1>
 
-    <div class="table-responsive">
-      <table class="table table-striped align-middle">
-        <thead class="table-light">
-          <tr>
-            <th>Order ID</th>
-            <th>Customer</th>
-            <th>Email</th>
-            <th>Date</th>
-            <th>Total</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% orders.forEach(order => { %>
+      <form class="row g-3 mb-4" method="GET" action="">
+        <div class="col-md-2">
+          <label for="orderStatus" class="form-label">Order Status</label>
+          <select class="form-select" id="orderStatus" name="orderStatus">
+            <option value="">All</option>
+            <option value="pending" <%= (orderStatus === 'pending') ? 'selected' : '' %>>pending</option>
+            <option value="processing" <%= (orderStatus === 'processing') ? 'selected' : '' %>>Processing</option>
+            <option value="shipped" <%= (orderStatus === 'shipped') ? 'selected' : '' %>>Shipped</option>
+            <option value="completed" <%= (orderStatus === 'completed') ? 'selected' : '' %>>Completed</option>
+            <option value="cancelled" <%= (orderStatus === 'cancelled') ? 'selected' : '' %>>Cancelled</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label for="paymentStatus" class="form-label">Payment Status</label>
+          <select class="form-select" id="paymentStatus" name="paymentStatus">
+            <option value="">All</option>
+            <option value="Paid" <%= (paymentStatus === 'Paid') ? 'selected' : '' %>>Paid</option>
+            <option value="Pending" <%= (paymentStatus === 'Pending') ? 'selected' : '' %>>Pending</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label for="dateFrom" class="form-label">Date From</label>
+          <input type="date" class="form-control" id="dateFrom" name="dateFrom" value="<%= dateFrom || '' %>">
+        </div>
+        <div class="col-md-3">
+          <label for="dateTo" class="form-label">Date To</label>
+          <input type="date" class="form-control" id="dateTo" name="dateTo" value="<%= dateTo || '' %>">
+        </div>
+        <div class="col-md-2">
+          <label for="paymentMethod" class="form-label">Payment Method</label>
+          <select class="form-select" id="paymentMethod" name="paymentMethod">
+            <option value="">All</option>
+            <option value="COD" <%= (paymentMethod === 'COD') ? 'selected' : '' %>>COD</option>
+            <option value="Razorpay" <%= (paymentMethod === 'Razorpay') ? 'selected' : '' %>>Razorpay</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label for="sortBy" class="form-label">Sort By</label>
+          <select class="form-select" id="sortBy" name="sortBy">
+            <option value="newest" <%= (sortBy === 'newest') ? 'selected' : '' %>>Newest Orders</option>
+            <option value="highest" <%= (sortBy === 'highest') ? 'selected' : '' %>>Highest Total Amount</option>
+          </select>
+        </div>
+        <div class="col-md-2 align-self-end">
+          <button type="submit" class="btn btn-primary w-100">Apply</button>
+        </div>
+        <div class="col-md-2 align-self-end">
+          <a href="/admin/orders" class="btn btn-secondary w-100">Reset</a>
+        </div>
+      </form>
+
+      <div class="table-responsive">
+        <table class="table table-striped align-middle">
+          <thead class="table-light">
             <tr>
-              <td>#<%= order._id %></td>
-              <td><%= order.userId.firstname %> <%= order.userId.lastname %></td>
-              <td><%= order.userId.email %></td>
-              <td><%= new Date(order.orderDate).toLocaleDateString() %></td>
-              <td>₹<%= order.finalAmount ? order.finalAmount.toFixed(2) : "0.00" %></td>
-              <td>
-                <span class="status-badge status-<%= order.orderStatus.toLowerCase() %>">
-                  <%= order.orderStatus %>
-                </span>
-              </td>
-              <td>
-                <select class="form-select mb-2" id="status-<%= order._id %>">
-                  <option value="Pending" <%= order.orderStatus==='Pending' ? 'selected' : '' %>>Pending</option>
-                  <option value="Processing" <%= order.orderStatus==='Processing' ? 'selected' : '' %>>Processing</option>
-                  <option value="Shipped" <%= order.orderStatus==='Shipped' ? 'selected' : '' %>>Shipped</option>
-                  <option value="Completed" <%= order.orderStatus==='Completed' ? 'selected' : '' %>>Completed</option>
-                  <option value="Cancelled" <%= order.orderStatus==='Cancelled' ? 'selected' : '' %>>Cancelled</option>
-                </select>
-                <button class="btn btn-primary btn-sm w-100 mb-1" onclick="updateStatus('<%= order._id %>')">Update</button>
-                <button class="btn btn-outline-secondary btn-sm w-100" data-bs-toggle="modal" data-bs-target="#orderDetailsModal<%= order._id %>">View Details</button>
-              </td>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Email</th>
+              <th>Date</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Action</th>
             </tr>
-          <% }); %>
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            <% orders.forEach(order=> { %>
+              <% 
+                const statusList = ["pending", "processing", "shipped", "completed", "cancelled"];
+                const currentStatusIndex = statusList.indexOf(order.orderStatus);
+              %>
+              <tr>
+                <td>#<%= order._id %>
+                </td>
+                <td>
+                  <%= order.userId.firstname %>
+                    <%= order.userId.lastname %>
+                </td>
+                <td>
+                  <%= order.userId.email %>
+                </td>
+                <td>
+                  <%= new Date(order.orderDate).toLocaleDateString() %>
+                </td>
+                <td>₹<%= order.finalAmount ? order.finalAmount.toFixed(2) : "0.00" %>
+                </td>
+                <td>
+                  <span class="status-badge status-<%= order.orderStatus.toLowerCase() %>">
+                    <%= order.orderStatus %>
+                  </span>
+                </td>
+                <td>
+                  <select class="form-select mb-2" id="status-<%= order._id %>">
+                    <% statusList.forEach(function(status, idx) { %>
+                      <option 
+                        value="<%= status %>" 
+                        <%= order.orderStatus === status ? 'selected' : '' %>
+                        <%= idx <= currentStatusIndex ? 'disabled' : '' %>
+                      >
+                        <%= status %>
+                      </option>
+                    <% }); %>
+                  </select>
+                  <button class="btn btn-primary btn-sm w-100 mb-1"
+                    onclick="updateStatus('<%= order._id %>')">Update</button>
+                  <button class="btn btn-outline-secondary btn-sm w-100" data-bs-toggle="modal"
+                    data-bs-target="#orderDetailsModal<%= order._id %>">View Details</button>
+                </td>
+              </tr>
+              <!-- Order Details Modal -->
+              <div class="modal fade" id="orderDetailsModal<%= order._id %>" tabindex="-1" aria-labelledby="orderDetailsLabel<%= order._id %>" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="orderDetailsLabel<%= order._id %>">Order Details - #<%= order._id %></h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <p><strong>Customer:</strong> <%= order.userId.firstname %> <%= order.userId.lastname %></p>
+                      <p><strong>Email:</strong> <%= order.userId.email %></p>
+                      <p><strong>Date:</strong> <%= new Date(order.orderDate).toLocaleString() %></p>
+                      <p><strong>Status:</strong> <%= order.orderStatus %></p>
+                      <p><strong>Total:</strong> ₹<%= order.finalAmount ? order.finalAmount.toFixed(2) : "0.00" %></p>
+                      <% if (order.address) { %>
+                        <p><strong>Shipping Address:</strong> <%= order.address %></p>
+                      <% } %>
+                      <% if (order.items && order.items.length) { %>
+                        <h6>Items:</h6>
+                        <ul>
+                          <% order.items.forEach(function(item) { %>
+                            <li>
+                              <strong><%= item.productName || (item.product && item.product.name) || 'Product' %></strong>
+                              - Qty: <%= item.quantity %>
+                              - Price: ₹<%= item.price ? item.price.toFixed(2) : "0.00" %>
+                            </li>
+                          <% }); %>
+                        </ul>
+                      <% } %>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <% }); %>
+          </tbody>
+        </table>
+      </div>
 
-    <!-- Toast -->
-    <div id="toast" class="toast">Status updated successfully!</div>
-
-    <!-- Pagination -->
-    <div class="pagination d-flex justify-content-center mt-4">
-      <% if (currentPage > 1) { %>
-        <a href="?page=<%= currentPage - 1 %>">Previous</a>
-      <% } %>
-      <% for (let i = 1; i <= totalPages; i++) { %>
-        <a href="?page=<%= i %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
-      <% } %>
-      <% if (currentPage < totalPages) { %>
-        <a href="?page=<%= currentPage + 1 %>">Next</a>
-      <% } %>
+      <!-- Toast -->
+      <div id="toast" class="toast">Status updated successfully!</div>
+      <!-- Pagination -->
+      <div class="pagination d-flex justify-content-center mt-4">
+        <% if (currentPage> 1) { %>
+          <a href="?page=<%= currentPage - 1 %>">Previous</a>
+          <% } %>
+            <% for (let i=1; i <=totalPages; i++) { %>
+              <a href="?page=<%= i %>" class="<%= currentPage === i ? 'active' : '' %>">
+                <%= i %>
+              </a>
+              <% } %>
+                <% if (currentPage < totalPages) { %>
+                  <a href="?page=<%= currentPage + 1 %>">Next</a>
+                  <% } %>
+      </div>
     </div>
-  </div>
 
     <script>
       function updateStatus(orderId) {
@@ -220,19 +327,21 @@
           .then(response => response.json())
           .then(data => {
             if (data.success) {
-              // Update the status badge without refreshing the page
-              const statusBadge = document.querySelector(`#status-${orderId}`).closest('tr').querySelector('.status-badge');
+              // Update the status badge
+              const statusBadge = select.closest('tr').querySelector('.status-badge');
               statusBadge.textContent = newStatus;
               statusBadge.className = `status-badge status-${newStatus.toLowerCase()}`;
 
+              // Disable previous and current options
               Array.from(select.options).forEach(option => {
                 if (option.value === newStatus || option.index < select.selectedIndex) {
                   option.disabled = true;
                 }
               });
-              // Optional: Show a toast notification for feedback
+
+              // Show toast
               const toast = document.getElementById('toast');
-              toast.textContent = 'Order status updated successfully!';
+              toast.textContent = "Status updated successfully!";
               toast.style.display = 'block';
               setTimeout(() => {
                 toast.style.display = 'none';

@@ -36,8 +36,7 @@
                                                 <% if (item.productId.salePrice < item.productId.regularPrice) { %>
                                                     ₹<%= item.productId.salePrice.toFixed(2) %> (Sale)
                                                         <% } else { %>
-                                                            ₹<%= item.productId.regularPrice.toFixed(2) %>
-                                                                <% } %>
+                                                            ₹<%= item.productId && item.productId.regularPrice ? item.productId.regularPrice.toFixed(2) : '0.00' %>                                                                <% } %>
                                             </p>
                                         </div>
                                         <div class="flex items-center space-x-2">

@@ -18,8 +18,8 @@ const handleLogin = async (req, res) => {
         if (admin) {
             const passwordmatch = await bcrypt.compare(password, admin.password);
             if (passwordmatch) {
-
-                req.session.admin = true;
+                req.session.admin = { id: admin._id, email: admin.email };
+                req.session.loginSuccess = true;
                 return res.redirect("/admin/dashboard")
             } else {
                 return res.render('admin/login', { message: 'Invalid password' });
@@ -37,7 +37,7 @@ const adminlogout = async (req, res) => {
     try {
         req.session.destroy((err) => {
             if (err) {
-                console.error("Error destroying session:", err);
+                console.error("Logout failed", err);
             }
             res.redirect("/admin");
         });

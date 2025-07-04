@@ -61,7 +61,7 @@ const forgotEmailValid = async (req, res) => {
                 message: "User with this email does not exist."
             });
         }
-        
+
         if (findUser) {
             const otp = generateOTP();
             const emailSent = await sendVerificationEmail(email, otp);
@@ -133,8 +133,11 @@ const resetPassword = async (req, res) => {
     }
 };
 
-const loadProfile = async (req, res) => {
+const loadProfile = async (req, res,next) => {
     try {
+         if (!req.user) {
+            return res.status(401).render("user/error", { message: "User not authenticated" });
+        }
         const userId = req.session.user.id;
 
         if (!userId) {
@@ -147,9 +150,8 @@ const loadProfile = async (req, res) => {
         }
 
         res.render("user/userProfile", { user });
-    } catch (error) {
-        console.error("Error while loading user profile:", error);
-        res.status(500).send("Internal Server Error");
+    } catch (err) {
+        next(err)
     }
 };
 
@@ -167,9 +169,8 @@ const geteditprofile = async (req, res) => {
         }
 
         res.render("user/editProfile", { user });
-    } catch (error) {
-        console.error("Error while loading user profile:", error);
-        res.status(500).send("Internal Server Error");
+    } catch (err) {
+        next(err)
     }
 };
 
@@ -220,25 +221,32 @@ const loadAddresses = async (req, res) => {
 const AddAddressForm = async (req, res) => {
     try {
         if (!req.session.user || !req.session.user.id) {
-            return res.status(400).send("User not logged in or session expired");
+            return res.status(400).json({ success: false, message: "User not logged in or session expired" });
         }
 
         const userId = req.session.user.id;
-
         const { name, city, state, pincode, phone, addressType } = req.body;
 
         if (!name || !phone || !city || !state || !pincode || !addressType) {
-            return res.status(400).send("All fields are required");
+            return res.status(400).json({ success: false, message: "All fields are required" });
         }
 
         const newAddress = new Address({ userId, name, city, state, pincode, phone, addressType });
         await newAddress.save();
 
-        const addressList = await Address.find({ userId });
+        // Check if this is an AJAX request (from checkout page)
+        if (req.xhr || req.headers['content-type'] === 'application/json') {
+            return res.json({ success: true, message: "Address added successfully", address: newAddress });
+        }
 
+        // For regular form submissions (from address page)
+        const addressList = await Address.find({ userId });
         res.render('user/useraddress', { address: addressList });
     } catch (err) {
         console.error("Error in AddAddressForm:", err);
+        if (req.xhr || req.headers['content-type'] === 'application/json') {
+            return res.status(500).json({ success: false, message: "Server Error" });
+        }
         res.status(500).send("Server Error");
     }
 };
@@ -260,12 +268,24 @@ const editAddress = async (req, res) => {
         }, { new: true });
 
         if (!updatedAddress) {
+            if (req.xhr || req.headers['content-type'] === 'application/json') {
+                return res.status(404).json({ success: false, message: 'Address not found' });
+            }
             return res.status(404).send('Address not found');
         }
 
+        // Check if this is an AJAX request (from checkout page)
+        if (req.xhr || req.headers['content-type'] === 'application/json') {
+            return res.json({ success: true, message: "Address updated successfully", address: updatedAddress });
+        }
+
+        // For regular form submissions (from address page)
         res.redirect('/address');
     } catch (error) {
         console.error('Error updating address:', error);
+        if (req.xhr || req.headers['content-type'] === 'application/json') {
+            return res.status(500).json({ success: false, message: 'Internal Server Error' });
+        }
         res.status(500).send('Internal Server Error');
     }
 };
@@ -294,9 +314,22 @@ const deleteAddress = async (req, res) => {
         const result = await Address.deleteOne({ _id: addressId, userId });
         console.log("address deleted successfully");
 
-        res.redirect("/address")
+        // Check if this is an AJAX request (from checkout page)
+        if (req.xhr || req.headers['content-type'] === 'application/json') {
+            if (result.deletedCount > 0) {
+                return res.json({ success: true, message: "Address deleted successfully" });
+            } else {
+                return res.status(404).json({ success: false, message: "Address not found" });
+            }
+        }
+
+        // For regular form submissions (from address page)
+        res.redirect("/address");
     } catch (error) {
         console.error("Error deleting address:", error);
+        if (req.xhr || req.headers['content-type'] === 'application/json') {
+            return res.status(500).json({ success: false, message: "An error occurred while deleting the address." });
+        }
         res.status(500).send("An error occurred while deleting the address.");
     }
 }
@@ -315,5 +348,5 @@ module.exports = {
     editAddress,
     getAddressById,
     deleteAddress,
-   
+
 };

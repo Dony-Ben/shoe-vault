@@ -1,6 +1,6 @@
+const { compare } = require('bcrypt');
 const Order = require('../../models/order.js');
 const Product = require('../../models/product.js');
-const Brand = require('../../models/Brands.js');
 const User = require('../../models/User.js');
 
 const getSalesChartData = async (req, res) => {
@@ -26,7 +26,7 @@ const getSalesChartData = async (req, res) => {
         const totalRevenue = await Order.aggregate([
             {
                 $match: {
-                    orderStatus: { $in: ['Completed', 'Delivered', 'Shipped', 'Pending'] }
+                    orderStatus: { $in: ['pending', 'processing', 'shipped', 'completed'] }
                 }
             },
             {
@@ -38,8 +38,9 @@ const getSalesChartData = async (req, res) => {
         ]);
 
         const totalOrders = await Order.countDocuments({
-            orderStatus: { $in: ['Completed', 'Delivered', 'Shipped', 'Pending'] }
+            orderStatus: { $in: ['pending', 'processing', 'shipped', 'completed'] }
         });
+        console.log('Total Orders:', totalOrders);
 
         const totalProducts = await Product.countDocuments();
         const totalCustomers = await User.countDocuments({ isadmin: false });
@@ -49,7 +50,7 @@ const getSalesChartData = async (req, res) => {
             {
                 $match: {
                     orderDate: { $gte: startDate },
-                    orderStatus: { $in: ['Completed', 'Delivered', 'Shipped', 'Pending'] }
+                    orderStatus: { $in: ['pending', 'processing', 'shipped', 'completed'] }
                 }
             },
             {
@@ -136,7 +137,7 @@ const getSalesChartData = async (req, res) => {
 
         // Get recent orders
         const recentOrders = await Order.find({
-            orderStatus: { $in: ['Completed', 'Delivered', 'Shipped', 'Pending'] }
+            orderStatus: { $in: ['pending', 'processing', 'shipped', 'completed'] }
         })
         .sort({ orderDate: -1 })
         .limit(5)
@@ -225,7 +226,8 @@ const getSalesChartData = async (req, res) => {
                 chartData.orders.push(dailyData[date.getDate()] ? dailyData[date.getDate()].orders : 0);
             }
         }
-
+        const loginSuccess = req.session.loginSuccess;
+        req.session.loginSuccess = undefined;
         res.render('admin/dashboard', {
             totalRevenue: totalRevenue[0]?.total || 0,
             totalOrders,
@@ -236,7 +238,8 @@ const getSalesChartData = async (req, res) => {
             topBrands,
             recentOrders,
             chartData,
-            filter
+            filter,
+            loginSuccess,
         });
 
     } catch (err) {

@@ -1,4 +1,4 @@
-const Brand = require("../../models/Brands");
+const Brand = require("../../models/Brands.js");
 
 const getBrandpage = async (req, res) => {
     try {
@@ -46,14 +46,22 @@ const addBrand = async (req, res) => {
 }
 
 const blockBrand = async (req, res) => {
-    try {
-        const id = req.query.id;
-        await Brand.updateOne({ _id: id }, { $set: { isBlocked: true } });
-        res.redirect("/admin/brands")
+     try {
+    const id = req.params.id;
+    console.log("brand", id);
 
-    } catch (error) {
+    const brand = await Brand.findById(id); 
 
+    if (!brand) {
+        console.log("not getting brand")
     }
+    brand.isBlocked = !brand.isBlocked;
+    await brand.save(); 
+    res.redirect("/admin/brands");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal server error");
+  }
 }
 
 const unBlockBrand = async (req, res) => {
@@ -66,25 +74,10 @@ const unBlockBrand = async (req, res) => {
     }
 }
 
-const deleteBrand = async (req, res) => {
-    try {
-        const { id } = req.query;
-        if (!id) {
-            return res.status(400).redirect("/pageError")
-        }
-        await Brand.deleteOne({ _id: id });
-        res.redirect("/admin/brands")
-    } catch (error) {
-        console.log("Error delete brand:", error);
-        res.status(500).redirect("/pageError")
-
-    }
-}
 
 module.exports = {
     getBrandpage,
     addBrand,
     blockBrand,
     unBlockBrand,
-    deleteBrand,
 }

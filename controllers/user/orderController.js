@@ -5,6 +5,47 @@ const Coupon = require("../../models/coupon.js");
 const Wallet = require("../../models/wallet.js");
 const razorpay = require("../../config/razorpay.js");
 const { createOrder, verifyRazorpayPayment } = require('../user/orderServiceController.js');
+const Offer = require('../../models/offers');
+
+const getActiveOffers = async () => {
+    const now = new Date();
+    return Offer.find({
+        isActive: true,
+        startDate: { $lte: now },
+        endDate: { $gte: now }
+    })
+        .populate('categories')
+        .populate('products')
+        .lean();
+};
+
+function getBestOfferForProduct(product, offers) {
+    let bestOffer = null;
+    let maxDiscount = 0;
+    const productId = product._id?.toString() || product.id?.toString();
+    const categoryId = product.category?._id?.toString() || product.category?.toString();
+    offers.forEach(offer => {
+        let applies = false;
+        if (offer.offerType === 'product') {
+            applies = offer.products.some(p => p._id.toString() === productId);
+        } else if (offer.offerType === 'category') {
+            applies = offer.categories.some(c => c._id.toString() === categoryId);
+        }
+        if (applies) {
+            let discount = 0;
+            if (offer.discountType === 'percentage') {
+                discount = (product.salePrice * offer.discountValue) / 100;
+            } else if (offer.discountType === 'fixed') {
+                discount = offer.discountValue;
+            }
+            if (discount > maxDiscount) {
+                maxDiscount = discount;
+                bestOffer = offer;
+            }
+        }
+    });
+    return bestOffer ? { offer: bestOffer, discount: maxDiscount } : null;
+}
 
 const loadcheckout = async (req, res) => {
     try {
@@ -16,21 +57,42 @@ const loadcheckout = async (req, res) => {
         const coupons = await Coupon.find({ isActive: true, expiryDate: { $gte: new Date() } });
         const cartData = await Cart.findOne({ userId }).populate({
             path: 'items.productId',
-            select: 'productName salePrice productImage',
-        });
+            select: 'productName salePrice regularPrice productImage quantity category'
+        })
         const cart = cartData ? cartData.items : [];
         const subtotal = cart.reduce((acc, item) => {
             return acc + (item.productId.salePrice * item.quantity);
         }, 0);
 
+        // Offer discount calculation
+        const offers = await getActiveOffers();
+        let offerDiscount = 0;
+        const cartWithOffers = cart.map(item => {
+            const best = getBestOfferForProduct(item.productId, offers);
+            let offerInfo = null;
+            if (best) {
+                offerDiscount += best.discount * item.quantity;
+                offerInfo = {
+                    offerName: best.offer.offerName,
+                    discountType: best.offer.discountType,
+                    discountValue: best.offer.discountValue,
+                    discount: best.discount
+                };
+            }
+            return { ...item.toObject(), offerInfo };
+        });
+        const offerTotal = subtotal - offerDiscount;
+
         const shipping = subtotal > 5000 ? 0 : 200.00;
         const addresses = await Address.find({ userId });
         res.render("user/checkout", {
-            cart,
+            cart: cartWithOffers,
             addresses,
             subtotal,
             shipping,
             coupons,
+            offerDiscount,
+            offerTotal,
         });
     } catch (error) {
         console.error("Error while loading checkout page:", error.message);
@@ -67,7 +129,7 @@ const ordersuccess = async (req, res) => {
     }
 };
 
-const getOrders = async (req, res) => {
+const getOrders = async (req, res, next) => {
     try {
         const userId = req.session.user.id;
         const page = parseInt(req.query.page) || 1;
@@ -87,7 +149,7 @@ const getOrders = async (req, res) => {
         const safeOrders = orders.map(order => ({
             ...order,
             items: (order.orderedItem || []).map(item => ({
-              itemId: item._id, // Important for individual cancellation
+                itemId: item._id, // Important for individual cancellation
                 productId: item.productId?._id,
                 productName: item.productId?.productName || 'N/A',
                 price: item.productId?.salePrice || 0,
@@ -96,51 +158,46 @@ const getOrders = async (req, res) => {
                 cancelled: item.cancelled || false
             }))
         }));
-
-        res.render("user/userorders", { orders: safeOrders, currentPage: page, totalPages, message: null });
-    } catch (error) {
-        console.error("An error occurred while fetching user orders:", error);
-        res.status(500).send("Error fetching user orders");
+        const message = req.query.message || null;
+        res.render("user/userorders", { orders: safeOrders, currentPage: page, totalPages, message });
+        console.log("orders", orders)
+    } catch (err) {
+        next(err)
     }
 };
 
-const OrderCancel = async (req, res) => {
-    console.log("Cancelling item in order");
+const OrderCancel = async (req, res, next) => {
     try {
         const { orderId, productId } = req.params;
-    console.log("Cancelling item:", orderId, productId);
+        console.log("Cancelling item:", orderId, productId);
         const order = await Orders.findById(orderId);
         if (!order) {
-          return res.render("user/userorders", { message: "Order not found" });
+            return res.redirect('/orders?message=Order not found');
+
         }
 
-        // Find the specific item in the order
         const item = order.orderedItem.find(
             item => item.productId.toString() === productId
         );
 
         if (!item) {
-            return res.render("user/userorders", { message: "Product not found in order" });
+            return res.redirect('/orders?message=Product not found in order');
         }
 
-        // Add 'cancelled' field to schema or handle logically here
         if (item.cancelled) {
-            return res.render("user/userorders", { message: "Item already cancelled" });
+            return res.redirect('/orders?message=Item already cancelled');
         }
 
-        item.cancelled = true; // You must make sure `cancelled: Boolean` is added in the schema under orderedItem
+        item.cancelled = true;
 
-        // If all items cancelled, update full order status
         const allCancelled = order.orderedItem.every(i => i.cancelled);
         if (allCancelled) {
-            order.orderStatus = 'Cancelled';
+            order.orderStatus = 'cancelled';
         }
-
         await order.save();
-        res.redirect('/orders');
-    } catch (error) {
-        console.error("Error cancelling item:", error);
-        res.status(500).send("Error cancelling item");
+        res.redirect('/orders?message=Item cancelled successfully');
+    } catch (err) {
+        next(err)
     }
 };
 

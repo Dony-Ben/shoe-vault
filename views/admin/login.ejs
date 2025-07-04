@@ -5,17 +5,207 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Login</title>
   <link rel="stylesheet" href="/admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    .error-message {
+      color: #d32f2f;
+      font-size: 0.875rem;
+      margin-top: 4px;
+      min-height: 20px;
+    }
+    
+    .input-error {
+      border-color: #d32f2f !important;
+      box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.2) !important;
+    }
+    
+    .input-success {
+      border-color: #2e7d32 !important;
+      box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.2) !important;
+    }
+  </style>
 </head>
 <body>
     <div class="login-container">
         <h1>Admin Login</h1>
-       
-            <div class="error-message"><%= message %></div>
-        <form action="/admin/login" method="POST">
-            <input type="email" name="email" placeholder="email" required />
-            <input type="password" name="password" placeholder="Password" required />
-            <button type="submit">Login</button>
+        
+        <% if (message) { %>
+            <div class="error-message" style="text-align: center; margin-bottom: 15px; padding: 10px; background-color: #ffebee; border: 1px solid #ffcdd2; border-radius: 4px;">
+                <%= message %>
+            </div>
+        <% } %>
+        
+        <form id="adminLoginForm" action="/admin/login" method="POST" novalidate>
+            <div class="form-group">
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    placeholder="Email Address"
+                    autocomplete="email"
+                />
+                <div class="error-message" id="emailError"></div>
+            </div>
+            
+            <div class="form-group password-toggle">
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    placeholder="Password"
+                    autocomplete="current-password"
+                />
+                <!-- <button type="button" class="toggle-password" onclick="togglePassword()">
+                    👁️
+                </button> -->
+                <div class="error-message" id="passwordError"></div>
+            </div>
+            
+            <button type="submit" class="submit-btn" id="submitBtn">
+                <span id="btnText">Login</span>
+                <div class="spinner" id="spinner"></div>
+            </button>
         </form>
     </div>
+
+    <script>
+        // Form validation and submission
+        const form = document.getElementById('adminLoginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const spinner = document.getElementById('spinner');
+        // Email validation
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // Password validation
+        function validatePassword(password) {
+            return password.length >= 6;
+        }
+
+        // Clear error styling
+        function clearError(input) {
+            input.classList.remove('input-error');
+            input.classList.add('input-success');
+            const errorElement = document.getElementById(input.id + 'Error');
+            if (errorElement) {
+                errorElement.textContent = '';
+            }
+        }
+
+        // Show error styling
+        function showError(input, message) {
+            input.classList.remove('input-success');
+            input.classList.add('input-error');
+            const errorElement = document.getElementById(input.id + 'Error');
+            if (errorElement) {
+                errorElement.textContent = message;
+            }
+        }
+
+        // Real-time validation
+        emailInput.addEventListener('input', function() {
+            const email = this.value.trim();
+            if (email === '') {
+                this.classList.remove('input-error', 'input-success');
+                document.getElementById('emailError').textContent = '';
+            } else if (!validateEmail(email)) {
+                showError(this, 'Please enter a valid email address');
+            } else {
+                clearError(this);
+            }
+        });
+
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            if (password === '') {
+                this.classList.remove('input-error', 'input-success');
+                document.getElementById('passwordError').textContent = '';
+            } else if (!validatePassword(password)) {
+                showError(this, 'Password must be at least 6 characters long');
+            } else {
+                clearError(this);
+            }
+        });
+        // Form submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Clear previous errors
+            document.getElementById('emailError').textContent = '';
+            document.getElementById('passwordError').textContent = '';
+            emailInput.classList.remove('input-error', 'input-success');
+            passwordInput.classList.remove('input-error', 'input-success');
+            
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+            // let hasError = false;
+
+            // Validate email
+            if (!email) {
+                showError(emailInput, 'Email is required');
+                hasError = true;
+            } else if (!validateEmail(email)) {
+                showError(emailInput, 'Please enter a valid email address');
+                // hasError = true;
+            }
+
+            // Validate password
+            if (!password) {
+                showError(passwordInput, 'Password is required');
+                // hasError = true;
+            } else if (!validatePassword(password)) {
+                showError(passwordInput, 'Password must be at least 6 characters long');
+                // hasError = true;
+            }
+
+        
+
+            // Show loading state
+            submitBtn.classList.add('loading');
+            btnText.style.display = 'none';
+            spinner.style.display = 'block';
+
+            // Submit form
+            setTimeout(() => {
+                form.submit();
+            }, 500);
+        });
+
+        // Prevent form submission on Enter key if validation fails
+        form.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+                
+                if (!email || !password || !validateEmail(email) || !validatePassword(password)) {
+                    e.preventDefault();
+                    form.dispatchEvent(new Event('submit'));
+                }
+            }
+        });
+
+        // Auto-focus email input on page load
+        window.addEventListener('load', function() {
+            emailInput.focus();
+        });
+
+        // Show success message if redirected from successful login
+        if (window.location.search.includes('success=true')) {
+            Swal.fire({
+                title: 'Welcome!',
+                text: 'Login successful',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false,
+                toast: true,
+                position: 'top-end'
+            });
+        }
+    </script>
 </body>
 </html>

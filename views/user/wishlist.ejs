@@ -106,7 +106,6 @@
 
 </body>
 <script>
-    // remove the item from the wishlist
     async function removeFromWishlist(productId) {
         try {
             const response = await fetch(`/wishlist/remove/${productId}`, {

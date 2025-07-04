@@ -7,6 +7,7 @@ const nocache = require("nocache");
 const passport = require("./config/passport");
 const userRoutes = require("./routes/userRouter");
 const adminRouter = require("./routes/adminRouter");
+const errorHandler = require("./middleware/error.js")
 const { setupSSE } = require("./helpers/sse");
 const cloudinary = require("cloudinary").v2;
   const app = express();
@@ -37,6 +38,8 @@ app.use(session({
   saveUninitialized: false,
 }));
 
+// error handling 
+app.use(errorHandler);
 
 // Prevent Caching to Avoid Session Issues
 app.use(nocache());
