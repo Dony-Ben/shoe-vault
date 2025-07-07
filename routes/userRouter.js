@@ -9,7 +9,6 @@ const {
   pageNotFound,
   loadOTP,
   shop,
-  // category,  
   about,
 } = require("../controllers/user/loadingController.js");
 
@@ -42,14 +41,14 @@ userRouter.post("/verify-otp", verifyOtp);
 userRouter.post("/set-new-password", resetPassword);
 
 // editin user profile
-userRouter.get('/profile', loadProfile);
-userRouter.get('/edit-profile', geteditprofile);
-userRouter.post('/edit-profile', editprofile);
-userRouter.get('/address', loadAddresses);
-userRouter.post('/add-address', AddAddressForm);
-userRouter.post('/edit-address/:id', editAddress);
-userRouter.get('/edit-address/:id', getAddressById);
-userRouter.post('/user/delete-address/:id', deleteAddress);
+userRouter.get('/profile', userAuth, loadProfile);
+userRouter.get('/edit-profile', userAuth, geteditprofile);
+userRouter.post('/edit-profile', userAuth, editprofile);
+userRouter.get('/address', userAuth, loadAddresses);
+userRouter.post('/add-address', userAuth, AddAddressForm);
+userRouter.post('/edit-address/:id', userAuth, editAddress);
+userRouter.get('/edit-address/:id', userAuth, getAddressById);
+userRouter.post('/user/delete-address/:id', userAuth, deleteAddress);
 
 
 // Authenticated routes (Require login)
@@ -57,7 +56,7 @@ userRouter.get("/home", userAuth, loadhome);
 userRouter.get("/logout", logout);
 userRouter.get("/pageNotFound", userAuth, pageNotFound);
 userRouter.get("/shop", userAuth, shop);
-userRouter.get("/about", about)
+userRouter.get("/about", userAuth, about)
 
 // OTP Management
 userRouter.get('/otp', ensureGuest, loadOTP);
@@ -72,36 +71,36 @@ userRouter.get("/google/callback", passport.authenticate("google", { failureRedi
 
 
 // Product management
-userRouter.get("/productDetails", productDetails);
+userRouter.get("/productDetails", userAuth, productDetails);
 
 
 // cartmanagement
 userRouter.get("/cart", userAuth, getcartpage);
 userRouter.post("/cart/add", userAuth, cartaddToCart);
-userRouter.delete('/cart/delete/:productId', deleteProduct);
-userRouter.post('/api/cart/update/:itemId', quantityManage);
+userRouter.delete('/cart/delete/:productId', userAuth, deleteProduct);
+userRouter.post('/api/cart/update/:itemId', userAuth, quantityManage);
 
 
 // product order 
-userRouter.get("/checkout", loadcheckout);
-userRouter.post("/checkout", OrderConfirmation);
-userRouter.get("/order-success/:orderId", ordersuccess);
-userRouter.get("/orders", getOrders);
-userRouter.post("/create-order", razorpayment);
-userRouter.post("/place-order", verifypayment);
-userRouter.get("/razorpay-successpage/:orderId", razorpaySuccessPage);
-userRouter.post("/orders/:orderId/cancel-item/:productId", OrderCancel);
-userRouter.post("/paywallet", payWithWallet)
-userRouter.post("/validate-coupon", couponValidation);
+userRouter.get("/checkout", userAuth, loadcheckout);
+userRouter.post("/checkout", userAuth, OrderConfirmation);
+userRouter.get("/order-success/:orderId", userAuth, ordersuccess);
+userRouter.get("/orders", userAuth, getOrders);
+userRouter.post("/create-order", userAuth, razorpayment);
+userRouter.post("/place-order", userAuth, verifypayment);
+userRouter.get("/razorpay-successpage/:orderId", userAuth, razorpaySuccessPage);
+userRouter.post("/orders/:orderId/cancel-item/:productId", userAuth, OrderCancel);
+userRouter.post("/paywallet", userAuth, payWithWallet)
+userRouter.post("/validate-coupon", userAuth, couponValidation);
 
 //wishlist management
-userRouter.get("/wishlist", wishlist);
-userRouter.post("/wishlist-add", wishlistadd);
-userRouter.delete("/wishlist/remove/:productId", ProductRemove);
+userRouter.get("/wishlist", userAuth, wishlist);
+userRouter.post("/wishlist-add", userAuth, wishlistadd);
+userRouter.delete("/wishlist/remove/:productId", userAuth, ProductRemove);
 
 //wallet management
-userRouter.get("/wallet", loadWallet);
-userRouter.post("/addfunds", addFunds);
+userRouter.get("/wallet", userAuth, loadWallet);
+userRouter.post("/addfunds", userAuth, addFunds);
 
-userRouter.get("/download-invoice/:orderId",downloadInvoice);
+userRouter.get("/download-invoice/:orderId", userAuth, downloadInvoice);
 module.exports = userRouter;  

@@ -5,116 +5,480 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Us - Shoe Vault</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
- * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f8f9fa;
-      color: #333;
-    }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #2d3748;
+            line-height: 1.6;
+        }
 
-    .about-content {
-      width: 100%;
-      padding: 60px 40px;
-      background-color: #ffffff;
-    }
+        .hero-section {
+            background: linear-gradient(135deg, #cacede 0%, #764ba2 100%);
+            color: white;
+            padding: 120px 0 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
 
-    h2 {
-      font-size: 32px;
-      margin-bottom: 20px;
-      color: #2c3e50;
-      border-left: 6px solid #007bff;
-      padding-left: 16px;
-    }
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
 
-    p {
-      font-size: 18px;
-      line-height: 1.8;
-      margin-bottom: 25px;
-    }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
 
-    ul {
-      list-style: none;
-      padding-left: 0;
-      margin-bottom: 30px;
-    }
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ffffff, #f7fafc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
 
-    .team-member {
-      background-color: #f9f9f9;
-      border-left: 5px solid #007bff;
-      padding: 20px 30px;
-      margin-bottom: 30px;
-      border-radius: 8px;
-    }
+        .hero-subtitle {
+            font-size: 1.25rem;
+            font-weight: 300;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
 
-    .team-member h3 {
-      margin-top: 0;
-      font-size: 24px;
-      color: #007bff;
-    }
+        .content-section {
+            background: white;
+            padding: 80px 0;
+        }
 
-    .team-member p {
-      font-size: 16px;
-      margin: 6px 0;
-    }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
 
-    @media (max-width: 768px) {
-      .about-content {
-        padding: 40px 20px;
-      }
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 3rem;
+            text-align: center;
+            position: relative;
+        }
 
-      h2 {
-        font-size: 26px;
-      }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
 
-      ul li {
-        font-size: 16px;
-      }
+        .story-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            margin-bottom: 4rem;
+        }
 
-      .team-member h3 {
-        font-size: 20px;
-      }
-    }
+        .story-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #4a5568;
+        }
+
+        .story-image {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 300px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 4rem;
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+        }
+
+        .mission-card {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 4rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .mission-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 1.5rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #f1f5f9;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-text {
+            color: #718096;
+            font-size: 0.95rem;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .team-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .team-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .team-avatar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .team-info {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .team-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .team-role {
+            color: #667eea;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .team-description {
+            color: #718096;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .contact-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .contact-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 3rem;
+            border-radius: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .contact-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-block;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .story-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+
+        .floating-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            width: 60px;
+            height: 60px;
+            top: 60%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+
+        .shape:nth-child(3) {
+            width: 40px;
+            height: 40px;
+            top: 40%;
+            left: 80%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
     </style>
 </head>
+
 <%- include('../partials/user/header.ejs') %>
 
 <body>
-    <div class="about-content">
-        <h2>Our Story</h2>
-        <p>Welcome to Shoe Vault, your premier destination for quality footwear. Established in , we've been passionate about providing our customers with the best shoes for every occasion.</p>
-
-        <h2>Our Mission</h2>
-        <p>At Shoe Vault, our mission is to offer a wide range of comfortable, stylish, and affordable shoes for everyone. We believe that the right pair of shoes can make all the difference in your day.</p>
-
-        <h2>What Sets Us Apart</h2>
-        <ul>
-            <li>Curated selection of top brands</li>
-            <li>Commitment to quality and comfort</li>
-            <li>Excellent customer service</li>
-            <li>Competitive pricing</li>
-        </ul>
-
-        <h2>Our Team</h2>
-       
-            <div class="team-member">
-                <h3></h3>
-                <p><strong>Role:</strong></p>
-                <p></p>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">About Shoe Vault</h1>
+                <p class="hero-subtitle">Where style meets comfort, and every step tells a story</p>
             </div>
-      
+        </div>
+    </section>
 
-        <h2>Contact Us</h2>
-        <p>Have questions or feedback? We'd love to hear from you!</p>
-        <p></p>
-        <p></p>
-    </div>
+    <!-- Content Section -->
+    <section class="content-section">
+        <div class="container">
+            <!-- Our Story -->
+            <h2 class="section-title">Our Story</h2>
+            <div class="story-grid">
+                <div class="story-text">
+                    <p>Welcome to Shoe Vault, your premier destination for quality footwear. Established with a passion for style and comfort, we've been dedicated to providing our customers with the finest shoes for every occasion.</p>
+                    <p>From casual sneakers to elegant formal wear, our carefully curated collection represents the perfect blend of fashion, functionality, and affordability. We believe that the right pair of shoes can transform not just your outfit, but your entire day.</p>
+                </div>
+                <div class="story-image">
+                    <i class="fas fa-shoe-prints"></i>
+                </div>
+            </div>
+
+            <!-- Our Mission -->
+            <div class="mission-card">
+                <div class="mission-icon">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <h3 style="font-size: 1.8rem; font-weight: 600; color: #2d3748; margin-bottom: 1rem;">Our Mission</h3>
+                <p style="font-size: 1.1rem; color: #4a5568; max-width: 800px; margin: 0 auto; line-height: 1.8;">
+                    At Shoe Vault, our mission is to offer a comprehensive range of comfortable, stylish, and affordable shoes for everyone. We believe that quality footwear is not a luxury, but a necessity that enhances your daily life and boosts your confidence.
+                </p>
+            </div>
+
+            <!-- What Sets Us Apart -->
+            <h2 class="section-title">What Sets Us Apart</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3 class="feature-title">Curated Selection</h3>
+                    <p class="feature-text">Handpicked collection of top brands and trending styles</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3 class="feature-title">Quality & Comfort</h3>
+                    <p class="feature-text">Commitment to providing the most comfortable footwear</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3 class="feature-title">Excellent Service</h3>
+                    <p class="feature-text">Dedicated customer support team ready to assist you</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                    <h3 class="feature-title">Competitive Pricing</h3>
+                    <p class="feature-text">Best value for money with regular offers and discounts</p>
+                </div>
+            </div>
+
+            <!-- Our Team -->
+            <h2 class="section-title">Meet Our Team</h2>
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="team-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="team-info">
+                        <h3 class="team-name">John Doe</h3>
+                        <p class="team-role">Founder & CEO</p>
+                        <p class="team-description">Passionate about bringing the best footwear experience to our customers with over 10 years of industry expertise.</p>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="team-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="team-info">
+                        <h3 class="team-name">Jane Smith</h3>
+                        <p class="team-role">Head of Design</p>
+                        <p class="team-description">Creative visionary who ensures our product selection stays ahead of fashion trends and customer preferences.</p>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="team-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="team-info">
+                        <h3 class="team-name">Mike Johnson</h3>
+                        <p class="team-role">Customer Experience</p>
+                        <p class="team-description">Dedicated to providing exceptional service and ensuring every customer has a memorable shopping experience.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section">
+        <div class="container">
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <h3 style="font-size: 2rem; font-weight: 600; margin-bottom: 1rem;">Get In Touch</h3>
+                <p style="font-size: 1.1rem; margin-bottom: 2rem; opacity: 0.9;">
+                    Have questions or feedback? We'd love to hear from you! Our team is here to help with any inquiries.
+                </p>
+                <a href="mailto:contact@shoevault.com" class="btn-primary">
+                    <i class="fas fa-paper-plane" style="margin-right: 8px;"></i>
+                    Contact Us
+                </a>
+            </div>
+        </div>
+    </section>
 </body>
 </html>

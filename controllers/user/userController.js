@@ -55,16 +55,16 @@ const userSignup = async (req, res) => {
     const { firstName, lastName, email, password, confirmPassword } = req.body;
 
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
-      return res.status(400).send("All fields are required.");
+      return res.render("user/signup", { message: "All fields are required." });
     }
     if (password !== confirmPassword) {
-      return res.status(400).send("Passwords do not match.");
+      return res.render("user/signup", { message: "Passwords do not match." });
     }
 
     const existingUser = await userModel.findOne({ email });
 
     if (existingUser) {
-      return res.status(409).send("Email is already registered.");
+      return res.render("user/signup", { message: "Email is already registered." });
     }
 
     const otp = generateOTP();
@@ -72,14 +72,14 @@ const userSignup = async (req, res) => {
     req.session.userOtp = otp;
     const emailSent = await sendVerificationEmail(email, otp);
     if (!emailSent) {
-      return res.json("email-error")
+      return res.render("user/signup", { message: "Failed to send verification email. Please try again." });
     }
 
     req.session.userData = { email, password, firstName, lastName };
     res.redirect("/otp");
   } catch (error) {
     console.error("Signup error:", error);
-    res.redirect("/pageNotFound")
+    res.render("user/signup", { message: "Something went wrong. Please try again." });
   }
 };
 

@@ -1,6 +1,6 @@
 const express = require("express");
 const path = require("path");
-const dotenv = require('dotenv');
+const dotenv = require('dotenv').config();
 const connectDB = require("./config/db");
 const session = require("express-session");
 const nocache = require("nocache");
@@ -10,11 +10,9 @@ const adminRouter = require("./routes/adminRouter");
 const errorHandler = require("./middleware/error.js")
 const { setupSSE } = require("./helpers/sse");
 const cloudinary = require("cloudinary").v2;
-  const app = express();
+const app = express();
 setupSSE(app);
 
-// Load Environment Variables
-dotenv.config();
 
 // Database Connection
 connectDB();

@@ -55,13 +55,33 @@
                                 <h3 class="font-medium text-lg text-gray-800 mb-2">
                                     <%= item.productName %>
                                 </h3>
-                                <p class="text-rose-600 font-semibold mb-4">₹<%= item.salePrice %>
-                                </p>
+                                <p class="text-rose-600 font-semibold mb-4">₹<%= item.salePrice %></p>
+                                <!-- Size Selection -->
+                                <div>
+                                    <h4 class="text-sm font-semibold mb-1">Select Size</h4>
+                                    <div class="flex flex-wrap gap-2 mb-2">
+                                        <% if (item.sizes && item.sizes.length > 0) { %>
+                                            <% item.sizes.forEach(function(size) { %>
+                                                <button
+                                                    type="button"
+                                                    class="wishlist-size-btn px-3 py-1 rounded-full border-2 border-gray-300 text-gray-700 font-medium transition hover:bg-black hover:text-white"
+                                                    onclick="selectWishlistSize('<%= item._id %>', '<%= size %>', this)"
+                                                ><%= size %></button>
+                                            <% }); %>
+                                        <% } else { %>
+                                            <span class="text-gray-400">No sizes available.</span>
+                                        <% } %>
+                                    </div>
+                                    <input type="hidden" id="wishlist-selected-size-<%= item._id %>">
+                                </div>
                                 <div class="flex space-x-2">
                                     <% if(item.quantity>0){ %>
-                                        <a onclick="addToCart(event, `<%= item._id %>`)"
-                                            class="modern-btn btn btn-black bg-black hover:bg-opacity-80 text-light transition duration-300 add-to-cart-btn"
-                                            data-product-id="<%= item._id %>">Add to Cart</a>
+                                        <a onclick="addToCartFromWishlist(event, '<%= item._id %>')"
+                                              class="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black py-2 px-4 rounded-md font-semibold text-base shadow hover:from-yellow-500 hover:to-yellow-400 transition duration-300 add-to-cart-btn flex items-center justify-center gap-2"
+                                              data-product-id="<%= item._id %>">
+                                               <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.35 2.7A2 2 0 007.48 19h9.04a2 2 0 001.83-1.3L21 13M7 13V6a1 1 0 011-1h5a1 1 0 011 1v7"></path></svg>
+                                               Add to Cart
+                                         </a>
                                         <% }else { %>
                                             <span class="out-of-stock-msg text-red-500">Out of Stock</span>
                                             <% } %>
@@ -105,22 +125,70 @@
     <%- include('../partials/user/footer.ejs') %>
 
 </body>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    async function removeFromWishlist(productId) {
+    const wishlistSelectedSizes = {};
+
+    function selectWishlistSize(productId, size, btn) {
+        document.querySelectorAll(`[data-product-id='${productId}'] .wishlist-size-btn`).forEach(b => {
+            b.classList.remove('bg-black', 'text-white', 'border-black');
+        });
+        btn.classList.add('bg-black', 'text-white', 'border-black');
+        wishlistSelectedSizes[productId] = size;
+        document.getElementById('wishlist-selected-size-' + productId).value = size;
+    }
+
+    async function addToCartFromWishlist(event, productId) {
+        event.preventDefault();
+        const size = wishlistSelectedSizes[productId] || document.getElementById('wishlist-selected-size-' + productId).value;
+        if (!size) {
+            Swal.fire('Please select a size before adding to cart.');
+            return;
+        }
         try {
-            const response = await fetch(`/wishlist/remove/${productId}`, {
-                method: 'DELETE'
+            const response = await fetch('/cart/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productId, size })
             });
             const data = await response.json();
             if (data.success) {
-                window.location.reload();
+                Swal.fire('Added to cart!', '', 'success');
+            } else {
+                Swal.fire(data.message || 'Could not add to cart.', '', 'error');
             }
-
         } catch (error) {
-            console.error('Error removing item from wishlist:', error);
+            Swal.fire('Error', 'Could not add to cart.', 'error');
         }
     }
 
+    async function removeFromWishlist(productId) {
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to remove this item from your wishlist?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, remove it!'
+        });
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch(`/wishlist/remove/${productId}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+                if (data.success) {
+                    Swal.fire('Removed!', 'The item has been removed from your wishlist.', 'success').then(() => {
+                        window.location.reload();
+                    });
+                }
+            } catch (error) {
+                console.error('Error removing item from wishlist:', error);
+                Swal.fire('Error', 'There was a problem removing the item.', 'error');
+            }
+        }
+    }
 </script>
 
 </html>
