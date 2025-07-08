@@ -1,6 +1,6 @@
+const env = require('dotenv').config();
 const express = require("express");
 const path = require("path");
-const dotenv = require('dotenv').config();
 const connectDB = require("./config/db");
 const session = require("express-session");
 const nocache = require("nocache");

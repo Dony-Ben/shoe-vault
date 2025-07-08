@@ -66,8 +66,8 @@ userRouter.post("/resend", ensureGuest, resentOtp);
 
 // google authentication
 userRouter.get("/auth/google", passport.authenticate('google', { scope: ['profile', 'email'] }));
-userRouter.get("/google/callback", passport.authenticate("google", { failureRedirect: "/signup" }),
-  (req, res) => { req.session.user = { id: req.user.id, email: req.user.email, }; res.redirect("/home"); });
+userRouter.get("/auth/google/callback", passport.authenticate("google", { failureRedirect: "/signup" }),
+  (req, res) => {  console.log("Authenticated user:", req.user); req.session.user = { id: req.user.id, email: req.user.email, }; res.redirect("/home"); });
 
 
 // Product management

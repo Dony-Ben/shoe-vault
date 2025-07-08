@@ -1,7 +1,7 @@
 const userModel = require('../../models/User.js');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
-
+const env = require('dotenv').config();
 const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
@@ -9,10 +9,12 @@ const generateOTP = () => {
 async function sendVerificationEmail(email, otp) {
   try {
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        pass: process.env.EMAIL_PASS
       },
     });
 
@@ -42,7 +44,7 @@ async function sendVerificationEmail(email, otp) {
         </div>
       `,
     });
-console.log("Email sent:", info);
+    console.log("Email sent:", info);
     return info.accepted.length > 0;
   } catch (error) {
     console.error("Error sending email:", error);
