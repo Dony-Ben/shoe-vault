@@ -2,7 +2,6 @@ const Category = require("../../models/category");
 const Offer = require("../../models/offers");
 const Product = require("../../models/product");
 const Wishlist = require("../../models/wishlist");
-const User = require("../../models/User");
 
 const pageNotFound = async (req, res) => {
     try {
@@ -47,7 +46,7 @@ const loadlogin = async (req, res) => {
 
 const loadregister = async (req, res) => {
     try {
-        res.render('user/signup', { errorMessage: null });
+        res.render('user/signup', { message: null });
     } catch (error) {
         console.log(error);
 
