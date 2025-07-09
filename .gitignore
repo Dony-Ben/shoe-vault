@@ -48,6 +48,3 @@ uploads/
 # PDFKit cache (if used)
 *.afm
 *.pdf
-
-github-actions-key
-github-actions-key.pub
