@@ -30,7 +30,6 @@ build/
 *.bak
 
 # Package lock
-package-lock.json
 yarn.lock
 
 # Coverage directories for testing
@@ -49,5 +48,3 @@ uploads/
 *.afm
 *.pdf
 
-github-actions-key
-github-actions-key.pub
