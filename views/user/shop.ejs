@@ -31,9 +31,66 @@
 
     <body>
 
-      <main class="py-40">
+      <main class="py-32 md:py-40">
 
         <style>
+          @media (max-width: 768px) {
+            .filters-wrapper {
+              flex-direction: column !important;
+              align-items: stretch !important;
+              gap: 10px !important;
+              margin: 0 !important;
+              padding: 0 10px !important;
+            }
+            .search-container,
+            .filter-section {
+              width: 100% !important;
+              margin: 0 !important;
+              padding: 0 !important;
+            }
+            .search-input,
+            .search-button,
+            select {
+              width: 100% !important;
+              min-width: 0 !important;
+              margin: 0 0 8px 0 !important;
+              font-size: 16px;
+            }
+            #product-list {
+              padding: 10px !important;
+            }
+            .card-body {
+              padding: 10px !important;
+            }
+            .pagination {
+              flex-wrap: wrap;
+              gap: 4px;
+            }
+            .page-link {
+              font-size: 16px;
+              padding: 8px 12px;
+            }
+            .product-card img {
+              max-height: 160px !important;
+              min-height: 120px !important;
+              object-fit: contain !important;
+            }
+          }
+          .filters-wrapper {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 16px;
+          }
+          .product-card img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            max-width: 100%;
+          }
+
           .filter-section {
             display: flex;
             justify-content: flex-end;
@@ -156,14 +213,9 @@
             padding: 10px 20px;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.3s, transform 0.3s;
-          }
-
-          .toastmsg {
             opacity: 1;
             transform: translateY(0);
+            transition: opacity 0.3s, transform 0.3s;
           }
 
           .wishlist-btn svg path {
@@ -175,57 +227,89 @@
           .wishlist-btn.active svg path {
             fill: red;
           }
+
+          .offer-percentage {
+            z-index: 2;
+            background-color: #1e40af;
+            /* blue for percentage offers */
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.95rem;
+          }
+
+          .offer-flat {
+            z-index: 2;
+            background-color: #dc2626;
+            /* red for flat offers */
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.95rem;
+          }
+          .card.out-of-stock {
+            opacity: 0.7;
+            pointer-events: none;
+          }
+          .badge.bg-danger {
+            background-color: #dc3545 !important;
+          }
+          .card-img-top.out-of-stock-img {
+            filter: grayscale(1);
+          }
         </style>
-        <div class="search-container">
-          <input type="text" class="search-input" id="search-input" placeholder="Search...">
-          <button type="button" class="search-button" id="search-button" onclick="search()">
-            <span class="search-icon"><img src="/image/search.svg" width="16" height="16"></span>
-          </button>
+        <div class="filters-wrapper flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0 px-2 md:px-0">
+          <div class="search-container mb-2 md:mb-0">
+            <input type="text" class="search-input" id="search-input" placeholder="Search...">
+            <button type="button" class="search-button" id="search-button" onclick="search()">
+              <span class="search-icon"><img src="/image/search.svg" width="16" height="16"></span>
+            </button>
+          </div>
+          <div class="filter-section mb-2 md:mb-0">
+            <select id="sort-filter" onchange="applyFilter()" aria-label="Sort products">
+              <option value="">Sort by</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="name-asc">Name: A to Z</option>
+              <option value="name-desc">Name: Z to A</option>
+            </select>
+          </div>
+          <div class="filter-section">
+            <select id="category-filter" onchange="filterByCategory()" aria-label="Filter by category">
+              <option value="">All Categories</option>
+              <% categories.forEach(category=> { %>
+                <option value="<%= category._id %>">
+                  <%= category.name %>
+                </option>
+                <% }) %>
+            </select>
+          </div>
         </div>
 
-        <div class="filter-section">
-          <select id="sort-filter" onchange="applyFilter()" aria-label="Sort products">
-            <option value="">Sort by</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-            <option value="name-asc">Name: A to Z</option>
-            <option value="name-desc">Name: Z to A</option>
-          </select>
-        </div>
-
-        <div class="filter-section">
-          <select id="category-filter" onchange="filterByCategory()" aria-label="Filter by category">
-            <option value="">All Categories</option>
-            <% categories.forEach(category=> { %>
-              <option value="<%= category._id %>">
-                <%= category.name %>
-              </option>
-              <% }) %>
-          </select>
-        </div>
-
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4" id="product-list">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3 md:g-4" id="product-list">
           <% if (Array.isArray(products) && products.length> 0) { %>
             <% products.forEach((product)=> { %>
               <div class="col animate-on-scroll" data-price="<%= product.salePrice %>"
                 data-name="<%= product.productName %>" data-category="<%= product.category?._id?.toString() %>">
-                <div class="card h-100 glass border-0 shadow-md hover:shadow-lg transition duration-300  product-card">
+                <div class="card h-100 glass border-0 shadow-md hover:shadow-lg transition duration-300  product-card <%= product.stock === 0 ? 'out-of-stock' : '' %>">
 
                   <% if (product.offer) { %>
-                    <span class="badge position-absolute top-0 start-0 m-2"
-                      style="z-index:2;background-color: <%= product.offerType === 'percentage' ? '#1e40af' : '#dc2626' %>;color: #fff; font-weight: 600;font-size: 0.95rem;">
+                    <span
+                      class="badge position-absolute top-0 start-0 m-2 
+                      <%= (product.offerType && product.offerType === 'percentage') ? 'offer-percentage' : 'offer-flat' %>">
                       <%= product.offer %>
                     </span>
                     <% } %>
+                    <% if (product.stock === 0) { %>
+                      <span class="badge position-absolute top-0 end-0 m-2 bg-danger" style="z-index:2;">Out of Stock</span>
+                    <% } %>
 
                       <a href="/productDetails?product=<%= product._id %>" class="block">
-                        <img src="<%= product.productImage[0] %>" class="card-img-top rounded-top"
-                          alt="<%= product.productName %>">
+                        <img src="<%= product.productImage[0] %>" class="card-img-top rounded-top w-100 object-cover <%= product.stock === 0 ? 'out-of-stock-img' : '' %>"
+                          style="max-height:220px;min-height:160px;" alt="<%= product.productName %>">
 
                         <div>
                           <% const isWishlisted=wishlistProductIds.includes(product._id.toString()); %>
                             <button type="button" class="wishlist-btn <%= isWishlisted ? 'active' : '' %>"
-                              onclick="toggleWishlist('<%= product._id %>', event)">
+                              onclick="toggleWishlist('<%= product._id %>', event)" <%= product.stock === 0 ? 'disabled' : '' %>>
                               <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" stroke-width="2"
                                 stroke="#000000" width="24" height="24">
                                 <path
@@ -319,7 +403,7 @@
 
     products.forEach(product => {
       const productCategory = product.getAttribute('data-category').split(',');
-      if (selectedCategory === "" || productCategory.includes (selectedCategory)) {
+      if (selectedCategory === "" || productCategory.includes(selectedCategory)) {
         product.style.display = "block";
       } else {
         product.style.display = "none";

@@ -62,7 +62,9 @@ const loadOTP = async (req, res) => {
 };
 const getPaginatedProducts = async (page, limit) => {
     return Product.find({ isblocked: false })
-        .populate({ path: "category", match: { isListed: true } }).populate({ path: "brands", match: { isBlocked: false } })
+        .populate({ path: "category", match: { isListed: true } })
+        .populate({ path: "brands", match: { isBlocked: false } })
+        .sort({ stock: -1 }) // This will show in-stock products first
         .skip((page - 1) * limit)
         .limit(limit)
         .lean();
