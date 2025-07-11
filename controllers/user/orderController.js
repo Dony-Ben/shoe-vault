@@ -190,6 +190,22 @@ const OrderCancel = async (req, res, next) => {
 
         item.cancelled = true;
 
+        const refundAmount = item.productId.salePrice * item.quantity;
+
+        // Find or create wallet
+        let wallet = await Wallet.findOne({ userId });
+        if (!wallet) {
+            wallet = new Wallet({ userId, balance: 0, transactions: [] });
+        }
+        wallet.balance += refundAmount;
+        wallet.transactions.push({
+            type: "credit",
+            amount: refundAmount,
+            description: `Refund for cancelled item in order #${orderId}`,
+            date: new Date(),
+        });
+        await wallet.save();
+
         const allCancelled = order.orderedItem.every(i => i.cancelled);
         if (allCancelled) {
             order.orderStatus = 'cancelled';

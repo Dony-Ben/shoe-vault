@@ -8,7 +8,8 @@ const loadWallet = async (req, res) => {
             wallet = new Wallet({ userId, balance: 0, transactions: [] });
             await wallet.save();
         }
-        res.render("user/wallet", { wallet });
+        // Pass transactions to the view
+        res.render("user/wallet", { wallet, transactions: wallet.transactions });
     } catch (error) {
         console.error("Error loading wallet:", error);
         res.status(500).send("Internal Server Error");

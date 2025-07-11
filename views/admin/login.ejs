@@ -78,19 +78,34 @@
 
     @media (max-width: 480px) {
       .admin-login-box {
-        padding: 18px 6px;
-        max-width: 100%;
+        padding: 12px 2vw;
+        max-width: 98vw;
+        min-width: 0;
+      }
+      .admin-login-box input[type='email'],
+      .admin-login-box input[type='password'] {
+        font-size: 1rem;
+        padding: 10px 8px;
+      }
+      .admin-login-box button {
+        font-size: 1rem;
+        padding: 10px 0;
       }
     }
   </style>
 </head>
 <body>
     <div class="admin-login-container">
-        <form class="admin-login-box" method="POST" action="/admin/login">
+        <form class="admin-login-box" id="adminLoginForm" method="POST" action="/admin/login">
             <h2>Admin Login</h2>
-            <input type="email" name="email" placeholder="Email Address">
-            <input type="password" name="password" placeholder="Password">
-            <button type="submit">Login</button>
+            <input type="email" id="email" name="email" placeholder="Email Address" autocomplete="username">
+            <div class="error-message" id="emailError"></div>
+            <input type="password" id="password" name="password" placeholder="Password" autocomplete="current-password">
+            <div class="error-message" id="passwordError"></div>
+            <button type="submit" id="submitBtn">
+                <span id="btnText">Login</span>
+                <span id="spinner" style="display:none;">Loading...</span>
+            </button>
         </form>
     </div>
 

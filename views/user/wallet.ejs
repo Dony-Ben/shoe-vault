@@ -73,25 +73,30 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
-                        <% /*transactions.forEach(function(transaction) { */%>
+                        <% if (transactions && transactions.length > 0) { %>
+                            <% transactions.slice().reverse().forEach(function(transaction) { %>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <%= transaction.date ? new Date(transaction.date).toLocaleString() : '' %>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        <%= transaction.description || (transaction.type === 'credit' ? 'Funds Added' : 'Funds Used') %>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm <%= transaction.type === 'credit' ? 'text-green-600' : 'text-red-600' %>">
+                                        ₹<%= transaction.amount %>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full <%= transaction.type === 'credit' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' %>">
+                                            <%= transaction.type === 'credit' ? 'Credit' : 'Debit' %>
+                                        </span>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
                             <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <%= /*transaction.date*/ %>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    <%= /*transaction.description */%>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">₹<%= /*
-                                        transaction.amount*/ %>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <span
-                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full <%= /*transaction.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'*/ %>">
-                                        <%= /* transaction.status */%>
-                                    </span>
-                                </td>
+                                <td colspan="4" class="px-6 py-4 text-center text-gray-400">No transactions yet.</td>
                             </tr>
-                            <% /* });*/ %>
+                        <% } %>
                     </tbody>
 
                 </table>
