@@ -10,24 +10,15 @@ const ensureGuest = (req, res, next) => {
 };
 
 const userAuth = (req, res, next) => {
-  if (req.session.user && req.session.user.id && req.session.user.email) {
-    userModel.findById(req.session.user.id)
-      .then(user => {
-        if (user && !user.isblocked) {
-          return next();
-        }
-        console.log('no session stored on user so cant access other routes.')
-        req.session.user = null;
-        res.redirect("/login");
-      })
-      .catch(error => {
-        console.log("Error in user auth middleware:", error);
-        res.status(500).render('user/page-404', { message: "Internal server error" });
-      });
-  } else {
-    console.log('no session found on user')
-    res.redirect("/login");
+  if (req.session && req.session.user) {
+    return next();
   }
+  // If AJAX request, send JSON
+  if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+    return res.status(401).json({ message: "Please login to add to cart." });
+  }
+  // Otherwise, redirect
+  res.redirect('/login');
 };
 
 

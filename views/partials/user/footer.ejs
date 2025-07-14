@@ -21,6 +21,10 @@
         opacity: 1;
         transform: translateY(0);
     }
+
+    .toast.success { background: #04650b; }   /* Green */
+    .toast.error   { background: #d32f2f; }   /* Red */
+    .toast.info    { background: #1976d2; }   /* Blue */
 </style>
 <footer class="bg-black text-white py-12">
     <div class="container mx-auto text-center">
@@ -56,13 +60,13 @@
             });
         }
 
-        function showToast(message) {
+        function showToast(message, type = 'success') {
             const toastContainer = $('#toast-container');
             const toast = $(`
-            <div class="toast">
-                <p>${message}</p>
-            </div>
-        `);
+                <div class="toast ${type}">
+                    <p>${message}</p>
+                </div>
+            `);
             toastContainer.append(toast);
             toast.addClass('show');
             setTimeout(() => {

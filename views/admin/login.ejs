@@ -4,26 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Login</title>
-  <link rel="stylesheet" href="/admin.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
-    .error-message {
-      color: #d32f2f;
-      font-size: 0.875rem;
-      margin-top: 4px;
-      min-height: 20px;
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f3f4f6;
     }
-    
-    .input-error {
-      border-color: #d32f2f !important;
-      box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.2) !important;
+    *, *:before, *:after {
+      box-sizing: inherit;
     }
-    
-    .input-success {
-      border-color: #2e7d32 !important;
-      box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.2) !important;
-    }
-
     .admin-login-container {
       min-height: 100vh;
       display: flex;
@@ -32,36 +25,37 @@
       background: #f3f4f6;
       padding: 16px;
     }
-
     .admin-login-box {
       background: #fff;
       border-radius: 12px;
       box-shadow: 0 2px 16px rgba(0,0,0,0.08);
-      padding: 32px 28px;
+      padding: 40px 36px;
       width: 100%;
-      max-width: 400px;
+      max-width: 480px;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
-
     .admin-login-box h2 {
       text-align: center;
       margin-bottom: 24px;
-      font-size: 1.5rem;
+      font-size: 1.7rem;
       font-weight: 700;
     }
-
     .admin-login-box input[type='email'],
     .admin-login-box input[type='password'] {
       width: 100%;
-      padding: 12px 14px;
-      margin-bottom: 18px;
+      padding: 14px 14px;
+      margin-bottom: 8px;
       border-radius: 6px;
       border: 1px solid #ccc;
       font-size: 1rem;
+      transition: border 0.2s, box-shadow 0.2s;
     }
-
     .admin-login-box button {
       width: 100%;
-      padding: 12px 0;
+      padding: 14px 0;
       background: #111;
       color: #fff;
       border: none;
@@ -70,37 +64,64 @@
       font-weight: 600;
       cursor: pointer;
       transition: background 0.2s;
+      margin-top: 8px;
     }
-
     .admin-login-box button:hover {
       background: #333;
     }
-
-    @media (max-width: 480px) {
+    .error-message {
+      color: #d32f2f;
+      font-size: 0.95rem;
+      min-height: 20px;
+      margin-bottom: 4px;
+    }
+    .input-error {
+      border-color: #d32f2f !important;
+      box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.2) !important;
+    }
+    .input-success {
+      border-color: #2e7d32 !important;
+      box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.2) !important;
+    }
+    @media (max-width: 600px) {
       .admin-login-box {
-        padding: 12px 2vw;
+        padding: 18px 4vw;
         max-width: 98vw;
-        min-width: 0;
+      }
+      .admin-login-box h2 {
+        font-size: 1.2rem;
       }
       .admin-login-box input[type='email'],
       .admin-login-box input[type='password'] {
-        font-size: 1rem;
-        padding: 10px 8px;
+        font-size: 0.98rem;
+        padding: 12px 8px;
       }
       .admin-login-box button {
         font-size: 1rem;
-        padding: 10px 0;
+        padding: 12px 0;
       }
     }
+    @media (max-width: 400px) {
+      .admin-login-box {
+        padding: 10px 2vw;
+      }
+      .admin-login-box h2 {
+        font-size: 1rem;
+      }
+    }
+    
   </style>
 </head>
 <body>
     <div class="admin-login-container">
-        <form class="admin-login-box" id="adminLoginForm" method="POST" action="/admin/login">
+        <form class="admin-login-box" id="adminLoginForm" method="POST" action="/admin/login" novalidate>
             <h2>Admin Login</h2>
-            <input type="email" id="email" name="email" placeholder="Email Address" autocomplete="username">
+            <% if (typeof error !== 'undefined' && error) { %>
+              <div class="error-message" style="text-align:center;"><%= error %></div>
+            <% } %>
+            <input type="email" id="email" name="email" placeholder="Email Address" autocomplete="username"  aria-describedby="emailError">
             <div class="error-message" id="emailError"></div>
-            <input type="password" id="password" name="password" placeholder="Password" autocomplete="current-password">
+            <input type="password" id="password" name="password" placeholder="Password" autocomplete="current-password"  aria-describedby="passwordError">
             <div class="error-message" id="passwordError"></div>
             <button type="submit" id="submitBtn">
                 <span id="btnText">Login</span>
@@ -110,139 +131,137 @@
     </div>
 
     <script>
-        // Form validation and submission
-        const form = document.getElementById('adminLoginForm');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const submitBtn = document.getElementById('submitBtn');
-        const btnText = document.getElementById('btnText');
-        const spinner = document.getElementById('spinner');
-        // Email validation
-        function validateEmail(email) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return emailRegex.test(email);
-        }
+  // Form validation and submission
+  const form = document.getElementById('adminLoginForm');
+  const emailInput = document.getElementById('email');
+  const passwordInput = document.getElementById('password');
+  const submitBtn = document.getElementById('submitBtn');
+  const btnText = document.getElementById('btnText');
+  const spinner = document.getElementById('spinner');
 
-        // Password validation
-        function validatePassword(password) {
-            return password.length >= 6;
-        }
+  // Email validation
+  function validateEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
 
-        // Clear error styling
-        function clearError(input) {
-            input.classList.remove('input-error');
-            input.classList.add('input-success');
-            const errorElement = document.getElementById(input.id + 'Error');
-            if (errorElement) {
-                errorElement.textContent = '';
-            }
-        }
+  // Password validation
+  function validatePassword(password) {
+    return password.length >= 6;
+  }
 
-        // Show error styling
-        function showError(input, message) {
-            input.classList.remove('input-success');
-            input.classList.add('input-error');
-            const errorElement = document.getElementById(input.id + 'Error');
-            if (errorElement) {
-                errorElement.textContent = message;
-            }
-        }
+  // Show error styling
+  function showError(input, message) {
+    input.classList.remove('input-success');
+    input.classList.add('input-error');
+    const errorElement = document.getElementById(input.id + 'Error');
+    if (errorElement) {
+      errorElement.style.display = 'block'; // Ensure visible
+      errorElement.textContent = message;
+    }
+  }
 
-        // Real-time validation
-        emailInput.addEventListener('input', function() {
-            const email = this.value.trim();
-            if (email === '') {
-                this.classList.remove('input-error', 'input-success');
-                document.getElementById('emailError').textContent = '';
-            } else if (!validateEmail(email)) {
-                showError(this, 'Please enter a valid email address');
-            } else {
-                clearError(this);
-            }
-        });
+  // Clear error styling
+  function clearError(input) {
+    input.classList.remove('input-error');
+    input.classList.add('input-success');
+    const errorElement = document.getElementById(input.id + 'Error');
+    if (errorElement) {
+      errorElement.textContent = '';
+      errorElement.style.display = 'block'; // Keep space for error
+    }
+  }
 
-        passwordInput.addEventListener('input', function() {
-            const password = this.value;
-            if (password === '') {
-                this.classList.remove('input-error', 'input-success');
-                document.getElementById('passwordError').textContent = '';
-            } else if (!validatePassword(password)) {
-                showError(this, 'Password must be at least 6 characters long');
-            } else {
-                clearError(this);
-            }
-        });
-        // Form submission
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Clear previous errors
-            document.getElementById('emailError').textContent = '';
-            document.getElementById('passwordError').textContent = '';
-            emailInput.classList.remove('input-error', 'input-success');
-            passwordInput.classList.remove('input-error', 'input-success');
-            
-            const email = emailInput.value.trim();
-            const password = passwordInput.value;
-            // let hasError = false;
-            
-            // Validate email
-            if (!email) {
-                showError(emailInput, 'Email is required');
-                hasError = true;
-            } else if (!validateEmail(email)) {
-                showError(emailInput, 'Please enter a valid email address');
-                // hasError = true;
-            }
-            // Validate password
-            if (!password) {
-                showError(passwordInput, 'Password is required');
-                // hasError = true;
-            } else if (!validatePassword(password)) {
-                showError(passwordInput, 'Password must be at least 6 characters long');
-                // hasError = true;
-            }
-            // Show loading state
-            submitBtn.classList.add('loading');
-            btnText.style.display = 'none';
-            spinner.style.display = 'block';
+  // Real-time validation
+  emailInput.addEventListener('input', function() {
+    const email = this.value.trim();
+    if (email === '') {
+      this.classList.remove('input-error', 'input-success');
+      document.getElementById('emailError').textContent = '';
+    } else if (!validateEmail(email)) {
+      showError(this, 'Please enter a valid email address');
+    } else {
+      clearError(this);
+    }
+  });
 
-            // Submit form
-            setTimeout(() => {
-                form.submit();
-            }, 500);
-        });
+  passwordInput.addEventListener('input', function() {
+    const password = this.value;
+    if (password === '') {
+      this.classList.remove('input-error', 'input-success');
+      document.getElementById('passwordError').textContent = '';
+    } else if (!validatePassword(password)) {
+      showError(this, 'Password must be at least 6 characters long');
+    } else {
+      clearError(this);
+    }
+  });
 
-        // Prevent form submission on Enter key if validation fails
-        form.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                const email = emailInput.value.trim();
-                const password = passwordInput.value;
-                
-                if (!email || !password || !validateEmail(email) || !validatePassword(password)) {
-                    e.preventDefault();
-                    form.dispatchEvent(new Event('submit'));
-                }
-            }
-        });
+  // Form submission
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
 
-        // Auto-focus email input on page load
-        window.addEventListener('load', function() {
-            emailInput.focus();
-        });
+    let hasError = false;
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
 
-        // Show success message if redirected from successful login
-        if (window.location.search.includes('success=true')) {
-            Swal.fire({
-                title: 'Welcome!',
-                text: 'Login successful',
-                icon: 'success',
-                timer: 2000,
-                showConfirmButton: false,
-                toast: true,
-                position: 'top-end'
-            });
-        }
-    </script>
+    // Validate email
+    if (!email) {
+      showError(emailInput, 'Email is required');
+      hasError = true;
+    } else if (!validateEmail(email)) {
+      showError(emailInput, 'Please enter a valid email address');
+      hasError = true;
+    } else {
+      clearError(emailInput);
+    }
+
+    // Validate password
+    if (!password) {
+      showError(passwordInput, 'Password is required');
+      hasError = true;
+    } else if (!validatePassword(password)) {
+      showError(passwordInput, 'Password must be at least 6 characters long');
+      hasError = true;
+    } else {
+      clearError(passwordInput);
+    }
+
+    if (hasError) {
+      btnText.style.display = 'block';
+      spinner.style.display = 'none';
+      submitBtn.disabled = false;
+      return; // Do not submit if there are errors
+    }
+    submitBtn.disabled = true;
+
+    // Show loading state
+    btnText.style.display = 'none';
+    spinner.style.display = 'block';
+
+    // Submit form after short delay for UX
+    setTimeout(() => {
+      form.submit();
+    }, 500);
+  });
+
+  // Auto-focus email input on page load
+  window.addEventListener('load', function() {
+    emailInput.focus();
+  });
+
+  // Show success message if redirected from successful login
+  if (window.location.search.includes('success=true')) {
+    Swal.fire({
+      title: 'Welcome!',
+      text: 'Login successful',
+      icon: 'success',
+      timer: 2000,
+      showConfirmButton: false,
+      toast: true,
+      position: 'top-end'
+    });
+  }
+</script>
 </body>
 </html>

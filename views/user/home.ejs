@@ -103,10 +103,6 @@
         <section class="bg-black text-black   ht py-48 relative overflow-hidden"
             style="background-image: url('/image/Banner.jpg');">
             <div class="container mx-auto text-center relative z-10">
-                <!-- <h1 class="text-6xl font-serif font-bold mb-6 animate-fade-in-up">Experience the Elegance of Shoe Vault</h1> 
-                 <p class="text-xl mb-12 animate-fade-in-up" style="animation-delay: 0.2s;">
-                Discover exclusive products crafted for modern lifestyles.
-            </p>  -->
                 <a href="#"
                     class="modern-btn bg-black text-light py-3 px-8 rounded-full text-lg font-medium hover:bg-opacity-90 transition duration-300 animate-fade-in-up"
                     style="animation-delay: 0.4s;">Explore Now</a>
@@ -136,12 +132,8 @@
                                             </p>
 
                                             <% if (product.quantity> 0) { %>
-                                                <a onclick="addToCart(event, '<%= product._id %>')"
-                                                    class="modern-btn btn btn-black bg-black hover:bg-opacity-80 text-light transition duration-300 add-to-cart-btn"
-                                                    data-product-id="<%= product._id %>">Add to Cart</a>
-                                                <% } else { %>
-                                                    <span class="out-of-stock-msg text-red-500">Out of Stock</span>
-                                                    <% } %>
+                                                <span class="out-of-stock-msg text-red-500">Out of Stock</span>
+                                                <% } %>
                                         </div>
                                     </a>
                                 </div>

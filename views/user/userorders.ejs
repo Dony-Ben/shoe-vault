@@ -108,20 +108,23 @@
                               <td>$<%= item.price.toFixed(2) %>
                               </td>
                               <td>
-                                <% if ( !item.cancelled && ['pending', 'processing' , 'cancelled'
-                                  ].includes(order.orderStatus.toLowerCase()) ) { %>
-                                  <form method="POST"
-                                    action="/orders/<%= order._id %>/cancel-item/<%= item.productId %>"
-                                    class="cancel-item-form">
+                                <% if (!item.cancelled && !item.returned && order.orderStatus === 'Completed') { %>
+                                  <form method="POST" action="/orders/<%= order._id %>/return-item/<%= item.productId %>" class="return-item-form">
+                                    <button class="btn btn-sm btn-warning">Return</button>
+                                  </form>
+                                <% } else if (item.returned) { %>
+                                  <span class="badge bg-warning text-dark">Returned</span>
+                                <% } else if (!item.cancelled && ['pending', 'processing', 'cancelled'].includes(order.orderStatus.toLowerCase())) { %>
+                                  <form method="POST" action="/orders/<%= order._id %>/cancel-item/<%= item.productId %>" class="cancel-item-form">
                                     <button class="btn btn-sm btn-danger">Cancel</button>
                                   </form>
-                                  <% } else if (item.cancelled) { %>
-                                    <span class="badge bg-danger">Cancelled</span>
-                                    <% } else { %>
-                                      <span class="badge bg-secondary">
-                                        <%= order.orderStatus.toLowerCase() %>
-                                      </span>
-                                      <% } %>
+                                <% } else if (item.cancelled) { %>
+                                  <span class="badge bg-danger">Cancelled</span>
+                                <% } else { %>
+                                  <span class="badge bg-secondary">
+                                    <%= order.orderStatus.toLowerCase() %>
+                                  </span>
+                                  <% } %>
                               </td>
                               <td>
                                 <% if (order.orderStatus==='Completed' ) { %>
@@ -302,7 +305,24 @@
               });
             });
           });
-
+          document.querySelectorAll('.return-item-form').forEach(form => {
+            form.addEventListener('submit', function (event) {
+              event.preventDefault();
+              Swal.fire({
+                title: 'Return this item?',
+                text: "Are you sure you want to return this item?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ffc107',
+                cancelButtonColor: '#aaa',
+                confirmButtonText: 'Yes, return it'
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  form.submit();
+                }
+              });
+            });
+          });
         </script>
         <style>
           .small-swal-popup {

@@ -15,21 +15,19 @@ const handleLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
         const admin = await user.findOne({ email, isadmin: true });
-        if (admin) {
-            const passwordmatch = await bcrypt.compare(password, admin.password);
-            if (passwordmatch) {
-                req.session.admin = { id: admin._id, email: admin.email };
-                req.session.loginSuccess = true;
-                return res.redirect("/admin/dashboard")
-            } else {
-                return res.render('admin/login', { message: 'Invalid password' });
-            }
-        } else {
-            return res.render('admin/login', { message: 'Admin not found' });
+        if (!admin) {
+            return res.render('admin/login', { error: 'Email not found' });
         }
+        const passwordmatch = await bcrypt.compare(password, admin.password);
+        if (!passwordmatch) {
+            return res.render('admin/login', { error: 'Incorrect password' });
+        }
+        req.session.admin = { id: admin._id, email: admin.email };
+        req.session.loginSuccess = true;
+        return res.redirect("/admin/dashboard");
     } catch (error) {
         console.log("Login error", error);
-        return res.render('error', { message: "An error occurred during login" });
+        return res.render('admin/login', { error: "An error occurred during login" });
     }
 };
 

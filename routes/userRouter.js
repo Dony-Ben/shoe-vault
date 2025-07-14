@@ -71,7 +71,7 @@ userRouter.get("/auth/google/callback", passport.authenticate("google", { failur
 
 
 // Product management
-userRouter.get("/productDetails", userAuth, productDetails);
+userRouter.get("/productDetails", productDetails);
 
 
 // cartmanagement
@@ -92,6 +92,7 @@ userRouter.get("/razorpay-successpage/:orderId", userAuth, razorpaySuccessPage);
 userRouter.post("/orders/:orderId/cancel-item/:productId", userAuth, OrderCancel);
 userRouter.post("/paywallet", userAuth, payWithWallet)
 userRouter.post("/validate-coupon", userAuth, couponValidation);
+userRouter.post("/orders/:orderId/return-item/:productId", userAuth, require("../controllers/user/orderController.js").OrderReturn);
 
 //wishlist management
 userRouter.get("/wishlist", userAuth, wishlist);

@@ -293,11 +293,23 @@
                                       <%= item.productName || (item.product && item.product.name) || 'Product' %>
                                     </strong>
                                     - Qty: <%= item.quantity %>
-                                      - Price: ₹<%= item.price ? item.price.toFixed(2) : "0.00" %>
+                                    - Price: ₹<%= item.price ? item.price.toFixed(2) : "0.00" %>
+                                    <% if (item.returned) { %>
+                                      <span class="badge bg-warning text-dark">Return Requested</span>
+                                      <form method="POST" action="/admin/orders/<%= order._id %>/approve-return/<%= item.productId %>" style="display:inline;">
+                                        <button class="btn btn-success btn-sm">Approve</button>
+                                      </form>
+                                      <form method="POST" action="/admin/orders/<%= order._id %>/reject-return/<%= item.productId %>" style="display:inline;">
+                                        <button class="btn btn-danger btn-sm">Reject</button>
+                                      </form>
+                                    <% } %>
+                                    <% if (item.cancelled) { %>
+                                      <span class="badge bg-danger">Cancelled</span>
+                                    <% } %>
                                   </li>
-                                  <% }); %>
+                                <% }); %>
                               </ul>
-                              <% } %>
+                            <% } %>
                       </div>
                       <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

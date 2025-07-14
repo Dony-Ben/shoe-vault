@@ -217,6 +217,54 @@ const OrderCancel = async (req, res, next) => {
     }
 };
 
+const OrderReturn = async (req, res, next) => {
+    try {
+        const { orderId, productId } = req.params;
+        const userId = req.session.user.id;
+        const order = await Orders.findById(orderId);
+        if (!order) {
+            return res.redirect('/orders?message=Order not found');
+        }
+        const item = order.orderedItem.find(
+            item => item.productId.toString() === productId
+        );
+        if (!item) {
+            return res.redirect('/orders?message=Product not found in order');
+        }
+        if (item.cancelled) {
+            return res.redirect('/orders?message=Item already cancelled');
+        }
+        if (item.returned) {
+            return res.redirect('/orders?message=Item already returned');
+        }
+        // Only allow return if order is delivered/completed
+        if (!['completed'].includes(order.orderStatus)) {
+            return res.redirect('/orders?message=Return allowed only after delivery');
+        }
+        item.returned = true;
+        // Refund logic (skip for COD)
+        if (order.paymentMethod !== 'cod') {
+            const refundAmount = item.productId.salePrice * item.quantity;
+            let wallet = await Wallet.findOne({ userId });
+            if (!wallet) {
+                wallet = new Wallet({ userId, balance: 0, transactions: [] });
+            }
+            wallet.balance += refundAmount;
+            wallet.transactions.push({
+                type: 'credit',
+                amount: refundAmount,
+                description: `Refund for returned item in order #${orderId}`,
+                date: new Date(),
+            });
+            await wallet.save();
+        }
+        await order.save();
+        res.redirect('/orders?message=Item returned successfully');
+    } catch (err) {
+        next(err);
+    }
+};
+
 const razorpayment = async (req, res) => {
     try {
         const options = {
@@ -313,6 +361,7 @@ module.exports = {
     ordersuccess,
     getOrders,
     OrderCancel,
+    OrderReturn,
     razorpayment,
     verifypayment,
     razorpaySuccessPage,

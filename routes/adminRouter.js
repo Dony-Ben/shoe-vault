@@ -6,7 +6,7 @@ const { customerBlocked, customerInfo, customerUnblocked } = require("../control
 const { categoryInfo, addCategory, addCategoryOffer, removeCategoryOffer, getEdiCategory, getListCategory, getUnlistCategory, editCategory } = require("../controllers/admin/categoryController.js");
 const { getAllProducts, getEditProduct, getProductAddpage, addProducts, blockProduct, editProduct, unblockProduct, deleteSingleImage } = require("../controllers/admin/adminproductController.js");
 const { getBrandpage, addBrand, blockBrand, unBlockBrand } = require("../controllers/admin/brandController");
-const { getOrderpage,updateOrderStatus } = require("../controllers/admin/adminOrderController.js");
+const { getOrderpage,updateOrderStatus, approveReturn, rejectReturn } = require("../controllers/admin/adminOrderController.js");
 const { adminAuth } = require("../middleware/adminAuth");
 const multer = require("multer");
 const storage = require("../helpers/multer");
@@ -61,6 +61,8 @@ adminRouter.post("/deleteImage",adminAuth, deleteSingleImage);
 // order management
 adminRouter.get("/orders",adminAuth, getOrderpage);
 adminRouter.post('/orders/update-status',adminAuth,updateOrderStatus);
+adminRouter.post('/orders/:orderId/approve-return/:productId', adminAuth, approveReturn);
+adminRouter.post('/orders/:orderId/reject-return/:productId', adminAuth, rejectReturn);
 
 // coupon management
 adminRouter.get("/coupons",adminAuth,loadcouponpage);

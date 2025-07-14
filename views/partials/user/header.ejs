@@ -1,4 +1,4 @@
-<nav class="bg-transparent p-4 fixed w-full z-10 transition-all duration-300 ease-in-out" id="navbar">
+<nav class="bg-white p-4 fixed w-full z-10 transition-all duration-300 ease-in-out" id="navbar">
     <div class="container mx-auto flex justify-between items-center">
         <a href="/home" class="text-2xl font-serif font-bold text-black">Shoe Vault </a>
         <!-- Hamburger for mobile -->
@@ -51,23 +51,12 @@
         const currentScrollY = window.scrollY;
 
         if (currentScrollY > lastScrollY && currentScrollY > 50) {
-            // Scrolling down - hide the navbar
             navbar.style.transform = 'translateY(-100%)';
         } else if (currentScrollY < lastScrollY) {
-            // Scrolling up - show the navbar
             navbar.style.transform = 'translateY(0)';
         }
 
         lastScrollY = currentScrollY;
-
-        // Add/remove background and shadow based on scroll position
-        if (currentScrollY > 50) {
-            navbar.classList.add('bg-white', 'shadow-md');
-            navbar.classList.remove('bg-transparent');
-        } else {
-            navbar.classList.remove('bg-white', 'shadow-md');
-            navbar.classList.add('bg-transparent');
-        }
     });
 
     // Scroll animations (unchanged)

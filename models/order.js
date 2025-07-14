@@ -23,6 +23,10 @@ const ordersSchema = new mongoose.Schema({
         cancelled: {
             type: Boolean,
             default: false
+        },
+        returned: {
+            type: Boolean,
+            default: false
         }
     }],
     deliveryAddress: {
