@@ -108,7 +108,7 @@
                               <td>$<%= item.price.toFixed(2) %>
                               </td>
                               <td>
-                                <% if (!item.cancelled && !item.returned && order.orderStatus === 'Completed') { %>
+                                <% if (!item.cancelled && !item.returned && order.orderStatus === 'completed') { %>
                                   <form method="POST" action="/orders/<%= order._id %>/return-item/<%= item.productId %>" class="return-item-form">
                                     <button class="btn btn-sm btn-warning">Return</button>
                                   </form>

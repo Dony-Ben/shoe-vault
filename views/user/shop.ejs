@@ -194,40 +194,6 @@
             font-size: 20px;
           }
 
-          .wishlist-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            z-index: 1;
-          }
-
-          .toastmsg {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #036d19;
-            color: #ffffff;
-            padding: 10px 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            opacity: 1;
-            transform: translateY(0);
-            transition: opacity 0.3s, transform 0.3s;
-          }
-
-          .wishlist-btn svg path {
-            fill: none;
-            transition: fill 0.3s ease;
-          }
-
-          /* Active (wishlisted) heart */
-          .wishlist-btn.active svg path {
-            fill: red;
-          }
-
           .offer-percentage {
             z-index: 2;
             background-color: #1e40af;
@@ -298,26 +264,13 @@
                       <%= product.offer %>
                     </span>
                     <% } %>
-                    <% if (product.stock === 0) { %>
+                    <% if (!product.quantity) { %>
                       <span class="badge position-absolute top-0 end-0 m-2 bg-danger" style="z-index:2;">Out of Stock</span>
                     <% } %>
 
                       <a href="/productDetails?product=<%= product._id %>" class="block">
                         <img src="<%= product.productImage[0] %>" class="card-img-top rounded-top w-100 object-cover <%= product.stock === 0 ? 'out-of-stock-img' : '' %>"
                           style="max-height:220px;min-height:160px;" alt="<%= product.productName %>">
-
-                        <div>
-                          <% const isWishlisted=wishlistProductIds.includes(product._id.toString()); %>
-                            <button type="button" class="wishlist-btn <%= isWishlisted ? 'active' : '' %>"
-                              onclick="toggleWishlist('<%= product._id %>', event)" <%= product.stock === 0 ? 'disabled' : '' %>>
-                              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" stroke-width="2"
-                                stroke="#000000" width="24" height="24">
-                                <path
-                                  d="M9.06,25C7.68,17.3,12.78,10.63,20.73,10c7-.55,10.47,7.93,11.17,9.55a.13.13,0,0,0,.25,0c3.25-8.91,9.17-9.29,11.25-9.5C49,9.45,56.51,13.78,55,23.87c-2.16,14-23.12,29.81-23.12,29.81S11.79,40.05,9.06,25Z">
-                                </path>
-                              </svg>
-                            </button>
-                        </div>
 
                         <div class="card-body text-center">
                           <h5 class="card-title text-lg font-semibold mb-2 text-black">
@@ -426,34 +379,6 @@
     });
   });
   // wishlist
-  function toggleWishlist(productId, event) {
-    event.preventDefault();
-    event.stopPropagation();
-
-    $.ajax({
-      url: `/wishlist-add`,
-      method: 'POST',
-      data: { productId },
-      success: function (response) {
-        const wishlistBtn = $(`button[onclick="toggleWishlist('${productId}', event)"]`);
-        const heartIcon = wishlistBtn.find('svg path');
-
-        if (response.success) {
-          const added = response.added;
-          heartIcon.css('fill', added ? 'red' : '');
-          wishlistBtn.toggleClass('active', added);
-
-
-          showToast(added ? 'Added to wishlist' : 'Removed from wishlist', added ? 'success' : 'error');
-        } else {
-          showToast('Failed to update wishlist.', 'error');
-        }
-      },
-      error: function () {
-        showToast('An error occurred. Please try again.', 'error');
-      }
-    });
-  }
   function showToast(message, type = 'success') {
     const toastmsg = $('<div class="toastmsg"></div>').text(message).addClass(type);
     $('body').append(toastmsg);

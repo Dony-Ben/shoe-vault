@@ -24,7 +24,7 @@ const loadhome = async (req, res) => {
 
 const landingpage = async (req, res) => {
     try {
-        let productData = await Product.find({ isblocked: false });
+        let productData = await Product.find({ isblocked: false }).populate({ path: "brands", match: { isBlocked: false } });
         res.render("user/landing", { products: productData, });
 
     } catch (error) {
@@ -114,16 +114,14 @@ const getWishlistProductIds = async (userId) => {
 
 const shop = async (req, res) => {
     try {
-        const userId = req.session.user?.id;
         const currentPage = parseInt(req.query.page) || 1;
         const productsPerPage = 12;
 
-        const [products, totalPages, categories, offers, wishlistProductIds] = await Promise.all([
+        const [products, totalPages, categories, offers] = await Promise.all([
             getPaginatedProducts(currentPage, productsPerPage),
             getTotalPages(productsPerPage),
             Category.find({ isListed: true }),
             getActiveOffers(),
-            userId ? getWishlistProductIds(userId) : [],
         ]);
 
         const updatedProducts = applyOffersToProducts(products, offers);
@@ -134,7 +132,6 @@ const shop = async (req, res) => {
             currentPage,
             categories,
             offers,
-            wishlistProductIds,
         });
     } catch (error) {
         console.error("Error while rendering shop page:", error);

@@ -204,19 +204,18 @@
               <input type="hidden" id="selectedSize" name="selectedSize">
             </div>
             <!-- Action Buttons -->
-            <div class="flex flex-col gap-2 mt-4">
+            <div class="flex flex-row gap-2 mt-4 items-center">
               <% if(productData.quantity>0) { %>
                 <button
                   onclick="addToCart(event, '<%= productData._id %>')"
-                  class="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black py-2 rounded-md font-semibold text-base shadow hover:from-yellow-500 hover:to-yellow-400 transition"
+                  class="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black py-2 px-6 rounded-md font-semibold text-base shadow hover:from-yellow-500 hover:to-yellow-400 transition"
                 >
                   Add to Cart
                 </button>
-                <button
-                  class="w-full bg-orange-600 text-white py-2 rounded-md font-semibold text-base shadow hover:bg-orange-700 transition"
-                  onclick="alert('Buy Now functionality coming soon!')"
-                >
-                  Buy Now
+                <button type="button" id="wishlist-btn" class="wishlist-btn <%= isWishlisted ? 'active' : '' %> ml-2 flex items-center justify-center border-2 border-gray-300 rounded-md p-2 transition hover:bg-rose-100" onclick="toggleWishlistDetail('<%= productData._id %>', event)">
+                  <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" stroke-width="2" stroke="#000000" width="28" height="28">
+                    <path d="M9.06,25C7.68,17.3,12.78,10.63,20.73,10c7-.55,10.47,7.93,11.17,9.55a.13.13,0,0,0,.25,0c3.25-8.91,9.17-9.29,11.25-9.5C49,9.45,56.51,13.78,55,23.87c-2.16,14-23.12,29.81-23.12,29.81S11.79,40.05,9.06,25Z"></path>
+                  </svg>
                 </button>
               <%}else{%>
                 <span class="out-of-stock-msg text-red-500 font-semibold">Out of Stock</span>
@@ -290,6 +289,30 @@
       btn.classList.add('bg-black', 'text-white', 'border-black');
     }
     document.getElementById('selectedSize').value = size;
+  }
+  function toggleWishlistDetail(productId, event) {
+    event.preventDefault();
+    event.stopPropagation();
+    $.ajax({
+      url: `/wishlist-add`,
+      method: 'POST',
+      data: { productId },
+      success: function (response) {
+        const wishlistBtn = $('#wishlist-btn');
+        const heartIcon = wishlistBtn.find('svg path');
+        if (response.success) {
+          const added = response.added;
+          heartIcon.css('fill', added ? 'red' : '');
+          wishlistBtn.toggleClass('active', added);
+          Swal.fire(added ? 'Added to wishlist' : 'Removed from wishlist', '', added ? 'success' : 'info');
+        } else {
+          Swal.fire('Failed to update wishlist.', '', 'error');
+        }
+      },
+      error: function () {
+        Swal.fire('An error occurred. Please try again.', '', 'error');
+      }
+    });
   }
 </script>
 </html>
