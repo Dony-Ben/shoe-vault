@@ -169,6 +169,7 @@ const getOrders = async (req, res, next) => {
 const OrderCancel = async (req, res, next) => {
     try {
         const { orderId, productId } = req.params;
+        const userId = req.session.user.id;
         console.log("Cancelling item:", orderId, productId);
         const order = await Orders.findById(orderId);
         if (!order) {

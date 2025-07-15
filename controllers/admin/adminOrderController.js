@@ -6,11 +6,16 @@ const getOrderpage = async (req, res) => {
         const limit = 3;
         const skip = (page - 1) * limit;
 
-        // Filters
         const { orderStatus, paymentStatus, dateFrom, dateTo, paymentMethod, sortBy } = req.query;
         const query = {};
 
-        if (orderStatus) query.orderStatus = orderStatus;
+        if (orderStatus) {
+            if (orderStatus === 'returned') {
+                query['orderedItem.returned'] = true;
+            } else {
+                query.orderStatus = orderStatus;
+            }
+        }
         if (paymentStatus) query.paymentStatus = paymentStatus;
         if (paymentMethod) query.paymentMethod = paymentMethod;
         if (dateFrom || dateTo) {
@@ -23,8 +28,7 @@ const getOrderpage = async (req, res) => {
             }
         }
 
-        // Sorting
-        let sort = { createdAt: -1 }; // Default: newest
+        let sort = { createdAt: -1 };
         if (sortBy === 'highest') {
             sort = { finalAmount: -1 };
         }
@@ -49,7 +53,7 @@ const getOrderpage = async (req, res) => {
             dateFrom,
             dateTo,
             paymentMethod,
-            sortBy
+            sortBy,
         });
     } catch (error) {
         console.log("An error occurred while fetching user orders:", error);
@@ -110,9 +114,7 @@ const rejectReturn = async (req, res) => {
         if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
         const item = order.orderedItem.find(i => i.productId._id.toString() === productId);
         if (!item || !item.returned) return res.status(400).json({ success: false, message: 'Item not marked for return' });
-        // Reverse the return
         item.returned = false;
-        // If refund was processed, deduct from wallet
         if (order.paymentMethod !== 'cod') {
             const refundAmount = item.productId.salePrice * item.quantity;
             let wallet = await Wallet.findOne({ userId: order.userId });

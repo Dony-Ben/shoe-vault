@@ -14,7 +14,7 @@ const pageNotFound = async (req, res) => {
 const loadhome = async (req, res) => {
     try {
 
-        let productData = await Product.find({ isblocked: false })
+        let productData = await Product.find({ isblocked: false }).populate({ path: "brands", match: { isBlocked: false } });
         res.render('user/home', { products: productData });
     } catch (error) {
         console.error(error);

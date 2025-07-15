@@ -34,7 +34,7 @@ const wishlistadd = async (req, res) => {
         } else {
             wishlist.product.push({ productId, addedOn: new Date() });
             await wishlist.save();
-            return res.json({ message: null, success: true, added: true });
+            return res.json({ success: true, message: 'Product added to cart successfully.' });
         }
     } catch (error) {
        console.error("Wishlist update error:", error);

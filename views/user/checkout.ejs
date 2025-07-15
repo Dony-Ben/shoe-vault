@@ -55,6 +55,16 @@
             padding: 2rem 1rem;
         }
 
+        /* Fix header overlap on checkout page only */
+        .container {
+            margin-top: 72px; /* Adjust if your header is taller/shorter */
+        }
+        @media (max-width: 768px) {
+            .container {
+                margin-top: 56px;
+            }
+        }
+
         /* Breadcrumb */
         .breadcrumb {
             display: flex;

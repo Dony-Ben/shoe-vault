@@ -118,8 +118,10 @@
                     <% if (Array.isArray(products) && products.length> 0) { %>
                         <% products.slice(0, 4).forEach((product)=> { %>
                             <div class="col animate-on-scroll" data-price="<%= product.salePrice %>"
-                                data-name="<%= product.productName %>" data-category="<%= product.category?._id?.toString() %>">
-                                <div class="card h-100 glass border-0 shadow-md hover:shadow-lg transition duration-300  product-card <%= !product.quantity ? 'out-of-stock' : '' %>">
+                                data-name="<%= product.productName %>"
+                                data-category="<%= product.category?._id?.toString() %>">
+                                <div
+                                    class="card h-100 glass border-0 shadow-md hover:shadow-lg transition duration-300  product-card <%= !product.quantity ? 'out-of-stock' : '' %>">
 
                                     <% if (product.offer) { %>
                                         <span
@@ -127,37 +129,44 @@
                                             <%= (product.offerType && product.offerType === 'percentage') ? 'offer-percentage' : 'offer-flat' %>">
                                             <%= product.offer %>
                                         </span>
-                                    <% } %>
-                                    <% if (!product.quantity) { %>
-                                        <span class="badge position-absolute top-0 end-0 m-2 bg-danger" style="z-index:2;">Out of Stock</span>
-                                    <% } %>
-
-                                    <a href="/productDetails?product=<%= product._id %>" class="block">
-                                        <img src="<%= product.productImage[0] %>" class="card-img-top rounded-top w-100 object-cover <%= !product.quantity ? 'out-of-stock-img' : '' %>"
-                                            style="max-height:220px;min-height:160px;" alt="<%= product.productName %>">
-
-                                        <div class="card-body text-center">
-                                            <h5 class="card-title text-lg font-semibold mb-2 text-black">
-                                                <%= product.productName %>
-                                            </h5>
-                                            <p class="text-sm text-gray-500 mb-1">
-                                                <% if (product.brands && product.brands.brandName) { %>
-                                                    <%= product.brands.brandName %>
-                                                <% } else { %>
-                                                    No Brand
+                                        <% } %>
+                                            <% if (!product.quantity) { %>
+                                                <span class="badge position-absolute top-0 end-0 m-2 bg-danger"
+                                                    style="z-index:2;">Out of Stock</span>
                                                 <% } %>
-                                            </p>
-                                            <% if (product.originalPrice && product.salePrice < product.originalPrice) { %>
-                                                <p class="card-text text-muted mb-1">
-                                                    <del>₹<%= product.originalPrice %></del>
-                                                </p>
-                                            <% } %>
-                                            <p class="card-text text-accent font-bold mb-4">₹<%= product.salePrice %></p>
-                                        </div>
-                                    </a>
+
+                                                    <a href="/productDetails?product=<%= product._id %>" class="block">
+                                                        <img src="<%= product.productImage[0] %>"
+                                                            class="card-img-top rounded-top w-100 object-cover <%= !product.quantity ? 'out-of-stock-img' : '' %>"
+                                                            style="max-height:220px;min-height:160px;"
+                                                            alt="<%= product.productName %>">
+
+                                                        <div class="card-body text-center">
+                                                            <h5
+                                                                class="card-title text-lg font-semibold mb-2 text-black">
+                                                                <%= product.productName %>
+                                                            </h5>
+                                                            <p class="text-sm text-gray-500 mb-1">
+                                                                <% if (product.brands && product.brands.brandName) { %>
+                                                                    <%= product.brands.brandName %>
+                                                                        <% } else { %>
+                                                                            No Brand
+                                                                            <% } %>
+                                                            </p>
+                                                            <% if (product.originalPrice && product.salePrice <
+                                                                product.originalPrice) { %>
+                                                                <p class="card-text text-muted mb-1">
+                                                                    <del>₹<%= product.originalPrice %></del>
+                                                                </p>
+                                                                <% } %>
+                                                                    <p class="card-text text-black font-bold mb-4">₹<%=
+                                                                            product.salePrice %>
+                                                                    </p>
+                                                        </div>
+                                                    </a>
                                 </div>
                             </div>
-                        <% }) %>
+                            <% }) %>
                                 <% } else { %>
                                     <div class="col-12 text-center">
                                         <p class="text-secondary font-medium text-xl">No products available at the
