@@ -49,11 +49,11 @@
             min-height: 100vh;
         }
 
-        .container {
+        /* .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem 1rem;
-        }
+        } */
 
         .checkout-container {
             padding-top: 48px;
@@ -63,6 +63,15 @@
         .checkout-container.container {
             padding-top: 48px !important;
             padding-bottom: 0 !important;
+        }
+
+        .checkout-container,
+        .checkout-container * {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }
+        .checkout-container {
+            padding-top: 48px !important;
         }
 
         @media (max-width: 768px) {
@@ -567,7 +576,7 @@
 
 <body>
     <%- include('../partials/user/header.ejs') %>
-        <div class="checkout-container container">
+        <div class="checkout-container">
             <!-- Breadcrumb -->
             <nav class="breadcrumb">
                 <a href="/"><i class="fas fa-home"></i> Home</a>
