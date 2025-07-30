@@ -171,7 +171,11 @@ const OrderCancel = async (req, res, next) => {
         const { orderId, productId } = req.params;
         const userId = req.session.user.id;
         console.log("Cancelling item:", orderId, productId);
-        const order = await Orders.findById(orderId);
+        const order = await Orders.findById(orderId).populate('orderedItem.productId');
+        console.log("Order found:", order ? "Yes" : "No");
+        if (order) {
+            console.log("Order items count:", order.orderedItem.length);
+        }
         if (!order) {
             return res.redirect('/orders?message=Order not found');
 
@@ -184,6 +188,11 @@ const OrderCancel = async (req, res, next) => {
         if (!item) {
             return res.redirect('/orders?message=Product not found in order');
         }
+        
+        console.log("Item found:", item.productId ? "Yes" : "No");
+        if (item.productId) {
+            console.log("Product sale price:", item.productId.salePrice);
+        }
 
         if (item.cancelled) {
             return res.redirect('/orders?message=Item already cancelled');
@@ -191,7 +200,17 @@ const OrderCancel = async (req, res, next) => {
 
         item.cancelled = true;
 
+        // Check if product data exists
+        if (!item.productId || !item.productId.salePrice) {
+            return res.redirect('/orders?message=Product data not found');
+        }
+        
         const refundAmount = item.productId.salePrice * item.quantity;
+        
+        // Validate refundAmount is a valid number
+        if (isNaN(refundAmount) || refundAmount <= 0) {
+            return res.redirect('/orders?message=Invalid refund amount');
+        }
 
         // Find or create wallet
         let wallet = await Wallet.findOne({ userId });
@@ -222,7 +241,7 @@ const OrderReturn = async (req, res, next) => {
     try {
         const { orderId, productId } = req.params;
         const userId = req.session.user.id;
-        const order = await Orders.findById(orderId);
+        const order = await Orders.findById(orderId).populate('orderedItem.productId');
         if (!order) {
             return res.redirect('/orders?message=Order not found');
         }
@@ -245,7 +264,17 @@ const OrderReturn = async (req, res, next) => {
         item.returned = true;
         // Refund logic (skip for COD)
         if (order.paymentMethod !== 'cod') {
+            // Check if product data exists
+            if (!item.productId || !item.productId.salePrice) {
+                return res.redirect('/orders?message=Product data not found');
+            }
+            
             const refundAmount = item.productId.salePrice * item.quantity;
+            
+            // Validate refundAmount is a valid number
+            if (isNaN(refundAmount) || refundAmount <= 0) {
+                return res.redirect('/orders?message=Invalid refund amount');
+            }
             let wallet = await Wallet.findOne({ userId });
             if (!wallet) {
                 wallet = new Wallet({ userId, balance: 0, transactions: [] });
