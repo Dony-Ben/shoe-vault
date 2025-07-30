@@ -384,6 +384,5 @@ module.exports = {
     razorpayment,
     verifypayment,
     razorpaySuccessPage,
-    payWithWallet,
 
 }
