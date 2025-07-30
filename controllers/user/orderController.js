@@ -170,59 +170,22 @@ const OrderCancel = async (req, res, next) => {
     try {
         const { orderId, productId } = req.params;
         const userId = req.session.user.id;
-        console.log("Cancelling item:", orderId, productId);
         const order = await Orders.findById(orderId).populate('orderedItem.productId');
-        console.log("Order found:", order ? "Yes" : "No");
-        if (order) {
-            console.log("Order items count:", order.orderedItem.length);
-        }
         if (!order) {
             return res.redirect('/orders?message=Order not found');
-
         }
-
         const item = order.orderedItem.find(
             item => item.productId.toString() === productId
         );
-
         if (!item) {
             return res.redirect('/orders?message=Product not found in order');
         }
-        
-        console.log("Item found:", item.productId ? "Yes" : "No");
-        if (item.productId) {
-            console.log("Product sale price:", item.productId.salePrice);
-        }
-
         if (item.cancelled) {
             return res.redirect('/orders?message=Item already cancelled');
         }
-
+        // Mark the item as cancelled
         item.cancelled = true;
-
-        if (!item.productId || !item.productId.salePrice) {
-            return res.redirect('/orders?message=Product data not found');
-        }
-        
-        const refundAmount = item.productId.salePrice * item.quantity;
-        
-        if (isNaN(refundAmount) || refundAmount <= 0) {
-            return res.redirect('/orders?message=Invalid refund amount');
-        }
-
-        let wallet = await Wallet.findOne({ userId });
-        if (!wallet) {
-            wallet = new Wallet({ userId, balance: 0, transactions: [] });
-        }
-        wallet.balance += refundAmount;
-        wallet.transactions.push({
-            type: "credit",
-            amount: refundAmount,
-            description: `Refund for cancelled item in order #${orderId}`,
-            date: new Date(),
-        });
-        await wallet.save();
-
+        // If all items are cancelled, update order status and cancelled field
         const allCancelled = order.orderedItem.every(i => i.cancelled);
         if (allCancelled) {
             order.orderStatus = 'cancelled';
@@ -266,9 +229,9 @@ const OrderReturn = async (req, res, next) => {
             if (!item.productId || !item.productId.salePrice) {
                 return res.redirect('/orders?message=Product data not found');
             }
-            
+
             const refundAmount = item.productId.salePrice * item.quantity;
-            
+
             // Validate refundAmount is a valid number
             if (isNaN(refundAmount) || refundAmount <= 0) {
                 return res.redirect('/orders?message=Invalid refund amount');
@@ -303,7 +266,7 @@ const razorpayment = async (req, res) => {
         const order = await razorpay.orders.create(options);
         res.json({ success: true, order });
     } catch (error) {
-        console.error ("Error creating order: ", error);
+        console.error("Error creating order: ", error);
         res.status(400).json({ success: false, message: "Order creation failed" });
     }
 };
