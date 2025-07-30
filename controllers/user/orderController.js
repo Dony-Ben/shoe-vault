@@ -349,13 +349,11 @@ const razorpaySuccessPage = async (req, res) => {
             date: new Date(),
         });
         await wallet.save();
-        const savedOrder = await createOrder({ userId, products, totalPrice, address, paymentMethod });
-        res.status(201).json({
+        res.status(200).json({
             success: true,
-            message: "Order Placed Successfully!",
-            orderId: savedOrder._id,
+            message: "Wallet payment processed successfully!",
+            orderId: orderId,
         });
-        await savedOrder.save();
     } catch (error) {
         console.error("Error processing wallet payment:", error);
         res.status(500).json({ message: "Server error", error });
