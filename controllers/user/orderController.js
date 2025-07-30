@@ -190,8 +190,6 @@ const OrderCancel = async (req, res, next) => {
             const salePrice = Number(item.productId?.salePrice);
             const quantity = Number(item.quantity);
             const refundAmount = salePrice * quantity;
-
-            // Defensive check
             if (!salePrice || !quantity || isNaN(refundAmount) || refundAmount <= 0) {
                 return res.redirect('/orders?message=Invalid refund amount');
             }
@@ -331,21 +329,18 @@ const razorpaySuccessPage = async (req, res) => {
         if (!orderDetails) {
             return res.status(404).send("Order not found");
         }
-        const finalAmount = orderDetails.orderedItem.reduce((sum, item) => {
-            return sum + (item.productId.salePrice * item.quantity);
-        }, 0);
-
+        const totalPrice = orderDetails.finalAmount;
+        if (!totalPrice || isNaN(totalPrice) || totalPrice <= 0) {
+            return res.status(400).json({ message: "Invalid total price." });
+        }
         const userId = req.session.user?.id;
-        const { totalPrice, products, address, paymentMethod } = req.body;
         const wallet = await Wallet.findOne({ userId });
         if (!wallet) {
             return res.status(400).json({ message: "Wallet not found. Please add funds to your wallet." });
         }
-
         if (wallet.balance < totalPrice) {
             return res.status(400).json({ message: "Insufficient wallet balance." });
         }
-
         wallet.balance -= totalPrice;
         wallet.transactions.push({
             type: "debit",
@@ -354,7 +349,6 @@ const razorpaySuccessPage = async (req, res) => {
             date: new Date(),
         });
         await wallet.save();
-
         const savedOrder = await createOrder({ userId, products, totalPrice, address, paymentMethod });
         res.status(201).json({
             success: true,
