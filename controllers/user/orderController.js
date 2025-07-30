@@ -175,7 +175,7 @@ const OrderCancel = async (req, res, next) => {
             return res.redirect('/orders?message=Order not found');
         }
         const item = order.orderedItem.find(
-            item => item.productId.toString() === productId
+            i => i.productId.toString() === productId.toString()
         );
         if (!item) {
             return res.redirect('/orders?message=Product not found in order');
@@ -206,8 +206,10 @@ const OrderReturn = async (req, res, next) => {
         if (!order) {
             return res.redirect('/orders?message=Order not found');
         }
+        console.log('Route productId:', productId);
+        console.log('Order items:', order.orderedItem.map(i => i.productId.toString()));
         const item = order.orderedItem.find(
-            item => item.productId.toString() === productId
+            i => i.productId.toString() === productId.toString()
         );
         if (!item) {
             return res.redirect('/orders?message=Product not found in order');
