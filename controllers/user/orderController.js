@@ -303,7 +303,7 @@ const razorpayment = async (req, res) => {
         const order = await razorpay.orders.create(options);
         res.json({ success: true, order });
     } catch (error) {
-        console.error("Error creating order: ", error);
+        console.error ("Error creating order: ", error);
         res.status(400).json({ success: false, message: "Order creation failed" });
     }
 };
@@ -374,6 +374,33 @@ const razorpaySuccessPage = async (req, res) => {
     }
 };
 
+const payWithWallet = async (req, res) => {
+    try {
+        const userId = req.session.user.id;
+        const { products, totalPrice, address, paymentMethod } = req.body;
+        const wallet = await Wallet.findOne({ userId });
+        if (!wallet || wallet.balance < totalPrice) {
+            return res.status(400).json({ message: "Insufficient wallet balance." });
+        }
+        wallet.balance -= totalPrice;
+        wallet.transactions.push({
+            type: "debit",
+            amount: totalPrice,
+            description: "Purchase using wallet",
+            date: new Date(),
+        });
+        await wallet.save();
+        const savedOrder = await createOrder({ userId, products, totalPrice, address, paymentMethod });
+        res.status(201).json({
+            success: true,
+            message: "Order Placed Successfully!",
+            orderId: savedOrder._id,
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+};
+
 module.exports = {
     loadcheckout,
     OrderConfirmation,
@@ -384,5 +411,6 @@ module.exports = {
     razorpayment,
     verifypayment,
     razorpaySuccessPage,
+    payWithWallet,
 
 }

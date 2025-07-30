@@ -23,7 +23,7 @@ const { productDetails } = require("../controllers/user/userproductController.js
 const { userAuth, ensureGuest } = require("../middleware/auth.js");
 const { getcartpage, cartaddToCart, deleteProduct, quantityManage } = require("../controllers/user/cartController.js");
 const { getForgotPassPage, forgotEmailValid, verifyOtp, resetPassword, loadProfile, geteditprofile, editprofile, loadAddresses, AddAddressForm, editAddress, getAddressById, deleteAddress } = require("../controllers/user/profileController.js");
-const { loadcheckout, OrderConfirmation, ordersuccess, getOrders, OrderCancel, razorpayment, verifypayment, razorpaySuccessPage, payWithWallet } = require("../controllers/user/orderController.js");
+const { loadcheckout, OrderConfirmation, ordersuccess, getOrders, OrderCancel, razorpayment, verifypayment, razorpaySuccessPage,payWithWallet } = require("../controllers/user/orderController.js");
 const { wishlist, wishlistadd, ProductRemove } = require("../controllers/user/wishlistController.js");
 const { loadWallet, addFunds } = require("../controllers/user/walletController.js");
 const { couponValidation } = require("../controllers/user/couponController.js");
@@ -89,8 +89,8 @@ userRouter.get("/orders", userAuth, getOrders);
 userRouter.post("/create-order", userAuth, razorpayment);
 userRouter.post("/place-order", userAuth, verifypayment);
 userRouter.get("/razorpay-successpage/:orderId", userAuth, razorpaySuccessPage);
+userRouter.post("/paywallet", userAuth, payWithWallet);
 userRouter.post("/orders/:orderId/cancel-item/:productId", userAuth, OrderCancel);
-userRouter.post("/paywallet", userAuth, payWithWallet)
 userRouter.post("/validate-coupon", userAuth, couponValidation);
 userRouter.post("/orders/:orderId/return-item/:productId", userAuth, require("../controllers/user/orderController.js").OrderReturn);
 
