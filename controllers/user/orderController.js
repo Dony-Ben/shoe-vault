@@ -187,31 +187,33 @@ const OrderCancel = async (req, res, next) => {
         item.cancelled = true;
 
         if (order.paymentMethod !== 'cod') {
-            const salePrice = item.productId.salePrice || 0;
-            if (!salePrice) {
-                return res.redirect('/orders?message=Product data not found');
-            }
-            const refundAmount = salePrice * item.quantity;
-            if (isNaN(refundAmount) || refundAmount <= 0) {
+            const salePrice = Number(item.productId.salePrice);
+            const quantity = Number(item.quantity);
+            const refundAmount = salePrice * quantity;
+
+            if (!salePrice || !quantity || isNaN(refundAmount) || refundAmount <= 0) {
                 return res.redirect('/orders?message=Invalid refund amount');
             }
+
             let wallet = await Wallet.findOne({ userId });
             if (!wallet) {
                 wallet = new Wallet({ userId, balance: 0, transactions: [] });
             }
-            wallet.balance += refundAmount;
+
+            wallet.balance = Number(wallet.balance) + refundAmount;
             wallet.transactions.push({
                 type: 'credit',
                 amount: refundAmount,
                 description: `Refund for cancelled item in order #${orderId}`,
                 date: new Date(),
             });
+
             try {
                 await wallet.save();
-                    console.log("Wallet after refund:", wallet);
-
+                console.log("Wallet after refund:", wallet);
             } catch (e) {
                 console.error("Wallet save error:", e);
+                return res.redirect('/orders?message=Wallet update failed');
             }
         }
 
