@@ -187,10 +187,11 @@ const OrderCancel = async (req, res, next) => {
         item.cancelled = true;
 
         if (order.paymentMethod !== 'cod') {
-            const salePrice = Number(item.productId.salePrice);
+            const salePrice = Number(item.productId?.salePrice);
             const quantity = Number(item.quantity);
             const refundAmount = salePrice * quantity;
 
+            // Defensive check
             if (!salePrice || !quantity || isNaN(refundAmount) || refundAmount <= 0) {
                 return res.redirect('/orders?message=Invalid refund amount');
             }
