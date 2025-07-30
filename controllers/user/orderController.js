@@ -169,12 +169,11 @@ const getOrders = async (req, res, next) => {
 const OrderCancel = async (req, res, next) => {
     try {
         const { orderId, productId } = req.params;
+        const userId = req.session.user.id;
         const order = await Orders.findById(orderId).populate('orderedItem.productId');
         if (!order) {
             return res.redirect('/orders?message=Order not found');
         }
-        console.log('Route productId:', productId);
-        console.log('Order items:', order.orderedItem.map(i => i.productId.toString()));
         const item = order.orderedItem.find(
             i => (i.productId._id ? i.productId._id.toString() : i.productId.toString()) === productId.toString()
         );
@@ -184,16 +183,39 @@ const OrderCancel = async (req, res, next) => {
         if (item.cancelled) {
             return res.redirect('/orders?message=Item already cancelled');
         }
-        // Mark the item as cancelled
+
         item.cancelled = true;
-        // If all items are cancelled, update order status and cancelled field
+
+        if (order.paymentMethod !== 'cod') {
+            const salePrice = item.productId.salePrice || 0;
+            if (!salePrice) {
+                return res.redirect('/orders?message=Product data not found');
+            }
+            const refundAmount = salePrice * item.quantity;
+            if (isNaN(refundAmount) || refundAmount <= 0) {
+                return res.redirect('/orders?message=Invalid refund amount');
+            }
+            let wallet = await Wallet.findOne({ userId });
+            if (!wallet) {
+                wallet = new Wallet({ userId, balance: 0, transactions: [] });
+            }
+            wallet.balance += refundAmount;
+            wallet.transactions.push({
+                type: 'credit',
+                amount: refundAmount,
+                description: `Refund for cancelled item in order #${orderId}`,
+                date: new Date(),
+            });
+            await wallet.save();
+        }
+
         const allCancelled = order.orderedItem.every(i => i.cancelled);
         if (allCancelled) {
             order.orderStatus = 'cancelled';
             order.cancelled = true;
         }
         await order.save();
-        res.redirect('/orders?message=Item cancelled successfully');
+        res.redirect('/orders?message=Item cancelled and amount refunded to wallet');
     } catch (err) {
         next(err)
     }
@@ -208,7 +230,7 @@ const OrderReturn = async (req, res, next) => {
             return res.redirect('/orders?message=Order not found');
         }
         const item = order.orderedItem.find(
-            i => i.productId.toString() === productId.toString()
+            i => (i.productId._id ? i.productId._id.toString() : i.productId.toString()) === productId.toString()
         );
         if (!item) {
             return res.redirect('/orders?message=Product not found in order');
@@ -219,21 +241,16 @@ const OrderReturn = async (req, res, next) => {
         if (item.returned) {
             return res.redirect('/orders?message=Item already returned');
         }
-        // Only allow return if order is delivered/completed
         if (!['completed'].includes(order.orderStatus)) {
             return res.redirect('/orders?message=Return allowed only after delivery');
         }
         item.returned = true;
-        // Refund logic (skip for COD)
         if (order.paymentMethod !== 'cod') {
-            // Check if product data exists
             if (!item.productId || !item.productId.salePrice) {
                 return res.redirect('/orders?message=Product data not found');
             }
 
             const refundAmount = item.productId.salePrice * item.quantity;
-
-            // Validate refundAmount is a valid number
             if (isNaN(refundAmount) || refundAmount <= 0) {
                 return res.redirect('/orders?message=Invalid refund amount');
             }
