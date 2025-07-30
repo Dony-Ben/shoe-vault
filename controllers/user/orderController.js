@@ -169,11 +169,12 @@ const getOrders = async (req, res, next) => {
 const OrderCancel = async (req, res, next) => {
     try {
         const { orderId, productId } = req.params;
-        const userId = req.session.user.id;
         const order = await Orders.findById(orderId).populate('orderedItem.productId');
         if (!order) {
             return res.redirect('/orders?message=Order not found');
         }
+        console.log('Route productId:', productId);
+        console.log('Order items:', order.orderedItem.map(i => i.productId.toString()));
         const item = order.orderedItem.find(
             i => i.productId.toString() === productId.toString()
         );
@@ -206,8 +207,6 @@ const OrderReturn = async (req, res, next) => {
         if (!order) {
             return res.redirect('/orders?message=Order not found');
         }
-        console.log('Route productId:', productId);
-        console.log('Order items:', order.orderedItem.map(i => i.productId.toString()));
         const item = order.orderedItem.find(
             i => i.productId.toString() === productId.toString()
         );
