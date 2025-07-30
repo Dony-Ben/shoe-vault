@@ -206,7 +206,13 @@ const OrderCancel = async (req, res, next) => {
                 description: `Refund for cancelled item in order #${orderId}`,
                 date: new Date(),
             });
-            await wallet.save();
+            try {
+                await wallet.save();
+                    console.log("Wallet after refund:", wallet);
+
+            } catch (e) {
+                console.error("Wallet save error:", e);
+            }
         }
 
         const allCancelled = order.orderedItem.every(i => i.cancelled);
@@ -265,7 +271,11 @@ const OrderReturn = async (req, res, next) => {
                 description: `Refund for returned item in order #${orderId}`,
                 date: new Date(),
             });
-            await wallet.save();
+            try {
+                await wallet.save();
+            } catch (e) {
+                console.error("Wallet save error:", e);
+            }
         }
         await order.save();
         res.redirect('/orders?message=Item returned successfully');
