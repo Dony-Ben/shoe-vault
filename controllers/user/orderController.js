@@ -149,7 +149,7 @@ const getOrders = async (req, res, next) => {
         const safeOrders = orders.map(order => ({
             ...order,
             items: (order.orderedItem || []).map(item => ({
-                itemId: item._id, // Important for individual cancellation
+                itemId: item._id,
                 productId: item.productId?._id,
                 productName: item.productId?.productName || 'N/A',
                 price: item.productId?.salePrice || 0,
@@ -200,19 +200,16 @@ const OrderCancel = async (req, res, next) => {
 
         item.cancelled = true;
 
-        // Check if product data exists
         if (!item.productId || !item.productId.salePrice) {
             return res.redirect('/orders?message=Product data not found');
         }
         
         const refundAmount = item.productId.salePrice * item.quantity;
         
-        // Validate refundAmount is a valid number
         if (isNaN(refundAmount) || refundAmount <= 0) {
             return res.redirect('/orders?message=Invalid refund amount');
         }
 
-        // Find or create wallet
         let wallet = await Wallet.findOne({ userId });
         if (!wallet) {
             wallet = new Wallet({ userId, balance: 0, transactions: [] });
@@ -229,6 +226,7 @@ const OrderCancel = async (req, res, next) => {
         const allCancelled = order.orderedItem.every(i => i.cancelled);
         if (allCancelled) {
             order.orderStatus = 'cancelled';
+            order.cancelled = true;
         }
         await order.save();
         res.redirect('/orders?message=Item cancelled successfully');
@@ -343,15 +341,6 @@ const razorpaySuccessPage = async (req, res) => {
             return sum + (item.productId.salePrice * item.quantity);
         }, 0);
 
-        res.render("user/razorpay-successpage", { orderDetails, finalAmount });
-    } catch (error) {
-        console.error("Error loading Razorpay success page:", error);
-        res.status(500).send("Internal Server Error");
-    }
-};
-
-const payWithWallet = async (req, res) => {
-    try {
         const userId = req.session.user?.id;
         const { totalPrice, products, address, paymentMethod } = req.body;
         const wallet = await Wallet.findOne({ userId });
