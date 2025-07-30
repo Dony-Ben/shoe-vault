@@ -176,7 +176,7 @@ const OrderCancel = async (req, res, next) => {
         console.log('Route productId:', productId);
         console.log('Order items:', order.orderedItem.map(i => i.productId.toString()));
         const item = order.orderedItem.find(
-            i => i.productId.toString() === productId.toString()
+            i => (i.productId._id ? i.productId._id.toString() : i.productId.toString()) === productId.toString()
         );
         if (!item) {
             return res.redirect('/orders?message=Product not found in order');
