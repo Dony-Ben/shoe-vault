@@ -259,34 +259,34 @@ const OrderReturn = async (req, res, next) => {
             order.orderStatus = 'returned';
         }
 
-        if (order.paymentMethod !== 'cod') {
-            if (!item.productId || !item.productId.salePrice) {
-                return res.redirect('/orders?message=Product data not found');
-            }
-
-            const refundAmount = item.productId.salePrice * item.quantity;
-            if (isNaN(refundAmount) || refundAmount <= 0) {
-                return res.redirect('/orders?message=Invalid refund amount');
-            }
-            let wallet = await Wallet.findOne({ userId });
-            if (!wallet) {
-                wallet = new Wallet({ userId, balance: 0, transactions: [] });
-            }
-            wallet.balance += refundAmount;
-            wallet.transactions.push({
-                type: 'credit',
-                amount: refundAmount,
-                description: `Refund for returned item in order #${orderId}`,
-                date: new Date(),
-            });
-            try {
-                await wallet.save();
-            } catch (e) {
-                console.error("Wallet save error:", e);
-            }
+        // Calculate refund amount
+        const refundAmount = item.productId.salePrice * item.quantity;
+        if (isNaN(refundAmount) || refundAmount <= 0) {
+            return res.redirect('/orders?message=Invalid refund amount');
         }
+
+        // Find or create the user's wallet
+        let wallet = await Wallet.findOne({ userId });
+        if (!wallet) {
+            wallet = new Wallet({ userId, balance: 0, transactions: [] });
+        }
+
+        // Credit the refund amount to the wallet
+        wallet.balance += refundAmount;
+        wallet.transactions.push({
+            type: 'credit',
+            amount: refundAmount,
+            description: `Refund for returned item in order #${orderId}`,
+            date: new Date(),
+        });
+
+        // Save the wallet
+        await wallet.save();
+
+        // Save the order
         await order.save();
-        res.redirect('/orders?message=Item returned successfully');
+
+        res.redirect('/orders?message=Item returned successfully and amount credited to wallet');
     } catch (err) {
         next(err);
     }
