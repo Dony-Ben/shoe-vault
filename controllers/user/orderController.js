@@ -251,7 +251,14 @@ const OrderReturn = async (req, res, next) => {
         if (!['completed'].includes(order.orderStatus)) {
             return res.redirect('/orders?message=Return allowed only after delivery');
         }
+    
         item.returned = true;
+        
+        const allReturnedOrCancelled = order.orderedItem.every(i => i.returned || i.cancelled);
+        if (allReturnedOrCancelled) {
+            order.orderStatus = 'returned';
+        }
+
         if (order.paymentMethod !== 'cod') {
             if (!item.productId || !item.productId.salePrice) {
                 return res.redirect('/orders?message=Product data not found');
