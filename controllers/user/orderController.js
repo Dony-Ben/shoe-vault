@@ -333,12 +333,17 @@ const razorpaySuccessPage = async (req, res) => {
     try {
         const orderId = req.params.orderId;
    
-        const orderDetails = await Orders.findById(orderId);
+        const orderDetails = await Orders.findById(orderId).populate('orderedItem.productId');
         if (!orderDetails) {
             return res.status(404).json({ success: false, message: "Order not found" });
         }
 
-        res.render('user/razorpay-successpage', { orderDetails });
+        const finalAmount = orderDetails.totalPrice - (orderDetails.discount || 0);
+        
+        res.render('user/razorpay-successpage', { 
+            orderDetails, 
+            finalAmount: finalAmount.toFixed(2) 
+        });
         
     } catch (error) {
         console.error("Error processing Razorpay payment:", error);
