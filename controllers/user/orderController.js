@@ -332,7 +332,7 @@ const verifypayment = async (req, res) => {
 const razorpaySuccessPage = async (req, res) => {
     try {
         const orderId = req.params.orderId;
-        const { payment_id, signature, order_id } = req.body;
+        const { payment_id, razorpay_signature, razorpay_order_id } = req.body;
 
         // Get the order details
         const orderDetails = await Orders.findById(orderId);
@@ -341,14 +341,14 @@ const razorpaySuccessPage = async (req, res) => {
         }
 
         // Use razorpay_order_id for signature verification (this is the key fix)
-        console.log("Attempting to verify payment with the following details from controll:");
+        console.log("Attempting to verify payment with the following details:");
         console.log("Order ID:", orderId);
         console.log("Payment ID:", payment_id);
-        console.log("Signature:", signature);
+        console.log("Signature:", razorpay_signature);
         const isPaymentVerified = verifyRazorpayPayment(
-            order_id,
-            signature,
+            razorpay_order_id,
             payment_id,
+            razorpay_signature,
             process.env.RAZORPAY_SECRET_KEY
         );
 
