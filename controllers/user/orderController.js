@@ -348,12 +348,16 @@ const razorpaySuccessPage = async (req, res) => {
         console.log("Order ID:", razorpay_order_id);
         console.log("Payment ID:", payment_id);
         console.log("Signature:", razorpay_signature);
+        console.log("Secret Key:", process.env.RAZORPAY_SECRET_KEY ? "Present" : "Missing");
+        
         const isPaymentVerified = verifyRazorpayPayment(
             razorpay_order_id,
             payment_id,
             razorpay_signature,
             process.env.RAZORPAY_SECRET_KEY
         );
+        
+        console.log("Verification result:", isPaymentVerified);
 
         if (!isPaymentVerified) {
             return res.status(400).json({
