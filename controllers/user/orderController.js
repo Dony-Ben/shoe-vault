@@ -332,7 +332,7 @@ const verifypayment = async (req, res) => {
 const razorpaySuccessPage = async (req, res) => {
     try {
         const orderId = req.params.orderId;
-        const { payment_id, razorpay_signature } = req.body;
+        const { payment_id, razorpay_signature, razorpay_order_id } = req.body;
         
         // Get the order details
         const orderDetails = await Orders.findById(orderId);
@@ -340,9 +340,9 @@ const razorpaySuccessPage = async (req, res) => {
             return res.status(404).json({ success: false, message: "Order not found" });
         }
 
-        // Verify the Razorpay payment
+        // Use razorpay_order_id for signature verification (this is the key fix)
         const isPaymentVerified = verifyRazorpayPayment(
-            orderDetails._id.toString(), 
+            razorpay_order_id, 
             payment_id, 
             razorpay_signature, 
             process.env.RAZORPAY_SECRET_KEY
