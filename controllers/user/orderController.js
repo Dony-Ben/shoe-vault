@@ -333,14 +333,12 @@ const razorpaySuccessPage = async (req, res) => {
     try {
         const orderId = req.params.orderId;
    
-
-
-        // Get the order details
         const orderDetails = await Orders.findById(orderId);
         if (!orderDetails) {
             return res.status(404).json({ success: false, message: "Order not found" });
         }
-        await orderDetails.save();
+
+        res.render('orderSuccess', { orderDetails });
         res.status(200).json({
             success: true,
             message: "Razorpay payment processed successfully!",
