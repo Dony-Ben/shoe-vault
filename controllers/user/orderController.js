@@ -332,66 +332,15 @@ const verifypayment = async (req, res) => {
 const razorpaySuccessPage = async (req, res) => {
     try {
         const orderId = req.params.orderId;
-        
-        // Handle both possible parameter formats from Razorpay
-        // Check req.body, req.query, and req.params for parameters
-        const razorpay_order_id = req.body.razorpay_order_id || req.body.order_id || req.query.razorpay_order_id || req.query.order_id;
-        const razorpay_payment_id = req.body.razorpay_payment_id || req.body.payment_id || req.query.razorpay_payment_id || req.query.payment_id;
-        const razorpay_signature = req.body.razorpay_signature || req.body.signature || req.query.razorpay_signature || req.query.signature;
-        
-        // Validate required parameters
-        if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-            console.log("Missing required parameters:", {
-                razorpay_order_id,
-                razorpay_payment_id,
-                razorpay_signature,
-                body: req.body,
-                query: req.query,
-                params: req.params
-            });
-            return res.status(400).json({
-                success: false,
-                message: "Missing required payment verification parameters",
-                received: {
-                    body: req.body,
-                    query: req.query,
-                    params: req.params
-                }
-            });
-        }
+   
+
 
         // Get the order details
         const orderDetails = await Orders.findById(orderId);
         if (!orderDetails) {
             return res.status(404).json({ success: false, message: "Order not found" });
         }
-
-        console.log("Attempting to verify payment with the following details:");
-        console.log("Order ID:", razorpay_order_id);
-        console.log("Payment ID:", razorpay_payment_id);
-        console.log("Signature:", razorpay_signature);
-        
-        const isPaymentVerified = verifyRazorpayPayment(
-            razorpay_order_id,
-            razorpay_payment_id,
-            razorpay_signature,
-            process.env.RAZORPAY_SECRET_KEY
-        );
-        
-        console.log("Verification result:", isPaymentVerified);
-
-        if (!isPaymentVerified) {
-            return res.status(400).json({
-                success: false,
-                message: "Razorpay payment verification failed"
-            });
-        }
-
-        // Update order status for successful Razorpay payment
-        orderDetails.paymentStatus = 'completed';
-        orderDetails.orderStatus = 'confirmed';
         await orderDetails.save();
-
         res.status(200).json({
             success: true,
             message: "Razorpay payment processed successfully!",

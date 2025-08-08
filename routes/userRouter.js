@@ -89,7 +89,6 @@ userRouter.get("/orders", userAuth, getOrders);
 userRouter.post("/create-order", userAuth, razorpayment);
 userRouter.post("/place-order", userAuth, verifypayment);
 userRouter.get("/razorpay-successpage/:orderId", userAuth, razorpaySuccessPage);
-userRouter.post("/razorpay-success/:orderId", userAuth, razorpaySuccessPage);
 userRouter.post("/paywallet", userAuth, payWithWallet);
 userRouter.post("/orders/:orderId/cancel-item/:productId", userAuth, OrderCancel);
 userRouter.post("/validate-coupon", userAuth, couponValidation);
