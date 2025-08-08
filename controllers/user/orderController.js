@@ -339,12 +339,7 @@ const razorpaySuccessPage = async (req, res) => {
         }
 
         res.render('orderSuccess', { orderDetails });
-        res.status(200).json({
-            success: true,
-            message: "Razorpay payment processed successfully!",
-            orderId: orderId,
-            paymentMethod: 'razorpay'
-        });
+        
     } catch (error) {
         console.error("Error processing Razorpay payment:", error);
         res.status(500).json({ success: false, message: "Server error", error });
