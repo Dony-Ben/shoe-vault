@@ -107,20 +107,16 @@ const createOrder = async ({ userId, products, totalPrice, address, paymentMetho
     return order.save();
 };
 
-console.log("Attempting to verify payment with the following details:");
-console.log("Order ID:", orderId);
-console.log("Payment ID:", paymentId);
-console.log("Signature:", signature);
 const verifyRazorpayPayment = (orderId, paymentId, signature, secretKey) => {
     const hmac = crypto.createHmac('sha256', secretKey);
     hmac.update(orderId + "|" + paymentId);
     const generatedSignature = hmac.digest('hex');
-
-    // Add logging for debugging
+    
+    
+    console.log("Attempting to verify payment with the following details:");
     console.log("Order ID:", orderId);
     console.log("Payment ID:", paymentId);
-    console.log("Provided Signature:", signature);
-    console.log("Generated Signature:", generatedSignature);
+    console.log("Signature:", signature);
 
     return generatedSignature === signature;
 };

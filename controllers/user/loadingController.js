@@ -155,6 +155,7 @@ module.exports = {
     loadlogin,
     loadregister,
     loadOTP,
+    getWishlistProductIds,
     shop,
     about
 }
