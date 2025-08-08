@@ -332,10 +332,25 @@ const verifypayment = async (req, res) => {
 const razorpaySuccessPage = async (req, res) => {
     try {
         const orderId = req.params.orderId;
-        const { razorpay_payment_id, razorpay_signature, razorpay_order_id } = req.body;
         
-        // Ensure payment_id is properly defined
-        const payment_id = razorpay_payment_id;
+        // Handle both possible parameter formats from Razorpay
+        const razorpay_order_id = req.body.razorpay_order_id || req.body.order_id;
+        const razorpay_payment_id = req.body.razorpay_payment_id || req.body.payment_id;
+        const razorpay_signature = req.body.razorpay_signature || req.body.signature;
+        
+        // Validate required parameters
+        if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+            console.log("Missing required parameters:", {
+                razorpay_order_id,
+                razorpay_payment_id,
+                razorpay_signature,
+                body: req.body
+            });
+            return res.status(400).json({
+                success: false,
+                message: "Missing required payment verification parameters"
+            });
+        }
 
         // Get the order details
         const orderDetails = await Orders.findById(orderId);
@@ -343,16 +358,14 @@ const razorpaySuccessPage = async (req, res) => {
             return res.status(404).json({ success: false, message: "Order not found" });
         }
 
-        // Use razorpay_order_id for signature verification
         console.log("Attempting to verify payment with the following details:");
         console.log("Order ID:", razorpay_order_id);
-        console.log("Payment ID:", payment_id);
+        console.log("Payment ID:", razorpay_payment_id);
         console.log("Signature:", razorpay_signature);
-        console.log("Secret Key:", process.env.RAZORPAY_SECRET_KEY ? "Present" : "Missing");
         
         const isPaymentVerified = verifyRazorpayPayment(
             razorpay_order_id,
-            payment_id,
+            razorpay_payment_id,
             razorpay_signature,
             process.env.RAZORPAY_SECRET_KEY
         );
