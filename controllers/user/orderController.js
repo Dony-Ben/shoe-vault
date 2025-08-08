@@ -338,7 +338,7 @@ const razorpaySuccessPage = async (req, res) => {
             return res.status(404).json({ success: false, message: "Order not found" });
         }
 
-        res.render('orderSuccess', { orderDetails });
+        res.render('user/razorpay-successpage', { orderDetails });
         
     } catch (error) {
         console.error("Error processing Razorpay payment:", error);
