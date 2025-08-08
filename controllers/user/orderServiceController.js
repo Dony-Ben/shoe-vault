@@ -111,6 +111,13 @@ const verifyRazorpayPayment = (orderId, paymentId, signature, secretKey) => {
     const hmac = crypto.createHmac('sha256', secretKey);
     hmac.update(orderId + "|" + paymentId);
     const generatedSignature = hmac.digest('hex');
+
+    // Add logging for debugging
+    console.log("Order ID:", orderId);
+    console.log("Payment ID:", paymentId);
+    console.log("Provided Signature:", signature);
+    console.log("Generated Signature:", generatedSignature);
+
     return generatedSignature === signature;
 };
 
