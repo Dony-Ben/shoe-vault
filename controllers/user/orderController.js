@@ -332,38 +332,43 @@ const verifypayment = async (req, res) => {
 const razorpaySuccessPage = async (req, res) => {
     try {
         const orderId = req.params.orderId;
-        const orderDetails = await Orders.findById(orderId).populate('orderedItem.productId');
+        const { payment_id, razorpay_signature } = req.body;
+        
+        // Get the order details
+        const orderDetails = await Orders.findById(orderId);
         if (!orderDetails) {
-            return res.status(404).send("Order not found");
+            return res.status(404).json({ success: false, message: "Order not found" });
         }
-        const totalPrice = orderDetails.finalAmount;
-        if (!totalPrice || isNaN(totalPrice) || totalPrice <= 0) {
-            return res.status(400).json({ message: "Invalid total price." });
+
+        // Verify the Razorpay payment
+        const isPaymentVerified = verifyRazorpayPayment(
+            orderDetails._id.toString(), 
+            payment_id, 
+            razorpay_signature, 
+            process.env.RAZORPAY_SECRET_KEY
+        );
+
+        if (!isPaymentVerified) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Razorpay payment verification failed" 
+            });
         }
-        const userId = req.session.user?.id;
-        const wallet = await Wallet.findOne({ userId });
-        if (!wallet) {
-            return res.status(400).json({ message: "Wallet not found. Please add funds to your wallet." });
-        }
-        if (wallet.balance < totalPrice) {
-            return res.status(400).json({ message: "Insufficient wallet balance." });
-        }
-        wallet.balance -= totalPrice;
-        wallet.transactions.push({
-            type: "debit",
-            amount: totalPrice,
-            description: "Purchase using wallet",
-            date: new Date(),
-        });
-        await wallet.save();
+
+        // Update order status for successful Razorpay payment
+        orderDetails.paymentStatus = 'completed';
+        orderDetails.orderStatus = 'confirmed';
+        await orderDetails.save();
+
         res.status(200).json({
             success: true,
-            message: "Wallet payment processed successfully!",
+            message: "Razorpay payment processed successfully!",
             orderId: orderId,
+            paymentMethod: 'razorpay'
         });
     } catch (error) {
-        console.error("Error processing wallet payment:", error);
-        res.status(500).json({ message: "Server error", error });
+        console.error("Error processing Razorpay payment:", error);
+        res.status(500).json({ success: false, message: "Server error", error });
     }
 };
 
