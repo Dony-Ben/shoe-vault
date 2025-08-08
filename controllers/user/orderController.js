@@ -251,9 +251,9 @@ const OrderReturn = async (req, res, next) => {
         if (!['completed'].includes(order.orderStatus)) {
             return res.redirect('/orders?message=Return allowed only after delivery');
         }
-    
+
         item.returned = true;
-        
+
         const allReturnedOrCancelled = order.orderedItem.every(i => i.returned || i.cancelled);
         if (allReturnedOrCancelled) {
             order.orderStatus = 'returned';
@@ -333,7 +333,7 @@ const razorpaySuccessPage = async (req, res) => {
     try {
         const orderId = req.params.orderId;
         const { payment_id, razorpay_signature, razorpay_order_id } = req.body;
-        
+
         // Get the order details
         const orderDetails = await Orders.findById(orderId);
         if (!orderDetails) {
@@ -341,17 +341,21 @@ const razorpaySuccessPage = async (req, res) => {
         }
 
         // Use razorpay_order_id for signature verification (this is the key fix)
+        console.log("Attempting to verify payment with the following details:");
+        console.log("Order ID:", orderId);
+        console.log("Payment ID:", payment_id);
+        console.log("Signature:", razorpay_signature);
         const isPaymentVerified = verifyRazorpayPayment(
-            razorpay_order_id, 
-            payment_id, 
-            razorpay_signature, 
+            razorpay_order_id,
+            payment_id,
+            razorpay_signature,
             process.env.RAZORPAY_SECRET_KEY
         );
 
         if (!isPaymentVerified) {
-            return res.status(400).json({ 
-                success: false, 
-                message: "Razorpay payment verification failed" 
+            return res.status(400).json({
+                success: false,
+                message: "Razorpay payment verification failed"
             });
         }
 
