@@ -64,7 +64,7 @@ const userSignup = async (req, res) => {
     }
 
     if (!validatePassword(password)) {
-      return res.render("user/signup", { message: "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number." });
+      return res.render("user/signup", { message: "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character." });
     }
 
     const existingUser = await userModel.findOne({ email });
@@ -90,8 +90,8 @@ const userSignup = async (req, res) => {
 };
 
 const validatePassword = (password) => {
-  // At least 8 characters, 1 uppercase, 1 lowercase, 1 number
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/;
+  // At least 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
   return passwordRegex.test(password);
 };
 

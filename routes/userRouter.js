@@ -39,6 +39,7 @@ userRouter.get("/forgotpassword", getForgotPassPage);
 userRouter.post("/resetpassword", forgotEmailValid);
 userRouter.post("/verify-otp", verifyOtp);
 userRouter.post("/set-new-password", resetPassword);
+userRouter.post("/resend-forgot-otp", require("../controllers/user/profileController.js").resendForgotOtp);
 
 // editin user profile
 userRouter.get('/profile', userAuth, loadProfile);

@@ -29,7 +29,7 @@ const sendVerificationEmail = async (email, otp) => {
 
         const mailOptions = {
             from: process.env.EMAIL_USER,
-            to: "donybenny612@gmail.com",
+            to: email,
             subject: 'Your OTP for Password Reset',
             text: `Your OTP is ${otp}`,
             html: `<b><h4>Your OTP: ${otp}</h4></b>`
@@ -85,21 +85,39 @@ const forgotEmailValid = async (req, res) => {
 const verifyOtp = async (req, res) => {
     try {
         const { userOtp, email } = req.session;
-        const enteredOtp = Object.values(req.body).join("").trim();
+        let enteredOtp;
+
+        // Handle both AJAX (JSON) and form submission
+        if (req.headers['content-type'] && req.headers['content-type'].includes('application/json')) {
+            enteredOtp = req.body.otp ? req.body.otp.toString().trim() : '';
+        } else {
+            enteredOtp = Object.values(req.body).join("").trim();
+        }
 
         if (!userOtp || !email) {
+            if (req.headers['content-type'] && req.headers['content-type'].includes('application/json')) {
+                return res.json({ success: false, message: "Session expired. Please request a new OTP." });
+            }
             return res.render("user/forgotpassword", { message: "Session expired. Please request a new OTP." });
         }
 
         if (userOtp.trim() === enteredOtp) {
             req.session.isOtpVerified = true;
+            if (req.headers['content-type'] && req.headers['content-type'].includes('application/json')) {
+                return res.json({ success: true, message: "OTP verified successfully." });
+            }
             res.render("user/newpassword");
         } else {
-            req.session.message = "Invalid OTP. Please try again.";
-            res.redirect("/passwordreset");
+            if (req.headers['content-type'] && req.headers['content-type'].includes('application/json')) {
+                return res.json({ success: false, message: "Invalid OTP. Please try again." });
+            }
+            res.render("user/otpforgotpass", { message: "Invalid OTP. Please try again." });
         }
     } catch (error) {
         console.error("Error verifying OTP:", error);
+        if (req.headers['content-type'] && req.headers['content-type'].includes('application/json')) {
+            return res.json({ success: false, message: "Something went wrong. Please try again." });
+        }
         res.render("user/page-404", { message: "Something went wrong. Please try again." });
     }
 };
@@ -334,12 +352,37 @@ const deleteAddress = async (req, res) => {
     }
 }
 
+const resendForgotOtp = async (req, res) => {
+    try {
+        if (!req.session || !req.session.email) {
+            return res.status(400).json({ success: false, message: "Session data not found." });
+        }
+
+        const { email } = req.session;
+        req.session.userOtp = null;
+        const otp = generateOTP();
+        req.session.userOtp = otp;
+        console.log("Resend Forgot OTP:", otp);
+        const emailSent = await sendVerificationEmail(email, otp);
+
+        if (emailSent) {
+            res.status(200).json({ success: true, message: "OTP resent successfully" });
+        } else {
+            res.status(500).json({ success: false, message: "Failed to resend OTP. Please try again." });
+        }
+    } catch (error) {
+        console.error("Error resending forgot OTP:", error.message);
+        res.status(500).json({ success: false, message: "Internal server error. Please try again." });
+    }
+};
+
 module.exports = {
     sendVerificationEmail,
     getForgotPassPage,
     forgotEmailValid,
     verifyOtp,
     resetPassword,
+    resendForgotOtp,
     loadProfile,
     geteditprofile,
     editprofile,

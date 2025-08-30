@@ -68,7 +68,7 @@
 </head>
 
 <body>
-    <form id="otpForm" method="POST">
+    <form id="otpForm" method="POST" action="/verify-otp">
         <h1>Enter OTP</h1>
         <input type="text" class="otp-input" maxlength="6" placeholder="Enter OTP" name="otp" required>
         <br>
@@ -129,14 +129,39 @@
 
         function resendOTP() {
             console.log('Resending OTP...');
-            Swal.fire({
-                icon: 'info',
-                title: 'OTP Resent',
-                text: 'A new OTP has been sent to your device.',
-                timer: 2000,
-                timerProgressBar: true
+            fetch('/resend-forgot-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'OTP Resent',
+                        text: data.message,
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
+                    startTimer();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message,
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error resending OTP:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Something went wrong',
+                    text: 'Please try again later.',
+                });
             });
-            startTimer();
         }
 
         function submitOTP(event) {
@@ -191,6 +216,4 @@
         startTimer();
     </script>
 </body>
-
-
 </html>
