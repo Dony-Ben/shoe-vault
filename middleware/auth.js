@@ -4,7 +4,7 @@ const userModel = require("../models/User.js");
 const ensureGuest = (req, res, next) => {
   // Check if the user is already logged in
   if (req.session.user && req.session.user.id && req.session.user.email) {
-    return res.redirect("/home");
+    return res.redirect("/login");
   }
   next();
 };

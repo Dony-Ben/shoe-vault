@@ -143,8 +143,16 @@ const resetPassword = async (req, res) => {
         if (result.modifiedCount === 0) {
             return res.render("user/newpassword", { message: "Failed to update password." });
         }
-        req.session.destroy();
-        res.render("user/login", { message: "Password reset successful. Please log in." });
+
+        // Clear session data but keep the session for success message
+        req.session.isOtpVerified = null;
+        req.session.email = null;
+        req.session.userOtp = null;
+
+        // Set success message for login page
+        req.session.passwordResetSuccess = "Password reset successful! Please login with your new password.";
+
+        res.redirect("/login");
     } catch (error) {
         console.error("Error resetting password:", error);
         res.render("user/page-404");

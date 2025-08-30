@@ -36,7 +36,11 @@ const landingpage = async (req, res) => {
 
 const loadlogin = async (req, res) => {
     try {
-        res.render('user/login', { message: null });
+        const successMessage = req.session.passwordResetSuccess;
+        if (successMessage) {
+            delete req.session.passwordResetSuccess;
+        }
+        res.render('user/login', { message: null, successMessage });
     } catch (error) {
         console.error("Error loading login page:", error);
         res.status(500).render('error', { message: "Internal Server Error" });
