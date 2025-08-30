@@ -352,6 +352,18 @@ const deleteAddress = async (req, res) => {
     }
 }
 
+const getNewPasswordPage = async (req, res) => {
+    try {
+        if (!req.session || !req.session.isOtpVerified) {
+            return res.redirect("/forgotpassword");
+        }
+        res.render("user/newpassword");
+    } catch (error) {
+        console.error("Error loading new password page:", error);
+        res.render("user/page-404", { message: "Something went wrong. Please try again." });
+    }
+};
+
 const resendForgotOtp = async (req, res) => {
     try {
         if (!req.session || !req.session.email) {
@@ -382,6 +394,7 @@ module.exports = {
     forgotEmailValid,
     verifyOtp,
     resetPassword,
+    getNewPasswordPage,
     resendForgotOtp,
     loadProfile,
     geteditprofile,
