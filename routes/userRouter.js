@@ -55,7 +55,7 @@ userRouter.post('/user/delete-address/:id', userAuth, deleteAddress);
 userRouter.get("/home", userAuth, loadhome);
 userRouter.get("/logout", logout);
 userRouter.get("/pageNotFound", userAuth, pageNotFound);
-userRouter.get("/shop", userAuth, shop);
+userRouter.get("/shop",shop);
 userRouter.get("/about", userAuth, about)
 
 // OTP Management

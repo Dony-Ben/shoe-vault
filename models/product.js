@@ -44,7 +44,7 @@ const productSchema = new Schema(
     },
     subtotal: {
       type: Number,
-      require: true,
+      required: true,
     },
     productImage: {
       type: [String],

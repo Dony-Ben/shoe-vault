@@ -1,4 +1,3 @@
-const { compare } = require('bcrypt');
 const Order = require('../../models/order.js');
 const Product = require('../../models/product.js');
 const User = require('../../models/User.js');

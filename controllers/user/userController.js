@@ -63,6 +63,10 @@ const userSignup = async (req, res) => {
       return res.render("user/signup", { message: "Passwords do not match." });
     }
 
+    if (!validatePassword(password)) {
+      return res.render("user/signup", { message: "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number." });
+    }
+
     const existingUser = await userModel.findOne({ email });
 
     if (existingUser) {
@@ -83,6 +87,12 @@ const userSignup = async (req, res) => {
     console.error("Signup error:", error);
     res.render("user/signup", { message: "Something went wrong. Please try again." });
   }
+};
+
+const validatePassword = (password) => {
+  // At least 8 characters, 1 uppercase, 1 lowercase, 1 number
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/;
+  return passwordRegex.test(password);
 };
 
 const securePassword = async (password) => {
@@ -147,14 +157,14 @@ const verifyotp = async (req, res) => {
         });
       }
 
-      req.session.user = saveUserData.id;
-      res.redirect("login");
+      req.session.user = { id: saveUserData._id, email: saveUserData.email };
+      res.redirect("/login");
     } else {
-      res.status(400).json({ success: false, message: "Invalid OTP, plase try again" })
+      res.status(400).json({ success: false, message: "Invalid OTP, please try again" })
     }
   } catch (error) {
-    console.error("Error verifiying otp,error", error);
-    res.status(500).json({ success: false, message: "An error is occured" })
+    console.error("Error verifying OTP:", error);
+    res.status(500).json({ success: false, message: "An error occurred" })
 
   }
 };
@@ -189,29 +199,30 @@ const userLogin = async (req, res) => {
       return res.render("user/login", { message: "Invalid email or password." });
     }
 
-    // Set session
     req.session.user = { id: user._id, email: user.email };
     console.log("User session set:", req.session.user);
 
-    // Redirect to home page after successful login
     return res.redirect("/home");
 
   } catch (error) {
     console.error("Error during login process:", error.message, error.stack);
-    return res.render.send("user.login", { message: "Something went wrong. Please try again later." });
+    return res.render("user/login", { message: "Something went wrong. Please try again later." });
   }
 };
 
 
 const logout = async (req, res) => {
   try {
-    req.session.user.id = null;
-    req.session.user.email = null;
-    console.log("Session after logout:", req.session);
-    return res.redirect("/");
-
+    req.session.destroy((err) => {
+      if (err) {
+        console.log("Logout error:", err);
+        return res.redirect("/pageNotFound");
+      }
+      res.clearCookie('connect.sid'); // Clear the session cookie
+      return res.redirect("/");
+    });
   } catch (error) {
-    console.log("Logout error", error);
+    console.log("Logout error:", error);
     return res.redirect("/pageNotFound");
   }
 }

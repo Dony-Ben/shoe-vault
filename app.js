@@ -10,6 +10,7 @@ const adminRouter = require("./routes/adminRouter");
 const errorHandler = require("./middleware/error.js")
 const { setupSSE } = require("./helpers/sse");
 const cloudinary = require("cloudinary").v2;
+
 const app = express();
 setupSSE(app);
 
@@ -53,10 +54,8 @@ cloudinary.config({
   api_secret: process.env.API_secret,
 });
 
-// Routes
 app.use("/", userRoutes);
 app.use("/admin", adminRouter);
-// Start the Server
 const PORT = process.env.PORT || 7000;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
