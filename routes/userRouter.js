@@ -45,7 +45,7 @@ userRouter.post("/resend-forgot-otp", require("../controllers/user/profileContro
 // editin user profile
 userRouter.get('/profile', userAuth, loadProfile);
 userRouter.get('/edit-profile', userAuth, geteditprofile);
-userRouter.post('/edit-profile', userAuth, editprofile);
+userRouter.post('/profile', userAuth, editprofile);
 userRouter.get('/address', userAuth, loadAddresses);
 userRouter.post('/add-address', userAuth, AddAddressForm);
 userRouter.post('/edit-address/:id', userAuth, editAddress);
