@@ -11,9 +11,7 @@
   <meta name="keywords" content="">
   <meta name="description" content="">
   <meta name="author" content="">
-  <link rel="stylesheet" type="text/css" href="bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="landing.css">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="responsive.css">
   <link rel="stylesheet" href="jquery.mCustomScrollbar.min.css">
   <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/font-awesome.css">
@@ -222,6 +220,14 @@
           .card-img-top.out-of-stock-img {
             filter: grayscale(1);
           }
+          
+          /* Custom utility classes */
+          .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+          }
         </style>
         <div class="filters-wrapper flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0 px-2 md:px-0">
           <div class="search-container mb-2 md:mb-0">
@@ -251,41 +257,38 @@
           </div>
         </div>
 
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3 md:g-4" id="product-list">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6" id="product-list">
           <% if (Array.isArray(products) && products.length> 0) { %>
             <% products.forEach((product)=> { %>
-              <div class="col animate-on-scroll" data-price="<%= product.salePrice %>"
+              <div class="animate-on-scroll" data-price="<%= product.salePrice %>"
                 data-name="<%= product.productName %>" data-category="<%= product.category?._id?.toString() %>">
-                <div class="card h-100 glass border-0 shadow-md hover:shadow-lg transition duration-300  product-card <%= product.stock === 0 ? 'out-of-stock' : '' %>">
+                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300 product-card overflow-hidden <%= product.stock === 0 ? 'opacity-60' : '' %>">
 
                   <% if (product.offer) { %>
-                    <span
-                      class="badge position-absolute top-0 start-0 m-2 
-                      <%= (product.offerType && product.offerType === 'percentage') ? 'offer-percentage' : 'offer-flat' %>">
+                    <span class="absolute top-2 left-2 z-10 px-2 py-1 text-xs font-semibold text-white rounded-md <%= (product.offerType && product.offerType === 'percentage') ? 'bg-blue-600' : 'bg-red-600' %>">
                       <%= product.offer %>
                     </span>
                     <% } %>
                     <% if (!product.quantity) { %>
-                      <span class="badge position-absolute top-0 end-0 m-2 bg-danger" style="z-index:2;">Out of Stock</span>
+                      <span class="absolute top-2 right-2 z-10 px-2 py-1 text-xs font-semibold text-white bg-red-600 rounded-md">Out of Stock</span>
                     <% } %>
 
                       <a href="/productDetails?product=<%= product._id %>" class="block">
-                        <img src="<%= product.productImage[0] %>" class="card-img-top rounded-top w-100 object-cover <%= product.stock === 0 ? 'out-of-stock-img' : '' %>"
-                          style="max-height:220px;min-height:160px;" alt="<%= product.productName %>">
+                        <img src="<%= product.productImage[0] %>" class="w-full h-48 object-cover <%= product.stock === 0 ? 'grayscale' : '' %>"
+                          alt="<%= product.productName %>">
 
-                        <div class="card-body text-center">
-                          <h5 class="card-title text-lg font-semibold mb-2 text-black">
+                        <div class="p-4 text-center">
+                          <h5 class="text-lg font-semibold mb-2 text-black line-clamp-2">
                             <%= product.productName %>
                           </h5>
 
                           <% if (product.originalPrice && product.salePrice < product.originalPrice) { %>
-                            <p class="card-text text-muted mb-1">
-                              <del>₹<%= product.originalPrice %></del>
+                            <p class="text-sm text-gray-400 line-through mb-1">
+                              ₹<%= product.originalPrice %>
                             </p>
                             <% } %>
-                              <p class="card-text text-accent font-bold mb-4">₹<%= product.salePrice %>
-                              </p>
-                              <p class="card-text text-accent font-bold mb-4">
+                              <p class="text-lg font-bold text-black mb-2">₹<%= product.salePrice %></p>
+                              <p class="text-sm text-gray-500">
                                 <% if (product.brands) { %>
                                   <%= product.brands.brandName %>
                                     <% } else { %>
@@ -298,18 +301,18 @@
               </div>
               <% }) %>
                 <% } else { %>
-                  <div class="col-12 text-center">
+                  <div class="col-span-full text-center">
                     <canvas id="dotlottie-canvas" style="width: 300px; height: 300px;"></canvas>
-                    <p class="text-secondary font-medium text-xl">No products available at the moment. Please check back
-                      later!</p>
+                    <p class="text-secondary font-medium text-xl">No products available at the moment. Please check back later!</p>
                   </div>
                   <% } %>
         </div>
-        <nav aria-label="Page navigation" class="mt-4 d-flex justify-content-center">
-          <ul class="pagination">
+        <nav aria-label="Page navigation" class="mt-8 flex justify-center">
+          <ul class="flex items-center space-x-2">
             <% for(let i=1;i<=totalPages; i++){ %>
-              <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
-                <a class="page-link" href="?page=<%= i %>">
+              <li>
+                <a class="px-3 py-2 text-sm font-medium rounded-md transition duration-200 <%= (i === currentPage) ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300' %>" 
+                   href="?page=<%= i %>">
                   <%= i %>
                 </a>
               </li>

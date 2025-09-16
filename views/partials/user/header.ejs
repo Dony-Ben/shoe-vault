@@ -1,39 +1,39 @@
-<nav class="bg-white p-4 fixed w-full z-10 transition-all duration-300 ease-in-out" id="navbar">
-    <div class="container mx-auto flex justify-between items-center">
-        <a href="/home" class="text-2xl font-serif font-bold text-black">Shoe Vault </a>
+<nav class="bg-white shadow-sm border-b border-gray-100 fixed w-full z-50 transition-all duration-300 ease-in-out" id="navbar">
+    <div class="container mx-auto flex justify-between items-center px-4 py-3">
+        <a href="/home" class="text-2xl font-serif font-bold text-black hover:text-accent transition duration-300">Shoe Vault</a>
+        
         <!-- Hamburger for mobile -->
-        <button id="mobileMenuButton" class="md:hidden flex flex-col justify-center items-center w-10 h-10 focus:outline-none" aria-label="Toggle navigation">
-            <span class="block w-6 h-0.5 bg-black mb-1"></span>
-            <span class="block w-6 h-0.5 bg-black mb-1"></span>
-            <span class="block w-6 h-0.5 bg-black"></span>
+        <button id="mobileMenuButton" class="md:hidden flex flex-col justify-center items-center w-10 h-10 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 rounded-md" aria-label="Toggle navigation" aria-expanded="false">
+            <span class="hamburger-line block w-6 h-0.5 bg-black mb-1 transition-all duration-300"></span>
+            <span class="hamburger-line block w-6 h-0.5 bg-black mb-1 transition-all duration-300"></span>
+            <span class="hamburger-line block w-6 h-0.5 bg-black transition-all duration-300"></span>
         </button>
+        
         <!-- Nav links -->
-        <ul id="navLinks" class="hidden md:flex space-x-6 absolute md:static top-16 left-0 w-full md:w-auto md:bg-transparent md:shadow-none md:top-auto md:left-auto flex-col md:flex-row z-20 md:z-auto">
-            <li><a href="/home" class="block px-4 py-2 md:p-0 text-black hover:text-accent transition duration-300">HOME</a></li>
-            <li><a href="/shop" class="block px-4 py-2 md:p-0 text-black hover:text-accent transition duration-300">SHOP</a></li>
-            <li><a href="/about" class="block px-4 py-2 md:p-0 text-black hover:text-accent transition duration-300">ABOUT US</a></li>
+        <ul id="navLinks" class="hidden md:flex space-x-6 absolute md:static top-full left-0 w-full md:w-auto bg-white md:bg-transparent shadow-lg md:shadow-none border-t md:border-t-0 border-gray-100 md:border-t-0 flex-col md:flex-row z-40">
+            <li><a href="/home" class="block px-4 py-3 md:py-2 text-black hover:text-accent transition duration-300 font-medium">HOME</a></li>
+            <li><a href="/shop" class="block px-4 py-3 md:py-2 text-black hover:text-accent transition duration-300 font-medium">SHOP</a></li>
+            <li><a href="/about" class="block px-4 py-3 md:py-2 text-black hover:text-accent transition duration-300 font-medium">ABOUT US</a></li>
         </ul>
+        
         <div class="flex items-center space-x-4 md:space-x-6">
-            <a href="/wishlist"
-                class="text-black hover:text-accent transition duration-300 flex items-center space-x-1">
+            <a href="/wishlist" class="text-black hover:text-accent transition duration-300 flex items-center space-x-1 p-2 rounded-md hover:bg-gray-50" aria-label="View wishlist">
                 <img src="/image/whishlist.svg" alt="Wishlist" class="w-6 h-6">
             </a>
-            <a href="/cart" class="text-black hover:text-accent transition duration-300 flex items-center space-x-1">
+            <a href="/cart" class="text-black hover:text-accent transition duration-300 flex items-center space-x-1 p-2 rounded-md hover:bg-gray-50 relative" aria-label="View cart">
                 <img src="/image/cart-icon.svg" alt="Cart" class="w-6 h-6">
+                <!-- Cart count badge can be added here -->
             </a>
             <div class="relative">
-                <button class="text-light hover:text-accent focus:outline-none flex items-center space-x-2"
-                    id="profileButton">
-                    <img src="/image/profile.jpg" alt="Profile" class="w-8 h-8 rounded-full">
+                <button class="text-light hover:text-accent focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 rounded-full flex items-center space-x-2 p-1" id="profileButton" aria-label="User profile menu" aria-expanded="false">
+                    <img src="/image/profile.jpg" alt="Profile" class="w-8 h-8 rounded-full border-2 border-gray-200">
                </button>
                 <!-- Dropdown -->
-                <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg">
-                    <a href="/profile" class="block px-4 py-2 text-gray-700 hover:bg-gray-200 transition">My Profile</a>
-                    <!-- <a href="/settings" class="block px-4 py-2 text-gray-700 hover:bg-gray-200 transition">Settings</a> -->
-                    <hr class="my-1">
+                <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white shadow-xl rounded-lg border border-gray-100 z-50">
+                    <a href="/profile" class="block px-4 py-3 text-gray-700 hover:bg-gray-50 transition duration-200 font-medium">My Profile</a>
+                    <hr class="my-1 border-gray-100">
                     <div class="flex justify-center">
-                        <button id="logoutButton" class="block px-4 py-2 text-gray-700 hover:bg-gray-200 transition"
-                            style="color: red;">
+                        <button id="logoutButton" class="block px-4 py-3 text-red-600 hover:bg-red-50 transition duration-200 font-medium w-full text-left">
                             Logout
                         </button>
                     </div>
@@ -71,21 +71,99 @@
 
     elements.forEach(el => observer.observe(el));
 
-    // dropdown
-    document.getElementById('profileButton').addEventListener('click', (e) => {
+    // Profile dropdown functionality
+    const profileButton = document.getElementById('profileButton');
+    const profileDropdown = document.getElementById('profileDropdown');
+    
+    profileButton.addEventListener('click', (e) => {
         e.stopPropagation();
-        const dropdown = document.getElementById('profileDropdown');
-        dropdown.classList.toggle('hidden');
-    });
-
-    document.addEventListener('click', (event) => {
-        const profileButton = document.getElementById('profileButton');
-        const dropdown = document.getElementById('profileDropdown');
-        if (!profileButton.contains(event.target) && !dropdown.contains(event.target)) {
-            dropdown.classList.add('hidden');
+        const isOpen = !profileDropdown.classList.contains('hidden');
+        
+        // Close mobile menu if open
+        closeMobileMenu();
+        
+        // Toggle dropdown
+        if (isOpen) {
+            closeProfileDropdown();
+        } else {
+            openProfileDropdown();
         }
     });
 
+    function openProfileDropdown() {
+        profileDropdown.classList.remove('hidden');
+        profileButton.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeProfileDropdown() {
+        profileDropdown.classList.add('hidden');
+        profileButton.setAttribute('aria-expanded', 'false');
+    }
+
+    // Mobile menu functionality
+    const mobileMenuButton = document.getElementById('mobileMenuButton');
+    const navLinks = document.getElementById('navLinks');
+    
+    mobileMenuButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = !navLinks.classList.contains('hidden');
+        
+        // Close profile dropdown if open
+        closeProfileDropdown();
+        
+        // Toggle mobile menu
+        if (isOpen) {
+            closeMobileMenu();
+        } else {
+            openMobileMenu();
+        }
+    });
+
+    function openMobileMenu() {
+        navLinks.classList.remove('hidden');
+        mobileMenuButton.setAttribute('aria-expanded', 'true');
+        // Animate hamburger to X
+        mobileMenuButton.querySelector('.hamburger-line:nth-child(1)').style.transform = 'rotate(45deg) translate(5px, 5px)';
+        mobileMenuButton.querySelector('.hamburger-line:nth-child(2)').style.opacity = '0';
+        mobileMenuButton.querySelector('.hamburger-line:nth-child(3)').style.transform = 'rotate(-45deg) translate(7px, -6px)';
+    }
+
+    function closeMobileMenu() {
+        navLinks.classList.add('hidden');
+        mobileMenuButton.setAttribute('aria-expanded', 'false');
+        // Reset hamburger animation
+        mobileMenuButton.querySelector('.hamburger-line:nth-child(1)').style.transform = '';
+        mobileMenuButton.querySelector('.hamburger-line:nth-child(2)').style.opacity = '';
+        mobileMenuButton.querySelector('.hamburger-line:nth-child(3)').style.transform = '';
+    }
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!profileButton.contains(event.target) && !profileDropdown.contains(event.target)) {
+            closeProfileDropdown();
+        }
+        
+        if (!mobileMenuButton.contains(event.target) && !navLinks.contains(event.target)) {
+            closeMobileMenu();
+        }
+    });
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+        if (window.innerWidth >= 768) {
+            closeMobileMenu();
+        }
+    });
+
+    // Handle escape key
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeProfileDropdown();
+            closeMobileMenu();
+        }
+    });
+
+    // Logout functionality
     document.getElementById('logoutButton').addEventListener('click', () => {
         Swal.fire({
             title: 'Are you sure?',
@@ -106,29 +184,5 @@
                 });
             }
         });
-    });
-
-    // Mobile menu toggle
-    const mobileMenuButton = document.getElementById('mobileMenuButton');
-    const navLinks = document.getElementById('navLinks');
-    mobileMenuButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        navLinks.classList.toggle('hidden');
-    });
-    // Hide menu when clicking outside (on mobile)
-    document.addEventListener('click', (event) => {
-        if (!mobileMenuButton.contains(event.target) && !navLinks.contains(event.target)) {
-            if (window.innerWidth < 768) {
-                navLinks.classList.add('hidden');
-            }
-        }
-    });
-    // Hide menu on resize to desktop
-    window.addEventListener('resize', () => {
-        if (window.innerWidth >= 768) {
-            navLinks.classList.remove('hidden');
-        } else {
-            navLinks.classList.add('hidden');
-        }
     });
 </script>

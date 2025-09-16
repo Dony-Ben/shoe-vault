@@ -4,157 +4,356 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Your E-Commerce</title>
-    <link rel="stylesheet" href="login.css">
-
+    <title>Login - Shoe Vault</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .form-input:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .form-input.error {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+        
+        .form-input.success {
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 
-<body>
-    <div class="login-container">
-        <h2>Login</h2>
+<body class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <!-- Logo/Brand -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Shoe Vault</h1>
+            <p class="text-gray-600">Welcome back! Please sign in to your account.</p>
+        </div>
 
+        <!-- Alert Messages -->
         <% if (typeof userBlocked !== 'undefined' && userBlocked) { %>
-            <div class="error-message" style="color: red;">
-                You are blocked by the admin.
+            <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                    </svg>
+                    You are blocked by the admin.
+                </div>
             </div>
         <% } else if (typeof successMessage !== 'undefined' && successMessage) { %>
-            <div class="success-message" style="color: green; background-color: #d4edda; border: 1px solid #c3e6cb; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
-                <%= successMessage %>
+            <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-6">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <%= successMessage %>
+                </div>
             </div>
         <% } else if (message) { %>
-            <div class="error-message" style="color: red;">
-                <%= message %>
+            <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                    </svg>
+                    <%= message %>
+                </div>
             </div>
         <% } %>
 
-        <form action="/login" method="POST">
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" placeholder="Enter your email">
-                <div id="emailError" class="error-message" style="display: none; color: red;"></div>
-            </div>
+        <!-- Login Form -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <form id="loginForm" action="/login" method="POST" novalidate>
+                <div class="space-y-6">
+                    <!-- Email Field -->
+                    <div class="form-group">
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                            Email Address
+                        </label>
+                        <div class="relative">
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email" 
+                                placeholder="Enter your email address"
+                                class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none transition duration-200"
+                                required
+                                autocomplete="email"
+                            >
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div id="emailError" class="error-message mt-2 text-sm text-red-600 hidden"></div>
+                    </div>
 
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <div style="position: relative;">
-                    <input type="password" id="password" name="password" placeholder="Enter your password"
-                        style="width: 100%; padding-right: 36px;">
-                    <button type="button" id="togglePassword" aria-label="Show password"
-                        style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
-                        <svg id="eyeIcon" width="20" height="20" style="display: block;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
+                    <!-- Password Field -->
+                    <div class="form-group">
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                            Password
+                        </label>
+                        <div class="relative">
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password" 
+                                placeholder="Enter your password"
+                                class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none transition duration-200 pr-12"
+                                required
+                                autocomplete="current-password"
+                            >
+                            <button 
+                                type="button" 
+                                id="togglePassword" 
+                                class="absolute inset-y-0 right-0 flex items-center pr-3 focus:outline-none"
+                                aria-label="Toggle password visibility"
+                            >
+                                <svg id="eyeIcon" class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="passwordError" class="error-message mt-2 text-sm text-red-600 hidden"></div>
+                    </div>
+
+                    <!-- Forgot Password -->
+                    <div class="flex justify-end">
+                        <a href="/forgotpassword" class="text-sm text-blue-600 hover:text-blue-500 font-medium transition duration-200">
+                            Forgot your password?
+                        </a>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button 
+                        type="submit" 
+                        id="submitBtn"
+                        class="w-full bg-black text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <span id="btnText">Sign In</span>
+                        <span id="btnLoading" class="hidden">
+                            <span class="loading-spinner mr-2"></span>
+                            Signing In...
+                        </span>
                     </button>
                 </div>
-                <div id="passwordError" class="error-message" style="display: none; color: red;"></div>
-            </div>
-            <!-- Forgot Password Section -->
-            <div class="form-group">
-                <a href="/forgotpassword" class="forgot-password-link"
-                    style="font-size: 0.9rem; color: rgb(255, 0, 0);">Forgot password?</a>
+            </form>
+
+            <!-- Divider -->
+            <div class="mt-6 mb-6">
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2 bg-white text-gray-500">Or continue with</span>
+                    </div>
+                </div>
             </div>
 
-            <button type="submit">Login</button>
-        </form>
-        <!-- Sign in with Google Section -->
-        <div class="social-login">
-            <p style="margin: 1rem 0;">Or</p>
-            <a href="/auth/google" class="google-signin-btn"
-                style="display: flex; align-items: center; justify-content: center; background: #000000; color: white; padding: 0.5rem; border-radius: 5px; text-decoration: none;">
-                <img src="image/google.jpg" alt="Google" style="width: 20px; margin-right: 10px;">
+            <!-- Google Sign In -->
+            <a href="/auth/google" class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition duration-200">
+                <img src="/image/google.jpg" alt="Google" class="w-5 h-5 mr-3">
                 Sign in with Google
             </a>
         </div>
 
-        <p>Don't have an account? <a href="/signup">Sign up</a></p>
+        <!-- Sign Up Link -->
+        <div class="text-center mt-6">
+            <p class="text-gray-600">
+                Don't have an account? 
+                <a href="/signup" class="text-blue-600 hover:text-blue-500 font-medium transition duration-200">
+                    Sign up here
+                </a>
+            </p>
+        </div>
     </div>
-
 </body>
 
 </html>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        console.log("DOM fully loaded and parsed");
-        const loginForm = document.querySelector("form");
+        const loginForm = document.getElementById("loginForm");
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
+        const togglePasswordBtn = document.getElementById("togglePassword");
+        const eyeIcon = document.getElementById("eyeIcon");
+        const submitBtn = document.getElementById("submitBtn");
+        const btnText = document.getElementById("btnText");
+        const btnLoading = document.getElementById("btnLoading");
 
-        if (!loginForm) {
-            console.error("Form element not found.");
-            return;
-        }
+        let passwordVisible = false;
+        let isSubmitting = false;
 
-        loginForm.addEventListener("submit", (event) => {
-            event.preventDefault();
-            console.log("Form submit event triggered");
+        // Real-time validation
+        emailInput.addEventListener('input', () => validateEmail());
+        emailInput.addEventListener('blur', () => validateEmail());
+        passwordInput.addEventListener('input', () => validatePassword());
+        passwordInput.addEventListener('blur', () => validatePassword());
 
-            clearErrors();
-            const email = document.getElementById("email").value.trim();
-            const password = document.getElementById("password").value;
-
-            console.log("Email:", email);
-            console.log("Password:", password);
-
-            let isValid = true;
-
-            const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            if (!email) {
-                showError("emailError", "Email is required.");
-                isValid = false;
-            } else if (!emailPattern.test(email)) {
-                showError("emailError", "Please enter a valid email address.");
-                isValid = false;
-            }
-
-            if (!password) {
-                showError("passwordError", "Password is required.");
-                isValid = false;
-            }
-
-            if (isValid) {
-                console.log("Form is valid. Submitting...");
-                loginForm.submit();
+        // Password toggle functionality
+        togglePasswordBtn.addEventListener('click', () => {
+            passwordVisible = !passwordVisible;
+            passwordInput.type = passwordVisible ? 'text' : 'password';
+            
+            if (passwordVisible) {
+                eyeIcon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.956 9.956 0 012.042-3.292m3.087-2.727A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.965 9.965 0 01-4.293 5.411M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18" />
+                `;
+                togglePasswordBtn.setAttribute('aria-label', 'Hide password');
+            } else {
+                eyeIcon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                `;
+                togglePasswordBtn.setAttribute('aria-label', 'Show password');
             }
         });
 
-        function clearErrors() {
-            const errorElements = document.querySelectorAll(".error-message");
-            errorElements.forEach((element) => {
-                element.textContent = "";
-                element.style.display = "none";
-            });
-        }
+        // Form submission
+        loginForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            
+            if (isSubmitting) return;
+            
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
 
-        function showError(elementId, message) {
-            const errorElement = document.getElementById(elementId);
-            if (!errorElement) {
-                console.error(`Error element with ID "${elementId}" not found.`);
+            // Validate all fields
+            const isEmailValid = validateEmail();
+            const isPasswordValid = validatePassword();
+
+            if (!isEmailValid || !isPasswordValid) {
+                showToast('Please fix the errors before submitting.', 'error');
                 return;
             }
+
+            // Show loading state
+            setLoadingState(true);
+
+            try {
+                // Simulate network delay for better UX
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Submit the form
+                loginForm.submit();
+            } catch (error) {
+                console.error('Login error:', error);
+                showToast('An error occurred. Please try again.', 'error');
+                setLoadingState(false);
+            }
+        });
+
+        function validateEmail() {
+            const email = emailInput.value.trim();
+            const emailError = document.getElementById("emailError");
+            const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+            if (!email) {
+                showFieldError(emailInput, emailError, "Email address is required.");
+                return false;
+            } else if (!emailPattern.test(email)) {
+                showFieldError(emailInput, emailError, "Please enter a valid email address.");
+                return false;
+            } else {
+                showFieldSuccess(emailInput, emailError);
+                return true;
+            }
+        }
+
+        function validatePassword() {
+            const password = passwordInput.value;
+            const passwordError = document.getElementById("passwordError");
+
+            if (!password) {
+                showFieldError(passwordInput, passwordError, "Password is required.");
+                return false;
+            } else if (password.length < 6) {
+                showFieldError(passwordInput, passwordError, "Password must be at least 6 characters long.");
+                return false;
+            } else {
+                showFieldSuccess(passwordInput, passwordError);
+                return true;
+            }
+        }
+
+        function showFieldError(input, errorElement, message) {
+            input.classList.remove('success');
+            input.classList.add('error');
             errorElement.textContent = message;
-            errorElement.style.display = "block";
+            errorElement.classList.remove('hidden');
         }
-    });
-    //
-    const passwordInput = document.getElementById('password');
-    const togglePasswordBtn = document.getElementById('togglePassword');
-    const eyeIcon = document.getElementById('eyeIcon');
-    let passwordVisible = false;
-    togglePasswordBtn.addEventListener('click', () => {
-        passwordVisible = !passwordVisible;
-        passwordInput.type = passwordVisible ? 'text' : 'password';
-        // Swap SVG icon
-        if (passwordVisible) {
-            eyeIcon.innerHTML = `
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.956 9.956 0 012.042-3.292m3.087-2.727A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.965 9.965 0 01-4.293 5.411M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18" />
-            `;
-            togglePasswordBtn.setAttribute('aria-label', 'Hide password');
-        } else {
-            eyeIcon.innerHTML = `
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            `;
-            togglePasswordBtn.setAttribute('aria-label', 'Show password');
+
+        function showFieldSuccess(input, errorElement) {
+            input.classList.remove('error');
+            input.classList.add('success');
+            errorElement.classList.add('hidden');
         }
+
+        function setLoadingState(loading) {
+            isSubmitting = loading;
+            submitBtn.disabled = loading;
+            
+            if (loading) {
+                btnText.classList.add('hidden');
+                btnLoading.classList.remove('hidden');
+            } else {
+                btnText.classList.remove('hidden');
+                btnLoading.classList.add('hidden');
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const toastConfig = {
+                icon: type === 'error' ? 'error' : type === 'success' ? 'success' : 'info',
+                title: type === 'error' ? 'Error' : type === 'success' ? 'Success' : 'Info',
+                text: message,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 4000,
+                timerProgressBar: true
+            };
+
+            Swal.fire(toastConfig);
+        }
+
+        // Clear errors on input
+        emailInput.addEventListener('input', () => {
+            if (emailInput.classList.contains('error')) {
+                emailInput.classList.remove('error');
+                document.getElementById("emailError").classList.add('hidden');
+            }
+        });
+
+        passwordInput.addEventListener('input', () => {
+            if (passwordInput.classList.contains('error')) {
+                passwordInput.classList.remove('error');
+                document.getElementById("passwordError").classList.add('hidden');
+            }
+        });
     });
 </script>
