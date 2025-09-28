@@ -1,4 +1,4 @@
-export const RESPONSE_SUCCESS = {
+ const RESPONSE_SUCCESS = {
     
     // Authentication
     login: "Login successful",
@@ -65,7 +65,7 @@ export const RESPONSE_SUCCESS = {
     operationSuccessful: "Operation completed successfully"
 }
 
-export const RESPONSE_ERROR = {
+ const RESPONSE_ERROR = {
     // Authentication Errors
     loginRequired: "Please login to continue",
     invalidCredentials: "Invalid email or password",
@@ -160,4 +160,7 @@ export const RESPONSE_ERROR = {
     validationError: "Validation error"
 }
 
-
+module.exports={
+    RESPONSE_ERROR,
+    RESPONSE_SUCCESS
+}

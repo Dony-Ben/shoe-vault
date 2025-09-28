@@ -1,4 +1,4 @@
-export const STATUS_CODES = {
+ const STATUS_CODES = {
     Success: 200,            
     OK: 200,
     Created: 201,
@@ -26,3 +26,4 @@ export const STATUS_CODES = {
     GatewayTimeout: 504,
 };
 
+module.exports = {STATUS_CODES};
