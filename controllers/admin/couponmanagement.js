@@ -1,12 +1,14 @@
 const Coupon = require("../../models/coupon.js");
+const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
+const { STATUS_CODES } = require("../../constants/httpStatusCodes");
 
 const  loadcouponpage = async (req, res) => {
     try {
         const coupons = await Coupon.find({});
-        res.render('admin/coupons', { coupons });
+        res.render(RENDER_PAGE_KEYS.adminCoupons, { coupons });
     } catch (error) {
         console.error('Error loading coupons:', error);
-        res.status(500).send('Failed to load coupons');
+        res.status(STATUS_CODES.InternalServerError).send('Failed to load coupons');
     }
 }
 
@@ -24,7 +26,7 @@ const createCoupon = async (req, res) => {
         res.redirect('/admin/coupons');
     } catch (error) {
         console.error('Error adding coupon:', error);
-        res.status(500).send('Failed to add coupon');
+        res.status(STATUS_CODES.InternalServerError).send('Failed to add coupon');
     }
 }
 
@@ -36,7 +38,7 @@ const deleteCoupon = async (req, res) => {
         res.redirect('/admin/coupons');
     } catch (error) {
         console.error('Error deleting coupon:', error);
-        res.status(500).send('Failed to delete coupon');
+        res.status(STATUS_CODES.InternalServerError).send('Failed to delete coupon');
     }
 };
 
@@ -49,7 +51,7 @@ const editCoupon = async (req,res) =>{
     res.redirect('/admin/coupons');
   } catch (error) {
     console.error('Error updating coupon:', error);
-    res.status(500).send('Server Error');
+    res.status(STATUS_CODES.InternalServerError).send('Server Error');
   }
 }
 module.exports = {

@@ -2,6 +2,8 @@ const Order = require('../../models/order.js');
 const { Parser } = require('json2csv');
 const ExcelJS = require('exceljs');
 const PDFDocument = require('pdfkit');
+const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
+const { STATUS_CODES } = require("../../constants/httpStatusCodes");
 
 const getDateRange = (period, customStart = null, customEnd = null) => {
     const now = new Date();
@@ -66,12 +68,12 @@ const getsalespage = async (req, res) => {
 
         const stats = todayStats[0] || { todayOrders: 0, todayRevenue: 0 };
 
-        res.render('admin/sales-reports', {
+        res.render(RENDER_PAGE_KEYS.adminSalesReports, {
             stats: stats,
         });
     } catch (error) {
         console.error('Error loading sales reports page:', error);
-        res.status(500).render('error', { message: 'Error loading sales reports' });
+        res.status(STATUS_CODES.InternalServerError).render('error', { message: 'Error loading sales reports' });
     }
 }
 
@@ -199,7 +201,8 @@ const Generatesales = async (req, res) => {
         res.json({ success: true, data: report });
     } catch (error) {
         console.error('Sales report error:', error);
-        res.status(500).json({
+        const { STATUS_CODES } = require("../../constants/httpStatusCodes");
+        res.status(STATUS_CODES.InternalServerError).json({
             success: false,
             message: 'Error generating sales report',
             error: error.message
@@ -227,52 +230,52 @@ const exportReport = async (req, res) => {
     }
 
     if (format === 'excel') {
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Sales Report');
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Sales Report');
 
-    worksheet.columns = [
-        { header: 'Date', key: 'date', width: 15 },
-        { header: 'Total Orders', key: 'totalOrders', width: 15 },
-        { header: 'Total Revenue', key: 'totalRevenue', width: 20 },
-        // ... add more columns as needed
-    ];
+        worksheet.columns = [
+            { header: 'Date', key: 'date', width: 15 },
+            { header: 'Total Orders', key: 'totalOrders', width: 15 },
+            { header: 'Total Revenue', key: 'totalRevenue', width: 20 },
+            // ... add more columns as needed
+        ];
 
-    reportData.dailyBreakdown.forEach(row => worksheet.addRow(row));
+        reportData.dailyBreakdown.forEach(row => worksheet.addRow(row));
 
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename=sales-report.xlsx');
-    await workbook.xlsx.write(res);
-    res.end();
-    return;
-    
-};
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'attachment; filename=sales-report.xlsx');
+        await workbook.xlsx.write(res);
+        res.end();
+        return;
 
-if (format === 'pdf') {
-    const doc = new PDFDocument();
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename=sales-report.pdf');
-    doc.pipe(res);
+    };
 
-    doc.fontSize(18).text('Sales Report', { align: 'center' });
-    doc.moveDown();
+    if (format === 'pdf') {
+        const doc = new PDFDocument();
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=sales-report.pdf');
+        doc.pipe(res);
 
-    // Table headers
-    doc.fontSize(12).text('Date', 50, doc.y, { continued: true });
-    doc.text('Total Orders', 150, doc.y, { continued: true });
-    doc.text('Total Revenue', 250, doc.y);
-    doc.moveDown();
-
-    // Table rows
-    reportData.dailyBreakdown.forEach(row => {
-        doc.text(row.date, 50, doc.y, { continued: true });
-        doc.text(row.totalOrders, 150, doc.y, { continued: true });
-        doc.text(row.totalRevenue, 250, doc.y);
+        doc.fontSize(18).text('Sales Report', { align: 'center' });
         doc.moveDown();
-    });
 
-    doc.end();
-    return;
-}
+        // Table headers
+        doc.fontSize(12).text('Date', 50, doc.y, { continued: true });
+        doc.text('Total Orders', 150, doc.y, { continued: true });
+        doc.text('Total Revenue', 250, doc.y);
+        doc.moveDown();
+
+        // Table rows
+        reportData.dailyBreakdown.forEach(row => {
+            doc.text(row.date, 50, doc.y, { continued: true });
+            doc.text(row.totalOrders, 150, doc.y, { continued: true });
+            doc.text(row.totalRevenue, 250, doc.y);
+            doc.moveDown();
+        });
+
+        doc.end();
+        return;
+    }
 }
 
 module.exports = {

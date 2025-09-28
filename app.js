@@ -10,6 +10,9 @@ const adminRouter = require("./routes/adminRouter");
 const errorHandler = require("./middleware/error.js")
 const { setupSSE } = require("./helpers/sse");
 const cloudinary = require("cloudinary").v2;
+const flash = require("connect-flash");
+const { RENDER_PAGE_KEYS } = require('./constants/renderPageKeys.js');
+const { STATUS_CODES } = require("./constants/httpStatusCodes.js");
 
 const app = express();
 setupSSE(app);
@@ -37,6 +40,14 @@ app.use(session({
   saveUninitialized: false,
 }));
 
+app.use(flash());
+
+app.use((req, res, next) => {
+  res.locals.success = req.flash("success");
+  res.locals.error = req.flash("error");
+  next();
+});
+
 // error handling 
 app.use(errorHandler);
 
@@ -56,6 +67,12 @@ cloudinary.config({
 
 app.use("/", userRoutes);
 app.use("/admin", adminRouter);
+
+app.use((req, res, next) => {
+
+  res.status(STATUS_CODES.NotFound).render(RENDER_PAGE_KEYS.userPage404)
+})
+
 const PORT = process.env.PORT || 7000;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

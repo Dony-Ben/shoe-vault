@@ -1,4 +1,5 @@
 const Orders = require("../../models/order");
+const { STATUS_CODES } = require("../../constants/httpStatusCodes");
 
 const getOrderpage = async (req, res) => {
     try {
@@ -9,7 +10,7 @@ const getOrderpage = async (req, res) => {
         res.render('admin/ordermanage', { orders });
     } catch (error) {
         console.log("An error occurred while fetching user orders:", error);
-        res.status(500).send("An error occurred");
+        res.status(STATUS_CODES.InternalServerError).send("An error occurred");
     }
 };
 
@@ -18,26 +19,26 @@ const updateOrderStatus = async (req, res) => {
 
     try {
         const updatedOrder = await Orders.findOneAndUpdate(
-            { _id: orderId }, 
-            { orderStatus: orderStatus }, 
-            { new: true } 
+            { _id: orderId },
+            { orderStatus: orderStatus },
+            { new: true }
         );
 
         if (updatedOrder) {
-            return res.status(200).json({
+            return res.status(STATUS_CODES.OK).json({
                 success: true,
                 message: 'Order status updated successfully.',
                 updatedOrder,
             });
         } else {
-            return res.status(404).json({
+            return res.status(STATUS_CODES.NotFound).json({
                 success: false,
                 message: 'Order not found.',
             });
         }
     } catch (error) {
         console.error('Error updating order status:', error);
-        return res.status(500).json({
+        return res.status(STATUS_CODES.InternalServerError).json({
             success: false,
             message: 'An error occurred while updating the order status.',
         });

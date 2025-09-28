@@ -596,7 +596,7 @@
                             <% cart.forEach(function(item) { %>
                                 <% const product=item.productId || {}; %>
                                     <div class="product-item">
-                                        <a href="/productDetails?product=<%= product._id %>">
+                                        <a href="/productDetails/<%= product._id %>">
                                             <img src="<%= product.productImage[0] %>" class="product-image"
                                                 alt="<%= product.productName %>">
                                         </a>

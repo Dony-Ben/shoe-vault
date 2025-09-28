@@ -28,6 +28,8 @@ const { wishlist, wishlistadd, ProductRemove } = require("../controllers/user/wi
 const { loadWallet, addFunds } = require("../controllers/user/walletController.js");
 const { couponValidation } = require("../controllers/user/couponController.js");
 const { downloadInvoice } = require("../controllers/user/invoice.js");
+
+
 userRouter.get("/", landingpage);
 userRouter.get("/login", ensureGuest, loadlogin);
 userRouter.post("/login", userLogin);
@@ -73,8 +75,7 @@ userRouter.get("/auth/google/callback", passport.authenticate("google", { failur
 
 
 // Product management
-userRouter.get("/productDetails", productDetails);
-
+userRouter.get("/productDetails/:id", productDetails);
 
 // cartmanagement
 userRouter.get("/cart", userAuth, getcartpage);

@@ -4,13 +4,15 @@ const fs = require("fs");
 const sharp = require("sharp");
 const Brand = require("../../models/Brands");
 const { notifyClient, notifyAllClients } = require("../../helpers/sse");
+const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
+const { STATUS_CODES } = require("../../constants/httpStatusCodes");
 
 
 const getProductAddpage = async (req, res) => {
     try {
         const categories = await Category.find({ isListed: true }).lean();
         const brands = await Brand.find({ isBlocked: false });
-        res.render("admin/product-add", { cat: categories, brands });
+        res.render(RENDER_PAGE_KEYS.adminProductAdd, { cat: categories, brands });
     } catch (error) {
         console.error("Error in getProductAddPage:", error.message);
         res.redirect("/admin/pageError");
@@ -22,7 +24,7 @@ const addProducts = async (req, res) => {
         const productData = req.body;
         const productExists = await Product.findOne({ productName: productData.productName });
         if (productExists) {
-            return res.status(400).json("Product already exists. Please use a different name.");
+            return res.status(STATUS_CODES.BadRequest).json("Product already exists. Please use a different name.");
         }
         const images = [];
         if (req.files?.length > 0) {
@@ -34,16 +36,16 @@ const addProducts = async (req, res) => {
 
             }
         } else {
-            return res.status(400).send("No images uploaded. Please try again.");
+            return res.status(STATUS_CODES.BadRequest).send("No images uploaded. Please try again.");
         }
 
         const category = await Category.findOne({ name: productData.category });
         if (!category) {
-            return res.status(400).send("Invalid category name.");
+            return res.status(STATUS_CODES.BadRequest).send("Invalid category name.");
         }
         const brand = await Brand.findOne({ brandName: productData.brand });
         if (!brand) {
-            return res.status(400).send("Invalid brand name.");
+            return res.status(STATUS_CODES.BadRequest).send("Invalid brand name.");
         }
         const newProduct = new Product({
             productName: productData.productName,
@@ -88,10 +90,11 @@ const getAllProducts = async (req, res) => {
         ]);
 
         if (!productData.length) {
-            return res.status(404).render("admin/page-404");
+            const { STATUS_CODES } = require("../../constants/httpStatusCodes");
+            return res.status(STATUS_CODES.NotFound).render("admin/page-404");
         }
 
-        res.render("admin/products", {
+        res.render(RENDER_PAGE_KEYS.adminProducts, {
             data: productData,
             currentPage: page,
             totalPages: Math.ceil(count / limit),
@@ -101,7 +104,7 @@ const getAllProducts = async (req, res) => {
         });
     } catch (error) {
         console.error("Error loading products:", error.message);
-        res.status(500).render("admin/pageError", { error: error.message });
+        res.status(STATUS_CODES.InternalServerError).render("admin/pageError", { error: error.message });
     }
 };
 
@@ -111,13 +114,13 @@ const blockProduct = async (req, res) => {
         const product = await Product.findByIdAndUpdate(id, { isblocked: true }, { new: true });
 
         if (!product) {
-            return res.status(404).send("Product not found");
+            return res.status(STATUS_CODES.NotFound).send("Product not found");
         }
 
         res.redirect("/admin/products");
     } catch (error) {
         console.error("Error blocking product:", error);
-        res.status(500).render("admin/pageError", { error: error.message });
+        res.status(STATUS_CODES.InternalServerError).render("admin/pageError", { error: error.message });
     }
 };
 
@@ -138,13 +141,13 @@ const getEditProduct = async (req, res) => {
         const product = await Product.findById(id);
         const category = await Category.find({});
         const brand = await Brand.find({});
-        res.render("admin/editproduct", {
+        res.render(RENDER_PAGE_KEYS.adminEditProduct, {
             product: product,
             cat: category,
             brand: brand,
         })
     } catch (error) {
-        res.render("admin/page-404")
+        res.render(RENDER_PAGE_KEYS.adminPage404)
     }
 };
 
@@ -153,18 +156,18 @@ const editProduct = async (req, res) => {
         const id = req.params.id;
         const product = await Product.findOne({ _id: id });
         if (!product) {
-            return res.status(404).send("Product not found.");
+            return res.status(STATUS_CODES.NotFound).send("Product not found.");
         }
 
         const data = req.body;
         const category = await Category.findOne({ name: data.category });
         if (!category) {
-            return res.status(400).send("Invalid category name.");
+            return res.status(STATUS_CODES.BadRequest).send("Invalid category name.");
         }
 
         const brand = await Brand.findOne({ brandName: new RegExp(`^${data.brand}$`, 'i') });
         if (!brand) {
-            return res.status(400).send("Invalid brand name.");
+            return res.status(STATUS_CODES.BadRequest).send("Invalid brand name.");
         }
 
         const images = [];
@@ -209,7 +212,7 @@ const deleteSingleImage = async (req, res) => {
         );
 
         if (!product) {
-            return res.status(404).send({ status: false, message: "Product not found" });
+            return res.status(STATUS_CODES.NotFound).send({ status: false, message: "Product not found" });
         }
 
         const imagePath = path.join("public", "uploads", "product-images", imageNameToserver);

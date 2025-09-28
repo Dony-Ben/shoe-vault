@@ -1,3 +1,5 @@
+const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
+const { STATUS_CODES } = require("../../constants/httpStatusCodes")
 const Category = require("../../models/category");
 const Offer = require("../../models/offers");
 const Product = require("../../models/product");
@@ -5,7 +7,7 @@ const Wishlist = require("../../models/wishlist");
 
 const pageNotFound = async (req, res) => {
     try {
-        res.status(404).render("user/page-404")
+        res.status(STATUS_CODES.NotFound).render(RENDER_PAGE_KEYS.userPage404)
     } catch (error) {
         res.redirect("user/pageNotFound")
     }
@@ -15,60 +17,56 @@ const loadhome = async (req, res) => {
     try {
 
         let productData = await Product.find({ isblocked: false }).populate({ path: "brands", match: { isBlocked: false } });
-        res.render('user/home', { products: productData });
+        res.render(RENDER_PAGE_KEYS.userHome, { products: productData });
     } catch (error) {
         console.error(error);
-        res.status(500).send('Server Error');
+        res.status(STATUS_CODES.InternalError).send('Server Error');
     }
 };
 
 const landingpage = async (req, res) => {
     try {
         let productData = await Product.find({ isblocked: false }).populate({ path: "brands", match: { isBlocked: false } });
-        res.render("user/landing", { products: productData, });
+        res.render(RENDER_PAGE_KEYS.userLanding, { products: productData });
 
     } catch (error) {
         console.error("Error loading home page:", error);
-        res.status(500).render("user/page-404", { message: "Internal server error" });
+        res.status(STATUS_CODES.InternalServerError).render(RENDER_PAGE_KEYS.userPage404, { message: "Internal server error" });
     }
 };
 
 
 const loadlogin = async (req, res) => {
     try {
-        const successMessage = req.session.passwordResetSuccess;
-        if (successMessage) {
-            delete req.session.passwordResetSuccess;
-        }
-        res.render('user/login', { message: null, successMessage });
+        res.render(RENDER_PAGE_KEYS.userLogin, { message: res.locals.error || null, successMessage: res.locals.success || null });
     } catch (error) {
         console.error("Error loading login page:", error);
-        res.status(500).render('error', { message: "Internal Server Error" });
+        res.status(STATUS_CODES.InternalServerError).render(RENDER_PAGE_KEYS.userError, { message: "Internal Server Error" });
     }
 };
 
 
 const loadregister = async (req, res) => {
     try {
-        res.render('user/signup', { message: null });
+        res.render(RENDER_PAGE_KEYS.userSignup, { message: null });
     } catch (error) {
         console.log(error);
-
     }
 }
 
 const loadOTP = async (req, res) => {
     try {
-        res.render('user/otp')
+        res.render(RENDER_PAGE_KEYS.userOtp);
     } catch (error) {
         console.log('error while loading otp page... ', error)
     }
 };
+
 const getPaginatedProducts = async (page, limit) => {
     return Product.find({ isblocked: false })
         .populate({ path: "category", match: { isListed: true } })
         .populate({ path: "brands", match: { isBlocked: false } })
-        .sort({ stock: -1 }) // This will show in-stock products first
+        .sort({ stock: -1 })
         .skip((page - 1) * limit)
         .limit(limit)
         .lean();
@@ -129,8 +127,7 @@ const shop = async (req, res) => {
         ]);
 
         const updatedProducts = applyOffersToProducts(products, offers);
-
-        res.render("user/shop", {
+        res.render(RENDER_PAGE_KEYS.userShop, {
             products: updatedProducts,
             totalPages,
             currentPage,
@@ -139,13 +136,13 @@ const shop = async (req, res) => {
         });
     } catch (error) {
         console.error("Error while rendering shop page:", error);
-        res.status(500).send("An error occurred while loading the page.");
+        res.status(STATUS_CODES.InternalError).send("An error occurred while loading the page.");
     }
 };
 
 const about = async (req, res) => {
     try {
-        res.render("user/about")
+        res.render(RENDER_PAGE_KEYS.userAbout)
     } catch (error) {
         console.error(error);
 

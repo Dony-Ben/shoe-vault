@@ -4,6 +4,10 @@ const bcrypt = require("bcrypt");
 const env = require("dotenv").config();
 const crypto = require("crypto");
 const Address = require("../../models/address")
+const { STATUS_CODES } = require("../../constants/httpStatusCodes");
+const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
+const { RESPONSE_SUCCESS, RESPONSE_ERROR } = require('../../constants/responseMessages');
+
 // OTP Generator
 function generateOTP() {
     const digits = "123456789";
@@ -46,9 +50,9 @@ const sendVerificationEmail = async (email, otp) => {
 
 const getForgotPassPage = async (req, res) => {
     try {
-        res.render("user/forgotpassword", { message: null });
+        res.render(RENDER_PAGE_KEYS.userForgotPassword, { message: null });
     } catch (error) {
-        res.render("user/page-404");
+        res.render(RENDER_PAGE_KEYS.userPage404);
     }
 };
 
@@ -57,8 +61,8 @@ const forgotEmailValid = async (req, res) => {
         const email = req.body.email.trim();
         const findUser = await User.findOne({ email });
         if (!findUser) {
-            res.render("user/forgotpassword", {
-                message: "User with this email does not exist."
+            res.render(RENDER_PAGE_KEYS.userForgotPassword, {
+                message: RESPONSE_ERROR.userNotFound
             });
         }
 
@@ -69,25 +73,25 @@ const forgotEmailValid = async (req, res) => {
             if (emailSent) {
                 req.session.userOtp = otp;
                 req.session.email = email;
-                res.render("user/otpforgotpass", { message: null });
+                res.render(RENDER_PAGE_KEYS.userOtpForgotPass, { message: null });
             } else {
-                res.render("user/forgotpassword", {
-                    message: "Failed to send OTP. Please try again."
+                res.render(RENDER_PAGE_KEYS.userForgotPassword, {
+                    message: RESPONSE_ERROR.tryAgainLater
                 });
             }
         }
     } catch (error) {
         console.error("Error:", error);
-        res.render("user/page-404");
+        res.render(RENDER_PAGE_KEYS.userPage404);
     }
 };
 
 const verifyOtp = async (req, res) => {
+    
     try {
         const { userOtp, email } = req.session;
         let enteredOtp;
 
-        // Handle both AJAX (JSON) and form submission
         if (req.headers['content-type'] && req.headers['content-type'].includes('application/json')) {
             enteredOtp = req.body.otp ? req.body.otp.toString().trim() : '';
         } else {
@@ -96,73 +100,74 @@ const verifyOtp = async (req, res) => {
 
         if (!userOtp || !email) {
             if (req.headers['content-type'] && req.headers['content-type'].includes('application/json')) {
-                return res.json({ success: false, message: "Session expired. Please request a new OTP." });
+                return res.json({ success: false, message: RESPONSE_ERROR.sessionExpired });
             }
-            return res.render("user/forgotpassword", { message: "Session expired. Please request a new OTP." });
+            return res.render(RENDER_PAGE_KEYS.userForgotPassword, { message: RESPONSE_ERROR.sessionExpired });
         }
 
         if (userOtp.trim() === enteredOtp) {
             req.session.isOtpVerified = true;
             if (req.headers['content-type'] && req.headers['content-type'].includes('application/json')) {
-                return res.json({ success: true, message: "OTP verified successfully." });
+                return res.json({ success: true, message: RESPONSE_SUCCESS.otpVerified });
             }
-            res.render("user/newpassword");
+            res.render(RENDER_PAGE_KEYS.userNewPassword);
         } else {
             if (req.headers['content-type'] && req.headers['content-type'].includes('application/json')) {
-                return res.json({ success: false, message: "Invalid OTP. Please try again." });
+                return res.json({ success: false, message: RESPONSE_ERROR.invalidOtp });
             }
-            res.render("user/otpforgotpass", { message: "Invalid OTP. Please try again." });
+            res.render(RENDER_PAGE_KEYS.userOtpForgotPass, { message: RESPONSE_ERROR.invalidOtp });
         }
     } catch (error) {
         console.error("Error verifying OTP:", error);
         if (req.headers['content-type'] && req.headers['content-type'].includes('application/json')) {
-            return res.json({ success: false, message: "Something went wrong. Please try again." });
+            return res.json({ success: false, message: RESPONSE_ERROR.somethingWentWrong });
         }
-        res.render("user/page-404", { message: "Something went wrong. Please try again." });
+        res.render(RENDER_PAGE_KEYS.userPage404, { message: RESPONSE_ERROR.somethingWentWrong });
     }
 };
+
+
 const resetPassword = async (req, res) => {
+
     try {
         const { email, isOtpVerified } = req.session;
         const { newPassword, confirmPassword } = req.body;
         if (!isOtpVerified) {
-            return res.render("user/forgotpassword", { message: "OTP verification required." });
+            return res.render(RENDER_PAGE_KEYS.userForgotPassword, { message: RESPONSE_ERROR.unauthorized });
         }
         if (!newPassword || !confirmPassword) {
-            return res.render("user/newpassword", { message: "Both password fields are required." });
+            return res.render(RENDER_PAGE_KEYS.userNewPassword, { message: RESPONSE_ERROR.allFieldsRequired });
         }
         if (newPassword !== confirmPassword) {
-            return res.render("user/newpassword", { message: "Passwords do not match." });
+            return res.render(RENDER_PAGE_KEYS.userNewPassword, { message: RESPONSE_ERROR.passwordMismatch });
         }
         const user = await User.findOne({ email });
         if (!user) {
-            return res.render("user/newpassword", { message: "User not found." });
+            return res.render(RENDER_PAGE_KEYS.userNewPassword, { message: "User not found." });
         }
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         const result = await User.updateOne({ email }, { $set: { password: hashedPassword } });
+
         if (result.modifiedCount === 0) {
-            return res.render("user/newpassword", { message: "Failed to update password." });
+            return res.render(RENDER_PAGE_KEYS.userNewPassword, { message: RESPONSE_ERROR.operationFailed });
         }
 
-        // Clear session data but keep the session for success message
         req.session.isOtpVerified = null;
         req.session.email = null;
         req.session.userOtp = null;
-
-        // Set success message for login page
-        req.session.passwordResetSuccess = "Password reset successful! Please login with your new password.";
-
+        req.flash("success",RESPONSE_SUCCESS.resetpassword)
         res.redirect("/login");
     } catch (error) {
         console.error("Error resetting password:", error);
-        res.render("user/page-404");
+        res.render(RENDER_PAGE_KEYS.userPage404);
     }
 };
+
 
 const loadProfile = async (req, res,next) => {
     try {
          if (!req.user) {
-            return res.status(401).render("user/error", { message: "User not authenticated" });
+            return res.status(STATUS_CODES.Unauthorized).render("user/error", { message: RESPONSE_ERROR.unauthorized });
         }
         const userId = req.session.user.id;
 
@@ -172,10 +177,10 @@ const loadProfile = async (req, res,next) => {
 
         const user = await User.findById(userId);
         if (!user) {
-            return res.render("user/userProfile", { user: null, error: "User not found" });
+            return res.render(RENDER_PAGE_KEYS.userProfile, { user: null, error: RESPONSE_ERROR.userNotFound });
         }
 
-        res.render("user/userProfile", { user });
+        res.render(RENDER_PAGE_KEYS.userProfile, { user });
     } catch (err) {
         next(err)
     }
@@ -191,10 +196,10 @@ const geteditprofile = async (req, res) => {
 
         const user = await User.findById(userId);
         if (!user) {
-            return res.render("user/userProfile", { user: null, error: "User not found" });
+            return res.render(RENDER_PAGE_KEYS.userProfile, { user: null, error: RESPONSE_ERROR.userNotFound });
         }
 
-        res.render("user/editProfile", { user });
+        res.render(RENDER_PAGE_KEYS.userEditProfile, { user });
     } catch (err) {
         next(err)
     }
@@ -211,15 +216,15 @@ const editprofile = async (req, res) => {
         );
         console.log(updatedUser);
         if (!updatedUser) {
-            return res.status(404).render("user/editprofile", {
+            return res.status(STATUS_CODES.NotFound).render("user/editprofile", {
                 user: req.session.user,
                 error: "User not found."
             });
         }
-        res.render("user/userProfile", { user: updatedUser });
+        res.render(RENDER_PAGE_KEYS.userProfile, { user: updatedUser });
     } catch (error) {
         console.error("Error updating user:", error);
-        res.status(500).render("user/editprofile", {
+        res.status(STATUS_CODES.InternalServerError).render("user/editprofile", {
             user: req.session.user,
             error: "An error occurred while updating the profile."
         });
@@ -229,17 +234,17 @@ const editprofile = async (req, res) => {
 const loadAddresses = async (req, res) => {
     try {
         if (!req.session.user || !req.session.user.id) {
-            return res.status(400).send("User not logged in or session expired");
+            return res.status(STATUS_CODES.BadRequest).send(RESPONSE_ERROR.sessionExpired);
         }
 
         const userId = req.session.user.id;
 
         const addressList = await Address.find({ userId });
 
-        res.render('user/useraddress', { address: addressList });
+        res.render(RENDER_PAGE_KEYS.userAddress, { address: addressList });
     } catch (err) {
         console.error("Error in loadAddresses:", err);
-        res.status(500).send("Server Error");
+        res.status(STATUS_CODES.InternalServerError).send(RESPONSE_ERROR.serverError);
     }
 };
 
@@ -247,14 +252,14 @@ const loadAddresses = async (req, res) => {
 const AddAddressForm = async (req, res) => {
     try {
         if (!req.session.user || !req.session.user.id) {
-            return res.status(400).json({ success: false, message: "User not logged in or session expired" });
+            return res.status(STATUS_CODES.BadRequest).json({ success: false, message: RESPONSE_ERROR.sessionExpired });
         }
 
         const userId = req.session.user.id;
         const { name, city, state, pincode, phone, addressType } = req.body;
 
         if (!name || !phone || !city || !state || !pincode || !addressType) {
-            return res.status(400).json({ success: false, message: "All fields are required" });
+            return res.status(STATUS_CODES.BadRequest).json({ success: false, message: RESPONSE_ERROR.allFieldsRequired });
         }
 
         const newAddress = new Address({ userId, name, city, state, pincode, phone, addressType });
@@ -262,18 +267,18 @@ const AddAddressForm = async (req, res) => {
 
         // Check if this is an AJAX request (from checkout page)
         if (req.xhr || req.headers['content-type'] === 'application/json') {
-            return res.json({ success: true, message: "Address added successfully", address: newAddress });
+            return res.json({ success: true, message: RESPONSE_SUCCESS.addressAdded, address: newAddress });
         }
 
         // For regular form submissions (from address page)
         const addressList = await Address.find({ userId });
-        res.render('user/useraddress', { address: addressList });
+        res.render(RENDER_PAGE_KEYS.userAddress, { address: addressList });
     } catch (err) {
         console.error("Error in AddAddressForm:", err);
         if (req.xhr || req.headers['content-type'] === 'application/json') {
-            return res.status(500).json({ success: false, message: "Server Error" });
+            return res.status(STATUS_CODES.InternalServerError).json({ success: false, message: RESPONSE_ERROR.serverError });
         }
-        res.status(500).send("Server Error");
+        res.status(STATUS_CODES.InternalServerError).send(RESPONSE_ERROR.serverError);
     }
 };
 
@@ -295,14 +300,14 @@ const editAddress = async (req, res) => {
 
         if (!updatedAddress) {
             if (req.xhr || req.headers['content-type'] === 'application/json') {
-                return res.status(404).json({ success: false, message: 'Address not found' });
+                return res.status(STATUS_CODES.NotFound).json({ success: false, message: RESPONSE_ERROR.notFound });
             }
-            return res.status(404).send('Address not found');
+            return res.status(STATUS_CODES.NotFound).send(RESPONSE_ERROR.notFound);
         }
 
         // Check if this is an AJAX request (from checkout page)
         if (req.xhr || req.headers['content-type'] === 'application/json') {
-            return res.json({ success: true, message: "Address updated successfully", address: updatedAddress });
+            return res.json({ success: true, message: RESPONSE_SUCCESS.addressUpdated, address: updatedAddress });
         }
 
         // For regular form submissions (from address page)
@@ -310,9 +315,9 @@ const editAddress = async (req, res) => {
     } catch (error) {
         console.error('Error updating address:', error);
         if (req.xhr || req.headers['content-type'] === 'application/json') {
-            return res.status(500).json({ success: false, message: 'Internal Server Error' });
+            return res.status(STATUS_CODES.InternalServerError).json({ success: false, message: RESPONSE_ERROR.internalServerError });
         }
-        res.status(500).send('Internal Server Error');
+        res.status(STATUS_CODES.InternalServerError).send(RESPONSE_ERROR.internalServerError);
     }
 };
 
@@ -322,13 +327,13 @@ const getAddressById = async (req, res) => {
         const address = await Address.findById(addressId);
 
         if (!address) {
-            return res.status(404).json({ message: 'Address not found' });
+            return res.status(STATUS_CODES.NotFound).json({ message: RESPONSE_ERROR.notFound });
         }
 
         res.json(address);
     } catch (error) {
         console.error('Error fetching address:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(STATUS_CODES.InternalServerError).json({ message: RESPONSE_ERROR.serverError });
     }
 };
 
@@ -343,9 +348,9 @@ const deleteAddress = async (req, res) => {
         // Check if this is an AJAX request (from checkout page)
         if (req.xhr || req.headers['content-type'] === 'application/json') {
             if (result.deletedCount > 0) {
-                return res.json({ success: true, message: "Address deleted successfully" });
+                return res.json({ success: true, message: RESPONSE_SUCCESS.addressDeleted });
             } else {
-                return res.status(404).json({ success: false, message: "Address not found" });
+                return res.status(STATUS_CODES.NotFound).json({ success: false, message: RESPONSE_ERROR.notFound });
             }
         }
 
@@ -354,9 +359,9 @@ const deleteAddress = async (req, res) => {
     } catch (error) {
         console.error("Error deleting address:", error);
         if (req.xhr || req.headers['content-type'] === 'application/json') {
-            return res.status(500).json({ success: false, message: "An error occurred while deleting the address." });
+            return res.status(STATUS_CODES.InternalServerError).json({ success: false, message: RESPONSE_ERROR.operationFailed });
         }
-        res.status(500).send("An error occurred while deleting the address.");
+        res.status(STATUS_CODES.InternalServerError).send(RESPONSE_ERROR.operationFailed);
     }
 }
 
@@ -365,17 +370,17 @@ const getNewPasswordPage = async (req, res) => {
         if (!req.session || !req.session.isOtpVerified) {
             return res.redirect("/forgotpassword");
         }
-        res.render("user/newpassword");
+        res.render(RENDER_PAGE_KEYS.userNewPassword);
     } catch (error) {
         console.error("Error loading new password page:", error);
-        res.render("user/page-404", { message: "Something went wrong. Please try again." });
+        res.render(RENDER_PAGE_KEYS.userPage404, { message: RESPONSE_ERROR.somethingWentWrong });
     }
 };
 
 const resendForgotOtp = async (req, res) => {
     try {
         if (!req.session || !req.session.email) {
-            return res.status(400).json({ success: false, message: "Session data not found." });
+            return res.status(STATUS_CODES.BadRequest).json({ success: false, message: RESPONSE_ERROR.sessionNotFound });
         }
 
         const { email } = req.session;
@@ -386,13 +391,13 @@ const resendForgotOtp = async (req, res) => {
         const emailSent = await sendVerificationEmail(email, otp);
 
         if (emailSent) {
-            res.status(200).json({ success: true, message: "OTP resent successfully" });
+            res.status(STATUS_CODES.OK).json({ success: true, message: RESPONSE_SUCCESS.otpResent });
         } else {
-            res.status(500).json({ success: false, message: "Failed to resend OTP. Please try again." });
+            res.status(STATUS_CODES.InternalServerError).json({ success: false, message: RESPONSE_ERROR.tryAgainLater });
         }
     } catch (error) {
         console.error("Error resending forgot OTP:", error.message);
-        res.status(500).json({ success: false, message: "Internal server error. Please try again." });
+        res.status(STATUS_CODES.InternalServerError).json({ success: false, message: RESPONSE_ERROR.internalServerError });
     }
 };
 

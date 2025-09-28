@@ -1,5 +1,6 @@
 const Order = require("../../models/order.js");
 const Coupon = require("../../models/coupon.js");
+const { STATUS_CODES } = require("../../constants/httpStatusCodes");
 
 const couponValidation = async (req, res) => {
     try {
@@ -7,24 +8,24 @@ const couponValidation = async (req, res) => {
 
         const coupon = await Coupon.findOne({ code: couponcode.trim(), isActive: true });
         if (!coupon) {
-            return res.status(400).json({ success: false, message: "Invalid or expired coupon." });
+            return res.status(STATUS_CODES.BadRequest).json({ success: false, message: "Invalid or expired coupon." });
         }
 
         const currentDate = new Date();
         if (coupon.expiryDate < currentDate) {
-            return res.status(400).json({ success: false, message: "Coupon has expired." });
+            return res.status(STATUS_CODES.BadRequest).json({ success: false, message: "Coupon has expired." });
         }
 
         if (coupon.minOrderAmount && subtotal < coupon.minOrderAmount) {
-            return res.status(400).json({ success: false, message: `Minimum order should be ₹${coupon.minOrderAmount}.` });
+            return res.status(STATUS_CODES.BadRequest).json({ success: false, message: `Minimum order should be ₹${coupon.minOrderAmount}.` });
         }
 
         if (coupon.usageLimit && coupon.usedCount >= coupon.usageLimit) {
-            return res.status(400).json({ success: false, message: "Coupon usage limit reached." });
+            return res.status(STATUS_CODES.BadRequest).json({ success: false, message: "Coupon usage limit reached." });
         }
 
         if (coupon.usedBy && coupon.usedBy.includes(userId)) {
-            return res.status(400).json({ success: false, message: "You have already used this coupon." });
+            return res.status(STATUS_CODES.BadRequest).json({ success: false, message: "You have already used this coupon." });
         }
 
         let discount = 0;
@@ -37,7 +38,7 @@ const couponValidation = async (req, res) => {
             discount = coupon.discount;
         }
         const newTotal = subtotal - discount;
-        return res.status(200).json({
+        return res.status(STATUS_CODES.OK).json({
             success: true,
             discount,
             newTotal,
@@ -46,7 +47,7 @@ const couponValidation = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ success: false, message: "Server error." });
+        return res.status(STATUS_CODES.InternalServerError).json({ success: false, message: "Server error." });
     }
 }
 

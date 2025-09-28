@@ -1,6 +1,8 @@
 const Order = require('../../models/order.js');
 const Product = require('../../models/product.js');
 const User = require('../../models/User.js');
+const { STATUS_CODES } = require("../../constants/httpStatusCodes");
+const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
 
 const getSalesChartData = async (req, res) => {
     try {
@@ -138,9 +140,9 @@ const getSalesChartData = async (req, res) => {
         const recentOrders = await Order.find({
             orderStatus: { $in: ['pending', 'processing', 'shipped', 'completed'] }
         })
-        .sort({ orderDate: -1 })
-        .limit(5)
-        .populate('userId', 'name email');
+            .sort({ orderDate: -1 })
+            .limit(5)
+            .populate('userId', 'name email');
 
         // Prepare chart data for different periods
         const chartData = {
@@ -161,9 +163,9 @@ const getSalesChartData = async (req, res) => {
                 monthlyData[month].orders += item.orderCount;
             });
 
-            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-                               'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
             for (let i = 1; i <= 12; i++) {
                 chartData.labels.push(monthNames[i - 1]);
                 chartData.sales.push(monthlyData[i] ? monthlyData[i].sales : 0);
@@ -227,7 +229,7 @@ const getSalesChartData = async (req, res) => {
         }
         const loginSuccess = req.session.loginSuccess;
         req.session.loginSuccess = undefined;
-        res.render('admin/dashboard', {
+        res.render(RENDER_PAGE_KEYS.adminDashboard, {
             totalRevenue: totalRevenue[0]?.total || 0,
             totalOrders,
             totalProducts,
@@ -243,7 +245,7 @@ const getSalesChartData = async (req, res) => {
 
     } catch (err) {
         console.error('Dashboard Error:', err);
-        res.status(500).send('Dashboard Error');
+        res.status(STATUS_CODES.InternalServerError).send('Dashboard Error');
     }
 };
 

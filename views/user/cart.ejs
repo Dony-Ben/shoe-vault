@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +8,62 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+<style>
+    .loading-spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+
+    .toast {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        padding: 16px 20px;
+        margin-bottom: 10px;
+        border-left: 4px solid #3b82f6;
+        animation: slideIn 0.3s ease;
+        min-width: 300px;
+    }
+
+    .toast.success {
+        border-left-color: #10b981;
+    }
+
+    .toast.error {
+        border-left-color: #ef4444;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+</style>
+
 <%- include('../partials/user/header.ejs') %>
     <%- include('../partials/user/loader.ejs') %>
 
@@ -36,7 +91,9 @@
                                                 <% if (item.productId.salePrice < item.productId.regularPrice) { %>
                                                     ₹<%= item.productId.salePrice.toFixed(2) %> (Sale)
                                                         <% } else { %>
-                                                            ₹<%= item.productId && item.productId.regularPrice ? item.productId.regularPrice.toFixed(2) : '0.00' %>                                                                <% } %>
+                                                            ₹<%= item.productId && item.productId.regularPrice ?
+                                                                item.productId.regularPrice.toFixed(2) : '0.00' %>
+                                                                <% } %>
                                             </p>
                                         </div>
                                         <div class="flex items-center space-x-2">
@@ -92,71 +149,31 @@
                 </div>
             </div>
             <%- include('../partials/user/footer.ejs') %>
-                <style>
-                    .loading-spinner {
-                        display: inline-block;
-                        width: 16px;
-                        height: 16px;
-                        border: 2px solid rgba(255, 255, 255, 0.3);
-                        border-radius: 50%;
-                        border-top-color: white;
-                        animation: spin 1s ease-in-out infinite;
-                    }
-                    
-                    @keyframes spin {
-                        to { transform: rotate(360deg); }
-                    }
-                    
-                    .toast-container {
-                        position: fixed;
-                        top: 20px;
-                        right: 20px;
-                        z-index: 9999;
-                    }
-                    
-                    .toast {
-                        background: white;
-                        border-radius: 8px;
-                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                        padding: 16px 20px;
-                        margin-bottom: 10px;
-                        border-left: 4px solid #3b82f6;
-                        animation: slideIn 0.3s ease;
-                        min-width: 300px;
-                    }
-                    
-                    .toast.success { border-left-color: #10b981; }
-                    .toast.error { border-left-color: #ef4444; }
-                    
-                    @keyframes slideIn {
-                        from { transform: translateX(100%); opacity: 0; }
-                        to { transform: translateX(0); opacity: 1; }
-                    }
-                </style>
+
                 <script>
                     let isUpdating = false;
-                    
+
                     function showToast(message, type = 'info') {
                         const toast = $(`
                             <div class="toast ${type}">
                                 <div class="flex items-center">
                                     <svg class="w-5 h-5 mr-3 ${type === 'success' ? 'text-green-600' : type === 'error' ? 'text-red-600' : 'text-blue-600'}" fill="currentColor" viewBox="0 0 20 20">
-                                        ${type === 'success' ? 
-                                            '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>' :
-                                            type === 'error' ?
-                                            '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>' :
-                                            '<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>'
-                                        }
+                                        ${type === 'success' ?
+                                '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>' :
+                                type === 'error' ?
+                                    '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>' :
+                                    '<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>'
+                            }
                                     </svg>
                                     <span class="text-gray-800">${message}</span>
                                 </div>
                             </div>
                         `);
-                        
+
                         $('body').append(toast);
-                        
+
                         setTimeout(() => {
-                            toast.fadeOut(300, function() {
+                            toast.fadeOut(300, function () {
                                 $(this).remove();
                             });
                         }, 3000);
@@ -217,7 +234,7 @@
 
                     function removeItem(itemId) {
                         const itemElement = document.getElementById(`cart-item-${itemId}`);
-                        
+
                         // Show loading state
                         if (itemElement) {
                             itemElement.style.opacity = '0.5';
@@ -234,24 +251,24 @@
                             .then(data => {
                                 if (data.success) {
                                     showToast('Item removed from cart successfully!', 'success');
-                                    
+
                                     // Animate removal
                                     if (itemElement) {
                                         itemElement.style.transition = 'all 0.3s ease';
                                         itemElement.style.transform = 'translateX(-100%)';
                                         itemElement.style.opacity = '0';
-                                        
+
                                         setTimeout(() => {
                                             itemElement.remove();
                                         }, 300);
                                     }
-                                    
+
                                     // Update totals
                                     document.getElementById('cart-total').textContent = `₹${data.newTotal.toFixed(2)}`;
                                     document.getElementById('cart-subtotal').textContent = `₹${data.newSubtotal.toFixed(2)}`;
                                 } else {
                                     showToast('Failed to remove item: ' + data.message, 'error');
-                                    
+
                                     // Reset loading state
                                     if (itemElement) {
                                         itemElement.style.opacity = '1';
@@ -262,7 +279,7 @@
                             .catch(error => {
                                 console.error("Error:", error);
                                 showToast("An error occurred while removing the item.", 'error');
-                                
+
                                 // Reset loading state
                                 if (itemElement) {
                                     itemElement.style.opacity = '1';

@@ -1,13 +1,18 @@
+const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
+const { STATUS_CODES } = require("../../constants/httpStatusCodes");
 const Product = require("../../models/product");
 const Category = require("../../models/category");
 const Brand = require("../../models/Brands");
 const { notifyAllClients } = require("../../helpers/sse");
 const fs = require("fs");
 const path = require("path");
+
+
+
 async function renderAddProductWithError(res, errorMessage) {
     const categories = await Category.find({ isListed: true }).lean();
     const brands = await Brand.find({ isBlocked: false });
-    res.render("admin/product-add", {
+    res.render(RENDER_PAGE_KEYS.adminProductAdd, {
         cat: categories,
         brands,
         errorMessage
@@ -18,7 +23,7 @@ const getProductAddpage = async (req, res) => {
     try {
         const categories = await Category.find({ isListed: true }).lean();
         const brands = await Brand.find({ isBlocked: false });
-        res.render("admin/product-add", { cat: categories, brands });
+        res.render(RENDER_PAGE_KEYS.adminProductAdd, { cat: categories, brands });
     } catch (error) {
         console.error("Error in getProductAddPage:", error.message);
         res.redirect("/admin/pageError");
@@ -72,7 +77,7 @@ const addProducts = async (req, res) => {
         res.redirect("/admin/addProducts");
     } catch (error) {
         console.error("Error saving product:", error.message);
-        res.render("admin/pageError");
+        res.render(RENDER_PAGE_KEYS.adminPageError);
     }
 };
 
@@ -100,10 +105,10 @@ const getAllProducts = async (req, res) => {
             Brand.find({ isblocked: false }).lean(),
         ]);
         if (!productData.length) {
-            return res.status(404).render("admin/page-404");
+            return res.status(STATUS_CODES.NotFound).render("admin/page-404");
         }
 
-        res.render("admin/products", {
+        res.render(RENDER_PAGE_KEYS.adminProducts, {
             data: productData,
             currentPage: page,
             totalPages: Math.ceil(count / limit),
@@ -113,7 +118,7 @@ const getAllProducts = async (req, res) => {
         });
     } catch (error) {
         console.error("Error loading products:", error.message);
-        res.status(500).render("admin/pageError", { error: error.message });
+        res.status(STATUS_CODES.InternalServerError).render("admin/pageError", { error: error.message });
     }
 };
 
@@ -123,13 +128,13 @@ const blockProduct = async (req, res) => {
         const product = await Product.findByIdAndUpdate(id, { isblocked: true }, { new: true });
 
         if (!product) {
-            return res.status(404).send("Product not found");
+            return res.status(STATUS_CODES.NotFound).send("Product not found");
         }
 
         res.redirect("/admin/products");
     } catch (error) {
         console.error("Error blocking product:", error);
-        res.status(500).render("admin/pageError", { error: error.message });
+        res.status(STATUS_CODES.InternalServerError).render("admin/pageError", { error: error.message });
     }
 };
 
@@ -150,13 +155,14 @@ const getEditProduct = async (req, res) => {
         const product = await Product.findById(id).populate("brands");
         const category = await Category.find({});
         const brand = await Brand.find({});
-        res.render("admin/editproduct", {
+        const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
+        res.render(RENDER_PAGE_KEYS.adminEditProduct, {
             product: product,
             cat: category,
             brand: brand,
         })
     } catch (error) {
-        res.render("admin/page-404")
+        res.render(RENDER_PAGE_KEYS.adminPage404)
     }
 };
 
@@ -166,18 +172,18 @@ const editProduct = async (req, res) => {
         const productData = req.body;
         const product = await Product.findOne({ _id: id });
         if (!product) {
-            return res.status(404).send("Product not found.");
+            return res.status(STATUS_CODES.NotFound).send("Product not found.");
         }
 
         const data = req.body;
         const category = await Category.findOne({ name: data.category });
         if (!category) {
-            return res.status(400).send("Invalid category name.");
+            return res.status(STATUS_CODES.BadRequest).send("Invalid category name.");
         }
 
         const brand = await Brand.findOne({ brandName: new RegExp(`^${data.brand}$`, 'i') });
         if (!brand) {
-            return res.status(400).send("Invalid brand name.");
+            return res.status(STATUS_CODES.BadRequest).send("Invalid brand name.");
         }
 
         let images = [];
@@ -224,7 +230,7 @@ const deleteSingleImage = async (req, res) => {
         );
 
         if (!product) {
-            return res.status(404).send({ status: false, message: "Product not found" });
+            return res.status(STATUS_CODES.NotFound).send({ status: false, message: "Product not found" });
         }
 
         const imagePath = path.join("public", "uploads", "product-images", imageNameToserver);
@@ -237,7 +243,7 @@ const deleteSingleImage = async (req, res) => {
         res.send({ status: true });
     } catch (error) {
         console.error("Error deleting image:", error);
-        res.status(500).send({ status: false, message: "Server error" });
+        res.status(STATUS_CODES.InternalServerError).send({ status: false, message: "Server error" });
     }
 };
 

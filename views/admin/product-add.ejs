@@ -200,7 +200,7 @@
         </div>
     </section>
   <script src="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.js"></script>
-    <script>
+  <script>
         function validateForm() {
             clearErrorMessages();
             const name = document.getElementsByName('productName')[0].value;
@@ -213,6 +213,7 @@
             const img1 = document.getElementById('input1');
             const img2 = document.getElementById('input2');
             const img3 = document.getElementById('input3');
+            const sizeCheckboxes = document.querySelectorAll('input[name="availableSizes[]"]:checked');
             let isValid = true;
 
             if (name.trim() === "") {
@@ -250,7 +251,6 @@
                 isValid = false;
             }
 
-            const sizeCheckboxes = document.querySelectorAll('input[name="availableSizes"]:checked');
             if (sizeCheckboxes.length === 0) {
                 displayErrorMessage('size-error', 'Please select at least one size.');
                 isValid = false;

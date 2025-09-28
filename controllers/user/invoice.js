@@ -1,5 +1,6 @@
 const Order = require("../../models/order.js");
 const PDFDocument = require('pdfkit');
+const { STATUS_CODES } = require("../../constants/httpStatusCodes");
 
 const downloadInvoice = async (req, res) => {
     try {
@@ -8,7 +9,7 @@ const downloadInvoice = async (req, res) => {
         const order = await Order.findById(orderId).populate('orderedItem.productId')
         console.log("Order details:", order);
         if (!order || order.userId.toString() !== userId) {
-            return res.status(403).send('Unauthorized or Order not found');
+            return res.status(STATUS_CODES.Forbidden).send('Unauthorized or Order not found');
         }
         const doc = new PDFDocument();
         res.setHeader('Content-Type', 'application/pdf');
@@ -55,7 +56,7 @@ const downloadInvoice = async (req, res) => {
 
     } catch (error) {
         console.error("Error downloading invoice:", error);
-        res.status(500).send("Internal Server Error");
+        res.status(STATUS_CODES.InternalServerError).send("Internal Server Error");
 
     }
 }

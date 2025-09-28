@@ -1,4 +1,6 @@
 const userModel = require("../../models/User");
+const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
+const { STATUS_CODES } = require("../../constants/httpStatusCodes");
 
 const customerInfo = async (req, res) => {
     try {
@@ -39,15 +41,15 @@ const customerInfo = async (req, res) => {
         const data = userData.length > 0 ? userData:"no user";
 
         // Pass variables to the EJS template
-        res.render("admin/coustomers", {
+        res.render(RENDER_PAGE_KEYS.adminCoustomers, {
             data,
             currentPage: page,
             totalPages: Math.ceil(count / limit),
             search,
         });
     } catch (error) {
-        console.error("Error in customerInfo:", error);
-        res.status(500).send("An error occurred while fetching customers.");
+    console.error("Error in customerInfo:", error);
+    res.status(STATUS_CODES.InternalServerError).send("An error occurred while fetching customers.");
     }
 };
 

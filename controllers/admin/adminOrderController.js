@@ -1,3 +1,6 @@
+const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
+const { STATUS_CODES } = require("../../constants/httpStatusCodes");
+const { RESPONSE_SUCCESS, RESPONSE_ERROR } = require("../../constants/responseMessages");
 const Orders = require("../../models/order");
 const Wallet = require("../../models/wallet");
 const getOrderpage = async (req, res) => {
@@ -44,7 +47,7 @@ const getOrderpage = async (req, res) => {
             .limit(limit)
             .lean();
 
-        res.render('admin/ordermanage', {
+        res.render(RENDER_PAGE_KEYS.adminOrderManage, {
             orders,
             currentPage: page,
             totalPages,
@@ -57,7 +60,7 @@ const getOrderpage = async (req, res) => {
         });
     } catch (error) {
         console.log("An error occurred while fetching user orders:", error);
-        res.status(500).send("An error occurred");
+        res.status(STATUS_CODES.InternalServerError).send("An error occurred");
     }
 };
 
@@ -72,22 +75,22 @@ const updateOrderStatus = async (req, res) => {
         );
 
         if (updatedOrder) {
-            return res.status(200).json({
+            return res.status(STATUS_CODES.OK).json({
                 success: true,
-                message: 'Order status updated successfully.',
+                message: RESPONSE_SUCCESS.orderStatusUpdated,
                 updatedOrder,
             });
         } else {
-            return res.status(404).json({
+            return res.status(STATUS_CODES.NotFound).json({
                 success: false,
-                message: 'Order not found.',
+                message: RESPONSE_ERROR.orderNotFound,
             });
         }
     } catch (error) {
         console.error('Error updating order status:', error);
-        return res.status(500).json({
+        return res.status(STATUS_CODES.InternalServerError).json({
             success: false,
-            message: 'An error occurred while updating the order status.',
+            message: RESPONSE_ERROR.operationFailed,
         });
     }
 };
@@ -96,14 +99,13 @@ const approveReturn = async (req, res) => {
     try {
         const { orderId, productId } = req.params;
         const order = await Orders.findById(orderId).populate('orderedItem.productId');
-        if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+        if (!order) return res.status(STATUS_CODES.NotFound).json({ success: false, message: RESPONSE_ERROR.orderNotFound });
         const item = order.orderedItem.find(i => i.productId._id.toString() === productId);
-        if (!item || !item.returned) return res.status(400).json({ success: false, message: 'Item not marked for return' });
-        // Already marked as returned, so just confirm
-        // (Refund already processed on user request)
-        return res.json({ success: true, message: 'Return approved' });
+        if (!item || !item.returned) return res.status(STATUS_CODES.BadRequest).json({ success: false, message: RESPONSE_ERROR.itemNotMarkedForReturn });
+       
+        return res.json({ success: true, message: RESPONSE_SUCCESS.returnApproved });
     } catch (err) {
-        res.status(500).json({ success: false, message: 'Server error' });
+        res.status(STATUS_CODES.InternalServerError).json({ success: false, message: RESPONSE_ERROR.serverError });
     }
 };
 
@@ -111,9 +113,9 @@ const rejectReturn = async (req, res) => {
     try {
         const { orderId, productId } = req.params;
         const order = await Orders.findById(orderId).populate('orderedItem.productId');
-        if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+        if (!order) return res.status(STATUS_CODES.NotFound).json({ success: false, message: RESPONSE_ERROR.orderNotFound });
         const item = order.orderedItem.find(i => i.productId._id.toString() === productId);
-        if (!item || !item.returned) return res.status(400).json({ success: false, message: 'Item not marked for return' });
+        if (!item || !item.returned) return res.status(STATUS_CODES.BadRequest).json({ success: false, message: RESPONSE_ERROR.itemNotMarkedForReturn });
         item.returned = false;
         if (order.paymentMethod !== 'cod') {
             const refundAmount = item.productId.salePrice * item.quantity;
@@ -130,9 +132,9 @@ const rejectReturn = async (req, res) => {
             }
         }
         await order.save();
-        return res.json({ success: true, message: 'Return rejected and refund reversed' });
+        return res.json({ success: true, message: RESPONSE_SUCCESS.returnRejected });
     } catch (err) {
-        res.status(500).json({ success: false, message: 'Server error' });
+        res.status(STATUS_CODES.InternalServerError).json({ success: false, message: RESPONSE_ERROR.serverError });
     }
 };
 

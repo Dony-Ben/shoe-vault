@@ -133,7 +133,7 @@
                         <% products.slice(0, 8).forEach((product)=> { %>
                             <div class="group">
                                 <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
-                                    <a href="/productDetails?product=<%=product._id%>" class="block">
+                                    <a href="/productDetails/<%=product._id%>" class="block">
                                         <div class="relative overflow-hidden rounded-t-lg">
                                             <% if (!product.quantity) { %>
                                                 <span class="badge position-absolute top-0 end-0 m-2 bg-danger" style="z-index:2; position:absolute; right:8px; top:8px; background:#dc3545; color:#fff; padding:4px 10px; border-radius:6px; font-weight:600; font-size:0.95rem;">

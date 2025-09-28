@@ -1,6 +1,8 @@
 const Category = require("../../models/category.js");
 const Offer = require("../../models/offers.js");
 const Product = require("../../models/product.js");
+const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
+const { STATUS_CODES } = require("../../constants/httpStatusCodes");
 
 const GetOfferpage = async (req, res) => {
     console.log("enter into get offer page")
@@ -8,10 +10,10 @@ const GetOfferpage = async (req, res) => {
         const offers = await Offer.find({}).populate("categories");
         const categories = await Category.find({});
         const products = await Product.find({})
-        res.render("admin/offer", { offers, categories, products });
+        res.render(RENDER_PAGE_KEYS.adminOffer, { offers, categories, products });
     } catch (error) {
         console.error("Error fetching offers:", error);
-        res.status(500).render("admin/pageError", { error: "Failed to fetch offers." });
+        res.status(STATUS_CODES.InternalServerError).render("admin/pageError", { error: "Failed to fetch offers." });
     }
 }
 
@@ -19,7 +21,7 @@ const addOffer = async (req, res) => {
     console.log("enter into add offer page")
     try {
         const {
-             offerName,
+            offerName,
             offerType,
             categoryId,
             productIds,
@@ -29,8 +31,8 @@ const addOffer = async (req, res) => {
             endDate,
             isActive
         } = req.body;
-        
-         const offerData = {
+
+        const offerData = {
             offerName,
             offerType,
             categories: offerType === 'category' ? [categoryId] : [],
@@ -42,11 +44,11 @@ const addOffer = async (req, res) => {
             isActive: isActive === 'on' ? true : false
         };
         console.log("New offer data:", offerData);
-          await Offer.create(offerData);
-         res.redirect('/admin/offer?successMessage=Offer created successfully');
+        await Offer.create(offerData);
+        res.redirect('/admin/offer?successMessage=Offer created successfully');
     } catch (error) {
         console.error("Error adding offer:", error);
-        res.status(500).render("admin/pageError", { error: "Failed to add offer." });
+        res.status(STATUS_CODES.InternalServerError).render("admin/pageError", { error: "Failed to add offer." });
     }
 }
 

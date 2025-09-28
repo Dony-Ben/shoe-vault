@@ -1,4 +1,6 @@
 const Brand = require("../../models/Brands.js");
+const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
+const { STATUS_CODES } = require("../../constants/httpStatusCodes");
 
 const getBrandpage = async (req, res) => {
     try {
@@ -10,12 +12,11 @@ const getBrandpage = async (req, res) => {
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
- 
+
         const totalBrands = await Brand.countDocuments({});
         const totalPages = Math.ceil(totalBrands / limit);
-
-        res.render("admin/Brand", {
-            data: brandData, 
+        res.render(RENDER_PAGE_KEYS.adminBrand, {
+            data: brandData,
             currentpages: page,
             totalPages: totalPages,
             totalBrands: totalBrands,
@@ -46,22 +47,22 @@ const addBrand = async (req, res) => {
 }
 
 const blockBrand = async (req, res) => {
-     try {
-    const id = req.params.id;
-    console.log("brand", id);
+    try {
+        const id = req.params.id;
+        console.log("brand", id);
 
-    const brand = await Brand.findById(id); 
+        const brand = await Brand.findById(id);
 
-    if (!brand) {
-        console.log("not getting brand")
+        if (!brand) {
+            console.log("not getting brand")
+        }
+        brand.isBlocked = !brand.isBlocked;
+        await brand.save();
+        res.redirect("/admin/brands");
+    } catch (error) {
+        console.error(error);
+        res.status(STATUS_CODES.InternalServerError).send("Internal server error");
     }
-    brand.isBlocked = !brand.isBlocked;
-    await brand.save(); 
-    res.redirect("/admin/brands");
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Internal server error");
-  }
 }
 
 const unBlockBrand = async (req, res) => {

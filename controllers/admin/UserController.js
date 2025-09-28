@@ -1,4 +1,6 @@
 const userModel = require("../../models/User");
+const { STATUS_CODES } = require("../../constants/httpStatusCodes");
+const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
 
 const customerInfo = async (req, res) => {
     try {
@@ -30,8 +32,8 @@ const customerInfo = async (req, res) => {
             ],
         });
 
-          const data = userData.length > 0 ? userData:"no user";
-        res.render("admin/coustomers", {
+        const data = userData.length > 0 ? userData : "no user";
+        res.render(RENDER_PAGE_KEYS.adminCoustomers || "admin/coustomers", {
             data,
             currentPage: page,
             totalPages: Math.ceil(count / limit),
@@ -39,7 +41,7 @@ const customerInfo = async (req, res) => {
         });
     } catch (error) {
         console.error("Error in customerInfo:", error);
-        res.status(500).send("An error occurred while fetching customers.");
+        res.status(STATUS_CODES.InternalServerError).send("An error occurred while fetching customers.");
     }
 };
 
