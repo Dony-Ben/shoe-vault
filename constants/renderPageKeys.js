@@ -1,4 +1,4 @@
-export const RENDER_PAGE_KEYS = {
+ const RENDER_PAGE_KEYS = {
     // user
     userLogin: "user/login",
     userSignup: "user/signup",
@@ -43,3 +43,4 @@ export const RENDER_PAGE_KEYS = {
     adminCoustomers: "admin/coustomers",
    
 };
+module.exports = {RENDER_PAGE_KEYS};
