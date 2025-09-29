@@ -1,6 +1,6 @@
 const Coupon = require("../../models/coupon.js");
 const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
-const { STATUS_CODES } = require("../../constants/httpStatusCodes");
+const { STATUS_CODES } = require("../../constants/httpStatusCodes.js");
 
 const  loadcouponpage = async (req, res) => {
     try {

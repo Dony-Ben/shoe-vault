@@ -1,6 +1,6 @@
 const Brand = require("../../models/Brands.js");
 const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
-const { STATUS_CODES } = require("../../constants/httpStatusCodes");
+const { STATUS_CODES } = require("../../constants/httpStatusCodes.js");
 
 const getBrandpage = async (req, res) => {
     try {

@@ -2,7 +2,7 @@ const Category = require("../../models/category.js");
 const Offer = require("../../models/offers.js");
 const Product = require("../../models/product.js");
 const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
-const { STATUS_CODES } = require("../../constants/httpStatusCodes");
+const { STATUS_CODES } = require("../httpStatusCodes.js");
 
 const GetOfferpage = async (req, res) => {
     console.log("enter into get offer page")

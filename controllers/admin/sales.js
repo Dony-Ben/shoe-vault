@@ -201,7 +201,6 @@ const Generatesales = async (req, res) => {
         res.json({ success: true, data: report });
     } catch (error) {
         console.error('Sales report error:', error);
-        const { STATUS_CODES } = require("../../constants/httpStatusCodes");
         res.status(STATUS_CODES.InternalServerError).json({
             success: false,
             message: 'Error generating sales report',
