@@ -60,6 +60,7 @@ const cartaddToCart = async (req, res) => {
         }
         await cart.save();
         res.json({ message: 'Product added to cart successfully.' });
+        alert("Product added to cart successfully.");
     } catch (error) {
         console.error("Error in cartaddToCart:", error);
         res.redirect("/shop?message=An error occurred while adding the product to the cart.");

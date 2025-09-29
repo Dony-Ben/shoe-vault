@@ -6,24 +6,26 @@ const Brand = require("../../models/Brands");
 const { notifyAllClients } = require("../../helpers/sse");
 const fs = require("fs");
 const path = require("path");
+const { PRODUCT_SIZES, PRODUCT_COLORS } = require("../../constants/enums");
 
 
-
-async function renderAddProductWithError(res, errorMessage) {
-    const categories = await Category.find({ isListed: true }).lean();
-    const brands = await Brand.find({ isBlocked: false });
-    res.render(RENDER_PAGE_KEYS.adminProductAdd, {
-        cat: categories,
-        brands,
-        errorMessage
-    });
-}
 
 const getProductAddpage = async (req, res) => {
     try {
         const categories = await Category.find({ isListed: true }).lean();
         const brands = await Brand.find({ isBlocked: false });
-        res.render(RENDER_PAGE_KEYS.adminProductAdd, { cat: categories, brands });
+        console.log("PRODUCT_SIZES =>", PRODUCT_SIZES);
+        console.log("PRODUCT_COLORS =>", PRODUCT_COLORS);
+
+        if (!PRODUCT_SIZES || !PRODUCT_COLORS) {
+            throw new Error('Product sizes or colors are not properly defined');
+        }
+        res.render("admin/product-add", {
+            cat: categories,
+            brands,
+            sizes: PRODUCT_SIZES,
+            colors: PRODUCT_COLORS
+        });
     } catch (error) {
         console.error("Error in getProductAddPage:", error.message);
         res.redirect("/admin/pageError");
@@ -70,7 +72,8 @@ const addProducts = async (req, res) => {
             quantity: productData.quantity,
             productImage: images,
             brands: brand._id,
-            sizes: sizes,
+            sizes: productData.availableSizes || [],
+            colors: productData.availableColors || [],
         });
 
         await newProduct.save();

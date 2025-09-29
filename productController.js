@@ -1,23 +1,12 @@
-const Product = require("../../models/product");
-const Category = require("../../models/category");
+const Product = require("./models/product");
+const Category = require("./models/category");
 const fs = require("fs");
 const sharp = require("sharp");
-const Brand = require("../../models/Brands");
-const { notifyClient, notifyAllClients } = require("../../helpers/sse");
-const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
-const { STATUS_CODES } = require("../../constants/httpStatusCodes");
-
-
-const getProductAddpage = async (req, res) => {
-    try {
-        const categories = await Category.find({ isListed: true }).lean();
-        const brands = await Brand.find({ isBlocked: false });
-        res.render(RENDER_PAGE_KEYS.adminProductAdd, { cat: categories, brands });
-    } catch (error) {
-        console.error("Error in getProductAddPage:", error.message);
-        res.redirect("/admin/pageError");
-    }
-};
+const Brand = require("./models/Brands");
+const { notifyClient, notifyAllClients } = require("./helpers/sse");
+const { RENDER_PAGE_KEYS } = require("./constants/renderPageKeys");
+const { STATUS_CODES } = require("./constants/httpStatusCodes");
+const { PRODUCT_SIZES, PRODUCT_COLORS} = require("./constants/enums");
 
 const addProducts = async (req, res) => {
     try {
@@ -33,7 +22,6 @@ const addProducts = async (req, res) => {
                 const resizedImagePath = path.join('public', 'uploads', 'product-images', file.filename);
                 await sharp(originalImagePath).resize({ width: 440, height: 440 }).toFile(resizedImagePath);
                 images.push(file.filename);
-
             }
         } else {
             return res.status(STATUS_CODES.BadRequest).send("No images uploaded. Please try again.");
@@ -56,9 +44,11 @@ const addProducts = async (req, res) => {
             quantity: productData.quantity,
             productImage: images,
             brands: brand._id,
+            sizes: productData.availableSizes || [],
+            colors: productData.availableColors || [],
         });
         await newProduct.save();
-        res.redirect("/admin/addProducts");
+        res.redirect("/admin/product-add");
     } catch (error) {
         console.error("Error saving product:", error.message);
         res.render("/admin/pageError");
@@ -90,7 +80,7 @@ const getAllProducts = async (req, res) => {
         ]);
 
         if (!productData.length) {
-            const { STATUS_CODES } = require("../../constants/httpStatusCodes");
+            const { STATUS_CODES } = require("./constants/httpStatusCodes");
             return res.status(STATUS_CODES.NotFound).render("admin/page-404");
         }
 
@@ -145,6 +135,9 @@ const getEditProduct = async (req, res) => {
             product: product,
             cat: category,
             brand: brand,
+            sizes: PRODUCT_SIZES,
+            colors: PRODUCT_COLORS,
+            statuses: PRODUCT_STATUS,
         })
     } catch (error) {
         res.render(RENDER_PAGE_KEYS.adminPage404)
@@ -186,7 +179,9 @@ const editProduct = async (req, res) => {
             regularPrice: data.regularPrice,
             salePrice: data.salePrice,
             quantity: data.quantity,
-            productImage: images
+            productImage: images,
+            sizes: data.availableSizes || [],
+            colors: data.availableColors || [],
         };
         if (images.length > 0) {
             uploadFields.productImage = images;
@@ -237,5 +232,6 @@ module.exports = {
     getEditProduct,
     editProduct,
     deleteSingleImage,
+    
 
 }

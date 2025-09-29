@@ -1,5 +1,5 @@
 <head>
-  <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.css">
     <link rel="stylesheet" href="/productadd.css">
 </head>
 <%- include('../partials/admin/leyout.ejs') %>
@@ -8,10 +8,12 @@
         .error-message {
             color: red;
         }
+
         .thumbnails-container {
             display: flex;
             overflow-x: auto;
         }
+
         .thumbnail {
             margin-right: 10px;
 
@@ -33,7 +35,7 @@
                                 <%= errorMessage %>
                             </div>
                             <% } %>
-                                    <form method="post" action="/admin/addproducts" enctype="multipart/form-data"
+                                <form method="post" action="/admin/addproducts" enctype="multipart/form-data"
                                     onsubmit="return validateForm()">
                                     <div class="mb-4">
                                         <label for="product_name" class="form-label">Product Name</label>
@@ -107,21 +109,27 @@
                                                     <div id="brand-error" class="error-message"></div>
                                                 </div>
 
-                                                <label>Available Sizes:</label><br>
-                                                <div id="size-error" class="error-message"></div>
-                                                <input type="checkbox" name="availableSizes[]" value="6"> 6
-                                                <input type="checkbox" name="availableSizes[]" value="7"> 7
-                                                <input type="checkbox" name="availableSizes[]" value="8"> 8
-                                                <input type="checkbox" name="availableSizes[]" value="9"> 9
-                                                <input type="checkbox" name="availableSizes[]" value="10"> 10
-                                                <div id="sizeInventory"></div>
+                                              <label>Sizes:</label><br>
+                                              <% if (sizes && sizes.length > 0) { %>
+                                                <% sizes.forEach(size => { %>
+                                        <input type="checkbox" name="availableSizes[]" value="<%= size %>"> <%= size %>
+                                                         <% }) %>
+                                                     <% } else { %>
+                                                <p>No sizes available</p>
+                                                        <% } %>
+
+                                                <br><label>Colors:</label><br>
+                                                <% colors.forEach(color => { %>
+                                                    <input type="checkbox" name="availableColors[]" value="<%= color %>"> <%= color %>
+                                                <% }) %>
+
                                             </div>
                                         </div>
                                         <div class="card mb-2">
                                             <div class="card-header">
                                                 <h4>Choose Images</h4>
                                             </div>
-                                             <div class="row">
+                                            <div class="row">
                                                 <div class="card-body align-items-center" style="margin-bottom: 20px;">
                                                     <label for="input1" class="form-label">Upload Image 1</label>
                                                     <input class="form-control" type="file" name="images" id="input1"
@@ -144,7 +152,7 @@
 
                                             <!-- Repeat similar structure for Image 2 -->
                                             <div class="row">
-                                                <div style="margin-bottom: 20px;">
+                                                <div class="card-body align-items-center" style="margin-bottom: 20px;">
                                                     <label for="input2" class="form-label">Upload Image 2</label>
                                                     <input class="form-control" type="file" name="images" id="input2"
                                                         accept="image/png, image/jpeg, image/jpg"
@@ -199,8 +207,8 @@
             </div>
         </div>
     </section>
-  <script src="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.js"></script>
-  <script>
+    <script src="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.js"></script>
+    <script>
         function validateForm() {
             clearErrorMessages();
             const name = document.getElementsByName('productName')[0].value;
@@ -214,6 +222,7 @@
             const img2 = document.getElementById('input2');
             const img3 = document.getElementById('input3');
             const sizeCheckboxes = document.querySelectorAll('input[name="availableSizes[]"]:checked');
+            const colorCheckboxes = document.querySelectorAll('input[name="availableColors[]"]:checked');
             let isValid = true;
 
             if (name.trim() === "") {
@@ -255,6 +264,10 @@
                 displayErrorMessage('size-error', 'Please select at least one size.');
                 isValid = false;
             }
+            if (colorCheckboxes.length === 0) {
+                displayErrorMessage('color-error', 'Please select at least one color.');
+                isValid = false;
+            }
             if (
                 (!img1.files || img1.files.length === 0) &&
                 (!img2.files || img2.files.length === 0) &&
@@ -282,63 +295,63 @@
 
         let croppers = {};
 
-       function viewImage(event, index) {
-    const fileInput = event.target;
-    const image = document.getElementById(`imgView${index}`);
-    const croppedImage = document.getElementById(`croppedImg${index}`);
-    const saveButton = document.getElementById(`saveButton${index}`);
-    const previewContainer = document.getElementById(`croppedPreview${index}`);
+        function viewImage(event, index) {
+            const fileInput = event.target;
+            const image = document.getElementById(`imgView${index}`);
+            const croppedImage = document.getElementById(`croppedImg${index}`);
+            const saveButton = document.getElementById(`saveButton${index}`);
+            const previewContainer = document.getElementById(`croppedPreview${index}`);
 
-    // Destroy previous cropper if exists
-    if (croppers[index]) {
-        croppers[index].destroy();
-    }
+            // Destroy previous cropper if exists
+            if (croppers[index]) {
+                croppers[index].destroy();
+            }
 
-    const file = fileInput.files[0];
-    if (!file || !file.type.startsWith('image/')) {
-        alert('Please select a valid image file.');
-        return;
-    }
+            const file = fileInput.files[0];
+            if (!file || !file.type.startsWith('image/')) {
+                alert('Please select a valid image file.');
+                return;
+            }
 
-    const imageUrl = URL.createObjectURL(file);
-    image.src = imageUrl;
-    image.style.display = "block";
+            const imageUrl = URL.createObjectURL(file);
+            image.src = imageUrl;
+            image.style.display = "block";
 
-    image.onload = function () {
-        if (croppers[index]) {
-            croppers[index].destroy();
+            image.onload = function () {
+                if (croppers[index]) {
+                    croppers[index].destroy();
+                }
+                croppers[index] = new Cropper(image, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    guides: true,
+                    background: false,
+                    autoCropArea: 1,
+                    zoomable: true,
+                });
+            };
+            saveButton.style.display = 'block';
+            saveButton.onclick = function () {
+                const cropper = croppers[index];
+                if (!cropper) return;
+                const croppedCanvas = cropper.getCroppedCanvas();
+                const croppedImageUrl = croppedCanvas.toDataURL('image/jpeg', 1.0);
+                croppedImage.src = croppedImageUrl;
+
+                croppedCanvas.toBlob((blob) => {
+                    const newFile = new File([blob], `cropped-${Date.now()}.jpg`, { type: 'image/jpeg' });
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(newFile);
+                    fileInput.files = dataTransfer.files; // Update the input's files
+
+                    cropper.destroy();
+                    croppers[index] = null;
+                });
+
+                image.style.display = "none";
+                previewContainer.style.display = 'block';
+            };
         }
-        croppers[index] = new Cropper(image, {
-            aspectRatio: 1,
-            viewMode: 1,
-            guides: true,
-            background: false,
-            autoCropArea: 1,
-            zoomable: true,
-        });
-    };
-    saveButton.style.display = 'block';
-    saveButton.onclick = function () {
-        const cropper = croppers[index];
-        if (!cropper) return;
-        const croppedCanvas = cropper.getCroppedCanvas();
-        const croppedImageUrl = croppedCanvas.toDataURL('image/jpeg', 1.0);
-        croppedImage.src = croppedImageUrl;
-
-        croppedCanvas.toBlob((blob) => {
-            const newFile = new File([blob], `cropped-${Date.now()}.jpg`, { type: 'image/jpeg' });
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(newFile);
-            fileInput.files = dataTransfer.files; // Update the input's files
-
-            cropper.destroy();
-            croppers[index] = null;
-        });
-          
-        image.style.display = "none"; 
-        previewContainer.style.display = 'block';
-    };
-}
 
         document.getElementById('cancelButton1').onclick = function () {
             clearImageInput(1);
@@ -359,21 +372,17 @@
                 croppers[index].destroy();
                 croppers[index] = null;
             }
-        }   
-        
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
-            const sizeCheckboxes = document.querySelectorAll('input[name="availableSizes"]');
+            const sizeCheckboxes = document.querySelectorAll('input[name="availableSizes[]"]');
             const sizeInventoryContainer = document.getElementById('sizeInventory');
 
             function updateSizeInventory() {
-                console.log("Updating size inventory...");
                 sizeInventoryContainer.innerHTML = '';
-
                 sizeCheckboxes.forEach(checkbox => {
                     if (checkbox.checked) {
                         const size = checkbox.value;
-                        console.log(`Creating input for size: ${size}`);
-
                         const sizeField = document.createElement('div');
                         sizeField.className = 'col-md-4 mb-3';
                         sizeField.innerHTML = `

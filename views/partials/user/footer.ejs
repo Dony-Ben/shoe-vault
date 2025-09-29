@@ -39,17 +39,18 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         async function addToCart(event, productId) {
+             event.stopPropagation();
             event.preventDefault();
-            const selectedSize = $('#selectedSize').val();
+            // const selectedSize = $('#selectedSize').val();
 
-            if (!selectedSize) {
-                showToast('Please select a size before adding to the cart.');
-                return;
-            }
+            // if (!selectedSize) {
+            //     showToast('Please select a size before adding to the cart.');
+            //     return;
+            // }
             $.ajax({
                 url: `/cart/add`,
                 type: 'POST',
-                data: { productId: productId,size:selectedSize },
+                data: { productId: productIde },
                 success: function (response) {
                     showToast(response.message);
                 },

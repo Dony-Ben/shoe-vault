@@ -88,19 +88,19 @@
                                     </div>
                                 </div>
                                 <label>Available Sizes:</label><br>
-                                <% const sizesArray=Array.isArray(product.sizes) ? product.sizes : []; %>
-                                    <input type="checkbox" name="availableSizes[]" value="6" <% if
-                                        (sizesArray.includes("6")) { %> checked <% } %>> 6
-                                        <input type="checkbox" name="availableSizes[]" value="7" <% if
-                                            (sizesArray.includes("7")) { %> checked <% } %>> 7
-                                            <input type="checkbox" name="availableSizes[]" value="8" <% if
-                                                (sizesArray.includes("8")) { %> checked <% } %>> 8
-                                                <input type="checkbox" name="availableSizes[]" value="9" <% if
-                                                    (sizesArray.includes("9")) { %> checked <% } %>> 9
-                                                    <input type="checkbox" name="availableSizes[]" value="10" <% if
-                                                        (sizesArray.includes("10")) { %> checked <% } %>> 10
+                             <select name="size" class="form-select border" style="width:150px;">
+                             <% sizes.forEach(size => { %>
+                             <option value="<%= size %>"><%= size %></option>
+                                <% }) %>
+                                 </select>
 
-                            </div>
+                                <br><label>Available Colors:</label><br>
+                               <select name="color" class="form-select border" style="width:150px;">
+                                 <% colors.forEach(color => { %>
+                               <option value="<%= color %>"><%= color %></option>
+                                 <% }) %>
+                                 </select>
+
                             <div class="card mb-2">
                                 <div class="card-header">
                                     <h4>Choose images</h4>
