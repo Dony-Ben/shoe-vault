@@ -20,12 +20,11 @@ const getProductAddpage = async (req, res) => {
         if (!PRODUCT_SIZES || !PRODUCT_COLORS) {
             throw new Error('Product sizes or colors are not properly defined');
         }
-
-        res.render("admin/product-add", {
+        res.render(RENDER_PAGE_KEYS.adminProductAdd, {
             cat: categories,
             brands,
             sizes: PRODUCT_SIZES,
-            colors: PRODUCT_COLORS
+            colors: PRODUCT_COLORS,
         });
     } catch (error) {
         console.error("Error in getProductAddPage:", error.message);
@@ -36,34 +35,30 @@ const getProductAddpage = async (req, res) => {
 const addProducts = async (req, res) => {
     try {
         const productData = req.body;
-
-        const category = await Category.findOne({ name: productData.category });
-        const brand = await Brand.findOne({ brandName: new RegExp(`^${productData.brand}$`, 'i') });
         const productExists = await Product.findOne({ productName: productData.productName });
         if (productExists) {
-            return renderAddProductWithError(res, "Product already exists. Please use a different name.");
+            return res.status(STATUS_CODES.BadRequest).json("Product already exists. Please use a different name.");
+        }
+        const images = [];
+        if (req.files?.length > 0) {
+            for (const file of req.files) {
+                const originalImagePath = file.path;
+                const resizedImagePath = path.join('public', 'uploads', 'product-images', file.filename);
+                await sharp(originalImagePath).resize({ width: 440, height: 440 }).toFile(resizedImagePath);
+                images.push(file.filename);
+            }
+        } else {
+            return res.status(STATUS_CODES.BadRequest).send("No images uploaded. Please try again.");
         }
 
-        if (!req.files || req.files.length === 0) {
-            return renderAddProductWithError(res, "No images uploaded. Please try again.");
-        }
-
+        const category = await Category.findOne({ name: productData.category });
         if (!category) {
-            return renderAddProductWithError(res, "Invalid category name.");
+            return res.status(STATUS_CODES.BadRequest).send("Invalid category name.");
         }
-
+        const brand = await Brand.findOne({ brandName: productData.brand });
         if (!brand) {
-            return renderAddProductWithError(res, "Invalid brand name.");
+            return res.status(STATUS_CODES.BadRequest).send("Invalid brand name.");
         }
-
-        const images = req.files.map(file => file.path);
-        let sizes = [];
-        if (productData.availableSizes) {
-            sizes = Array.isArray(productData.availableSizes)
-                ? productData.availableSizes
-                : [productData.availableSizes];
-        }
-
         const newProduct = new Product({
             productName: productData.productName,
             description: productData.description,
@@ -76,53 +71,11 @@ const addProducts = async (req, res) => {
             sizes: productData.availableSizes || [],
             colors: productData.availableColors || [],
         });
-
         await newProduct.save();
-        res.redirect("/admin/addProducts");
+        res.redirect("/admin/product-add");
     } catch (error) {
         console.error("Error saving product:", error.message);
         res.render(RENDER_PAGE_KEYS.adminPageError);
-    }
-};
-
-const getAllProducts = async (req, res) => {
-    try {
-        const search = req.query.search || "";
-        const page = parseInt(req.query.page, 10) || 1;
-        const limit = parseInt(req.query.limit, 10) || 4;
-        const searchQuery = {
-            $or: [
-                { productName: { $regex: new RegExp(search, "i") } },
-                { brand: { $regex: new RegExp(search, "i") } },
-            ],
-        };
-        const [productData, count, categories, brands] = await Promise.all([
-            Product.find(searchQuery)
-                .limit(limit)
-                .skip((page - 1) * limit)
-                .populate("category")
-                .populate("brands")
-                .lean(),
-
-            Product.countDocuments(searchQuery),
-            Category.find({ isListed: true }).lean(),
-            Brand.find({ isblocked: false }).lean(),
-        ]);
-        if (!productData.length) {
-            return res.status(STATUS_CODES.NotFound).render("admin/page-404");
-        }
-
-        res.render(RENDER_PAGE_KEYS.adminProducts, {
-            data: productData,
-            currentPage: page,
-            totalPages: Math.ceil(count / limit),
-            cat: categories,
-            brand: brands,
-
-        });
-    } catch (error) {
-        console.error("Error loading products:", error.message);
-        res.status(STATUS_CODES.InternalServerError).render("admin/pageError", { error: error.message });
     }
 };
 
