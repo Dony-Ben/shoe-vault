@@ -1,6 +1,6 @@
 const Order = require("../../models/order.js");
 const Coupon = require("../../models/coupon.js");
-const { STATUS_CODES } = require("../../constants/httpStatusCodes");
+const { STATUS_CODES } = require("../httpStatusCodes.js");
 
 const couponValidation = async (req, res) => {
     try {

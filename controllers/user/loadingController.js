@@ -1,5 +1,5 @@
 const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
-const { STATUS_CODES } = require("../../constants/httpStatusCodes")
+const { STATUS_CODES } = require("../httpStatusCodes")
 const Category = require("../../models/category");
 const Offer = require("../../models/offers");
 const Product = require("../../models/product");

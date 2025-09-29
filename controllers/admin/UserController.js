@@ -1,5 +1,5 @@
 const userModel = require("../../models/User");
-const { STATUS_CODES } = require("../../constants/httpStatusCodes");
+const { STATUS_CODES } = require("../httpStatusCodes");
 const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
 
 const customerInfo = async (req, res) => {

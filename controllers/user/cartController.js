@@ -1,6 +1,6 @@
 const Cart = require("../../models/cart");
 const Product = require("../../models/product");
-const { STATUS_CODES } = require("../../constants/httpStatusCodes");
+const { STATUS_CODES } = require("../httpStatusCodes");
 const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
 
 const getcartpage = async (req, res) => {

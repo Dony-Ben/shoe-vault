@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const env = require("dotenv").config();
 const crypto = require("crypto");
 const Address = require("../../models/address")
-const { STATUS_CODES } = require("../../constants/httpStatusCodes");
+const { STATUS_CODES } = require("../httpStatusCodes");
 const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
 const { RESPONSE_SUCCESS, RESPONSE_ERROR } = require('../../constants/responseMessages');
 

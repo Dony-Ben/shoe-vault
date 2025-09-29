@@ -1,5 +1,5 @@
 const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
-const { STATUS_CODES } = require("../../constants/httpStatusCodes");
+const { STATUS_CODES } = require("../httpStatusCodes");
 const { RESPONSE_SUCCESS, RESPONSE_ERROR } = require("../../constants/responseMessages");
 const Orders = require("../../models/order");
 const Wallet = require("../../models/wallet");

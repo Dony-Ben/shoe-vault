@@ -22,9 +22,21 @@
         transform: translateY(0);
     }
 
-    .toast.success { background: #04650b; }   /* Green */
-    .toast.error   { background: #d32f2f; }   /* Red */
-    .toast.info    { background: #1976d2; }   /* Blue */
+    .toast.success {
+        background: #04650b;
+    }
+
+    /* Green */
+    .toast.error {
+        background: #d32f2f;
+    }
+
+    /* Red */
+    .toast.info {
+        background: #1976d2;
+    }
+
+    /* Blue */
 </style>
 <footer class="bg-black text-white py-12">
     <div class="container mx-auto text-center">
@@ -36,44 +48,44 @@
         </div>
     </div>
 </footer>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        async function addToCart(event, productId) {
-            event.preventDefault();
-            const selectedSize = $('#selectedSize').val();
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    async function addToCart(event, productId) {
+        event.stopPropagation();
+        event.preventDefault();
+        const selectedSize = $('#selectedSize').val();
 
-            if (!selectedSize) {
-                showToast('Please select a size before adding to the cart.');
-                return;
-            }
-            $.ajax({
-                url: `/cart/add`,
-                type: 'POST',
-                data: { productId: productId,size:selectedSize },
-                success: function (response) {
-                    showToast(response.message);
-                },
-                error: function (xhr) {
-                    const response = xhr.responseJSON;
-                    showToast(response.message)
-                }
-            });
+        if (!selectedSize) {
+            showToast('Please select a size before adding to the cart.');
+            return;
         }
+        $.ajax({
+            url: `/cart/add`,
+            type: 'POST',
+            data: { productId: productId, size: selectedSize },
+            success: function (response) {
+                showToast(response.message);
+            },
+            error: function (xhr) {
+                const response = xhr.responseJSON;
+                showToast(response.message)
+            }
+        });
+    }
 
-        function showToast(message, type = 'success') {
-            const toastContainer = $('#toast-container');
-            const toast = $(`
+    function showToast(message, type = 'success') {
+        const toastContainer = $('#toast-container');
+        const toast = $(`
                 <div class="toast ${type}">
                     <p>${message}</p>
                 </div>
             `);
-            toastContainer.append(toast);
-            toast.addClass('show');
-            setTimeout(() => {
-                toast.removeClass('show');
-                setTimeout(() => toast.remove(), 300);
-            }, 2000);
-        }
-    </script>
-    <div id="toast-container" class="toast-container"></div>
-   
+        toastContainer.append(toast);
+        toast.addClass('show');
+        setTimeout(() => {
+            toast.removeClass('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 2000);
+    }
+</script>
+<div id="toast-container" class="toast-container"></div>

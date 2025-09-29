@@ -256,9 +256,9 @@
         <div class="max-w-6xl ">
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 " id="product-list">
             <% if (Array.isArray(products) && products.length> 0) { %>
-
             <% products.forEach((product)=> { %>
-              <div class="h-[400px] w-[300px]  rounded-md shadow-md bg-white">
+              <div onclick="goToDetail('<%= product._id %>')" class="h-[400px] w-[300px]  rounded-md shadow-md bg-white">
+
                 <div class="h-[50%] w-full rounded-t-md">
                   <img class="h-full w-full object-cover rounded-t-md" src=<%=product.productImage[0] %> alt="">
                 </div>
@@ -277,12 +277,12 @@
                   
                   <div class="flex justify-between items-center mt-3 px-2 ">
                     <h1 class="text-2xl font-semibold text-[#3F3E44] ">₹ <%= product.salePrice  %></h1>
-                    <button class="text-white text-lg font-semibold px-6 py-2 bg-[#5E568B] rounded-md ">Add to cart </button>
+                    <button onclick="addToCart(event, '<%= product._id %>')" class="text-white text-lg font-semibold px-6 py-2 bg-[#5E568B] rounded-md ">Add to cart </button>
                   </div>
                 </div>
-                
               </div>
-              <% }) %>
+
+            <% }) %>
                 <% } else { %>
                   <div class=" col-span-full text-center">
                         <canvas id="dotlottie-canvas" style="width: 300px; height: 300px;"></canvas>
@@ -292,9 +292,8 @@
                   </div>
                   <% } %>
                 </div>
-
                 </div>
-         </div>
+                </div>
 
 
 
@@ -358,6 +357,9 @@
       }
     });
   }
+function goToDetail(productId) {
+  window.location.href = `/productDetails/${productId}`;
+}
 
   document.getElementById("search-input").addEventListener("input", function () {
     let searchQuery = this.value.toLowerCase();
