@@ -2,7 +2,7 @@ const { memoryStorage } = require("multer");
 const Category = require("../../models/category");
 const product = require("../../models/product");
 const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
-const { STATUS_CODES } = require("../httpStatusCodes");
+const { STATUS_CODES } = require("../../constants/httpStatusCodes");
 const { RESPONSE_SUCCESS, RESPONSE_ERROR } = require("../../constants/responseMessages");
 
 const categoryInfo = async (req, res) => {
