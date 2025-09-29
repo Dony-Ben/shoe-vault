@@ -3,7 +3,7 @@ const { Parser } = require('json2csv');
 const ExcelJS = require('exceljs');
 const PDFDocument = require('pdfkit');
 const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
-const { STATUS_CODES } = require("../../constants/httpStatusCodes.js");
+const { STATUS_CODES } = require("../../constants/httpStatusCodes");
 
 const getDateRange = (period, customStart = null, customEnd = null) => {
     const now = new Date();
@@ -201,7 +201,7 @@ const Generatesales = async (req, res) => {
         res.json({ success: true, data: report });
     } catch (error) {
         console.error('Sales report error:', error);
-        const { STATUS_CODES } = require("../../constants/httpStatusCodes.js");
+        const { STATUS_CODES } = require("../../constants/httpStatusCodes");
         res.status(STATUS_CODES.InternalServerError).json({
             success: false,
             message: 'Error generating sales report',

@@ -18,6 +18,8 @@ const PAYMENT_STATUS = ['Pending', 'Success', 'Failed'];
 
 const PAYMENT_METHOD = ['cod', "razorpay", 'Wallet']
 
+const WALLET_TYPE =  ["credit", "debit"];
+
 module.exports = {
     PRODUCT_SIZES,
     PRODUCT_COLORS,
@@ -29,4 +31,5 @@ module.exports = {
     ORDER_STATUS,
     PAYMENT_STATUS,
     PAYMENT_METHOD,
+    WALLET_TYPE,
 }

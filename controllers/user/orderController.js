@@ -7,7 +7,7 @@ const razorpay = require("../../config/razorpay.js");
 const { createOrder, verifyRazorpayPayment } = require('../user/orderServiceController.js');
 const Offer = require('../../models/offers');
 const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
-const { STATUS_CODES } = require("../../constants/httpStatusCodes.js");
+const { STATUS_CODES } = require("../../constants/httpStatusCodes");
 const { RESPONSE_SUCCESS, RESPONSE_ERROR } = require("../../constants/responseMessages");
 
 const getActiveOffers = async () => {

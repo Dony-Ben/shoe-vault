@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { OFFER_TYPE, DISCOUNT_TYPE } = require('../constants/enums');
 const { Schema } = mongoose;
 
 const offerSchema = new Schema({
@@ -10,7 +11,7 @@ const offerSchema = new Schema({
      offerType: {
         type: String,
         required: true,
-        enum: ['category', 'product']
+        enum:OFFER_TYPE,
     },
     categories: [{ 
         type: Schema.Types.ObjectId, 
@@ -25,7 +26,7 @@ const offerSchema = new Schema({
     discountType: { 
     type: String, 
     required: true, 
-    enum: ['percentage', 'fixed'] 
+    enum:DISCOUNT_TYPE,
     
   },
   discountValue: { 

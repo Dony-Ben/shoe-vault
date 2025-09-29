@@ -1,4 +1,5 @@
 const mongoose=require("mongoose");
+const { ADDRESS_TYPE } = require("../constants/enums");
 const Schema = mongoose.Schema
 
 const addressSchema=new Schema({
@@ -30,7 +31,7 @@ const addressSchema=new Schema({
         },
         addressType:{
             type:String,
-            enum:['Home', 'Work', 'Other'],
+            enum:ADDRESS_TYPE,
             default:'Home'
         }
 

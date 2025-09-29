@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { ORDER_STATUS, PAYMENT_STATUS, PAYMENT_METHOD } = require("../constants/enums");
 const ordersSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -39,18 +40,18 @@ const ordersSchema = new mongoose.Schema({
     },
     orderStatus: {
         type: String,
-        enum: ['pending', 'processing', 'shipped', 'completed', 'cancelled', 'returned'],
+        enum: ORDER_STATUS,
         default: 'pending'
     },
     paymentStatus: {
         type: String,
         required: true,
-        enum: ['Pending', 'Success', 'Failed'],
+        enum: PAYMENT_STATUS,
         default: 'Pending'
     },
     paymentMethod: {
         type: String,
-        enum: ['cod', "razorpay", 'Wallet'],
+        enum: PAYMENT_METHOD,
         required: true
     },
     offerDiscount: {

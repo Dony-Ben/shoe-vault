@@ -1,20 +1,20 @@
 const mongoose = require("mongoose");
-const { Schema, Types } = mongoose;
+const { PRODUCT_STATUS, PRODUCT_SIZES, PRODUCT_COLORS } = require("../constants/enums");
+const { Schema } = mongoose;
 
 const productSchema = new Schema(
   {
     productName: {
       type: String,
       required: true,
-
     },
     description: {
       type: String,
       required: true,
     },
     category: {
-      type:  mongoose.Schema.Types.ObjectId,
-      ref: "Category", 
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
       required: true,
     },
     brands: {
@@ -42,24 +42,26 @@ const productSchema = new Schema(
       type: Boolean,
       default: false
     },
-    subtotal: {
-      type: Number,
-      required: true,
-    },
     productImage: {
       type: [String],
       default: [],
     },
     status: {
       type: String,
-      enum: ["Available", "Out of Stock", "Discontinued"],
+      enum:PRODUCT_STATUS,
       default: "Available",
       required: true,
     },
-    sizes: {
-      type: [String],
+    sizes: [{
+      type: String,
+      enum: PRODUCT_SIZES,
       required: true,
-    }
+    }],
+    colors: [{
+      type: String,
+      enum: PRODUCT_COLORS,
+      required: true,
+    }],
   },
   { timestamps: true },
 );

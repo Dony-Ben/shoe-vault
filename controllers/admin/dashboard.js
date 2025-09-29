@@ -1,7 +1,7 @@
 const Order = require('../../models/order.js');
 const Product = require('../../models/product.js');
 const User = require('../../models/User.js');
-const { STATUS_CODES } = require("../../constants/httpStatusCodes.js");
+const { STATUS_CODES } = require("../../constants/httpStatusCodes");
 const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
 
 const getSalesChartData = async (req, res) => {

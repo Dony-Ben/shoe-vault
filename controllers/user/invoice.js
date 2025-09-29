@@ -1,6 +1,6 @@
 const Order = require("../../models/order.js");
 const PDFDocument = require('pdfkit');
-const { STATUS_CODES } = require("../../constants/httpStatusCodes.js");
+const { STATUS_CODES } = require("../../constants/httpStatusCodes");
 
 const downloadInvoice = async (req, res) => {
     try {
