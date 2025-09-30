@@ -36,7 +36,8 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
           cd ~/shoe-vault &&
-          git pull origin main &&
+          git fetch origin main &&
+          git reset --hard origin/main &&
           npm install &&
           pm2 restart all
           "
