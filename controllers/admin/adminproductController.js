@@ -79,6 +79,22 @@ const addProducts = async (req, res) => {
     }
 };
 
+const getAllProducts = async (req, res) => {
+  try {
+    // fetch products with category + brand details
+    const products = await Product.find()
+      .populate("category") // because you stored category._id
+      .populate("brands")   // because you stored brand._id
+      .lean();              // gives plain JS objects (good for EJS)
+
+    res.render(RENDER_PAGE_KEYS.adminProductList, { products });
+  } catch (error) {
+    console.error("Error fetching products:", error.message);
+    res.render(RENDER_PAGE_KEYS.adminPageError);
+  }
+};
+
+
 const blockProduct = async (req, res) => {
     try {
         const id = req.query.id;

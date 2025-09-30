@@ -1,5 +1,5 @@
 const Wallet = require("../../models/wallet.js");
-const { STATUS_CODES } = require("../httpStatusCodes.js");
+const { STATUS_CODES } = require("../../constants/httpStatusCodes");
 
 const loadWallet = async (req, res) => {
     try {
