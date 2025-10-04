@@ -129,7 +129,7 @@ const getEditProduct = async (req, res) => {
         const category = await Category.find({});
         const brand = await Brand.find({});
         const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
-        res.render(RENDER_PAGE_KEYS.adminEditProduct, {
+        res.render(RENDER_PAGE_KEYS.adminProductList, {
             product: product,
             cat: category,
             brand: brand,
