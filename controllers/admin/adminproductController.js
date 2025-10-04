@@ -6,26 +6,24 @@ const Brand = require("../../models/Brands");
 const { notifyAllClients } = require("../../helpers/sse");
 const fs = require("fs");
 const path = require("path");
-const { PRODUCT_SIZES, PRODUCT_COLORS } = require("../../constants/enums");
 
 
+
+async function renderAddProductWithError(res, errorMessage) {
+    const categories = await Category.find({ isListed: true }).lean();
+    const brands = await Brand.find({ isBlocked: false });
+    res.render(RENDER_PAGE_KEYS.adminProductAdd, {
+        cat: categories,
+        brands,
+        errorMessage
+    });
+}
 
 const getProductAddpage = async (req, res) => {
     try {
         const categories = await Category.find({ isListed: true }).lean();
         const brands = await Brand.find({ isBlocked: false });
-        console.log("PRODUCT_SIZES =>", PRODUCT_SIZES);
-        console.log("PRODUCT_COLORS =>", PRODUCT_COLORS);
-
-        if (!PRODUCT_SIZES || !PRODUCT_COLORS) {
-            throw new Error('Product sizes or colors are not properly defined');
-        }
-        res.render(RENDER_PAGE_KEYS.adminProductAdd, {
-            cat: categories,
-            brands,
-            sizes: PRODUCT_SIZES,
-            colors: PRODUCT_COLORS,
-        });
+        res.render(RENDER_PAGE_KEYS.adminProductAdd, { cat: categories, brands });
     } catch (error) {
         console.error("Error in getProductAddPage:", error.message);
         res.redirect("/admin/pageError");
@@ -35,30 +33,34 @@ const getProductAddpage = async (req, res) => {
 const addProducts = async (req, res) => {
     try {
         const productData = req.body;
-        const productExists = await Product.findOne({ productName: productData.productName });
-        if (productExists) {
-            return res.status(STATUS_CODES.BadRequest).json("Product already exists. Please use a different name.");
-        }
-        const images = [];
-        if (req.files?.length > 0) {
-            for (const file of req.files) {
-                const originalImagePath = file.path;
-                const resizedImagePath = path.join('public', 'uploads', 'product-images', file.filename);
-                await sharp(originalImagePath).resize({ width: 440, height: 440 }).toFile(resizedImagePath);
-                images.push(file.filename);
-            }
-        } else {
-            return res.status(STATUS_CODES.BadRequest).send("No images uploaded. Please try again.");
-        }
 
         const category = await Category.findOne({ name: productData.category });
+        const brand = await Brand.findOne({ brandName: new RegExp(`^${productData.brand}$`, 'i') });
+        const productExists = await Product.findOne({ productName: productData.productName });
+        if (productExists) {
+            return renderAddProductWithError(res, "Product already exists. Please use a different name.");
+        }
+
+        if (!req.files || req.files.length === 0) {
+            return renderAddProductWithError(res, "No images uploaded. Please try again.");
+        }
+
         if (!category) {
-            return res.status(STATUS_CODES.BadRequest).send("Invalid category name.");
+            return renderAddProductWithError(res, "Invalid category name.");
         }
-        const brand = await Brand.findOne({ brandName: productData.brand });
+
         if (!brand) {
-            return res.status(STATUS_CODES.BadRequest).send("Invalid brand name.");
+            return renderAddProductWithError(res, "Invalid brand name.");
         }
+
+        const images = req.files.map(file => file.path);
+        let sizes = [];
+        if (productData.availableSizes) {
+            sizes = Array.isArray(productData.availableSizes)
+                ? productData.availableSizes
+                : [productData.availableSizes];
+        }
+
         const newProduct = new Product({
             productName: productData.productName,
             description: productData.description,
@@ -68,11 +70,11 @@ const addProducts = async (req, res) => {
             quantity: productData.quantity,
             productImage: images,
             brands: brand._id,
-            sizes: productData.availableSizes || [],
-            colors: productData.availableColors || [],
+            sizes: sizes,
         });
+
         await newProduct.save();
-        res.redirect("/admin/product-add");
+        res.redirect("/admin/addProducts");
     } catch (error) {
         console.error("Error saving product:", error.message);
         res.render(RENDER_PAGE_KEYS.adminPageError);
@@ -87,13 +89,12 @@ const getAllProducts = async (req, res) => {
       .populate("brands")   // because you stored brand._id
       .lean();              // gives plain JS objects (good for EJS)
 
-    res.render(RENDER_PAGE_KEYS.adminProducts, { data:products });
+    res.render(RENDER_PAGE_KEYS.adminProductList, { products });
   } catch (error) {
     console.error("Error fetching products:", error.message);
     res.render(RENDER_PAGE_KEYS.adminPageError);
   }
 };
-
 
 const blockProduct = async (req, res) => {
     try {
