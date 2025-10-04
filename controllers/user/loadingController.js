@@ -27,7 +27,14 @@ const loadhome = async (req, res) => {
 const landingpage = async (req, res) => {
     try {
         let productData = await Product.find({ isblocked: false }).populate({ path: "brands", match: { isBlocked: false } });
-        res.render(RENDER_PAGE_KEYS.userLanding, { products: productData });
+        const banner = {
+            imageUrl: "/image/Banner1.jpg",
+            imageUrl1: "/image/Banner.jpg", // fallback image
+            videoUrl: "/image/landing.mp4", // optional video
+            title: "Experience the Elegance of Shoe Vault",
+            subtitle: "Discover exclusive products crafted for modern lifestyles."
+        };
+        res.render(RENDER_PAGE_KEYS.userLanding, { products: productData ,banner});
 
     } catch (error) {
         console.error("Error loading home page:", error);
