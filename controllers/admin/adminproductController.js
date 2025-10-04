@@ -87,7 +87,7 @@ const getAllProducts = async (req, res) => {
       .populate("brands")   // because you stored brand._id
       .lean();              // gives plain JS objects (good for EJS)
 
-    res.render(RENDER_PAGE_KEYS.adminProductList, { products });
+    res.render(RENDER_PAGE_KEYS.adminProducts, { products });
   } catch (error) {
     console.error("Error fetching products:", error.message);
     res.render(RENDER_PAGE_KEYS.adminPageError);
