@@ -110,28 +110,6 @@
             border-color: #1b5605;
           }
 
-          .product-card {
-            position: relative;
-          }
-
-          .product-card img {
-            transition: transform 0.3s ease-in-out;
-          }
-
-          .product-card:hover img {
-            transform: scale(1.1);
-          }
-
-          .product-item p {
-            margin: 0;
-            color: #007bff;
-            font-weight: bold;
-          }
-
-          #product-list {
-            padding: 30px;
-          }
-
           /* Search Container */
           .search-container {
             display: flex;
@@ -184,12 +162,6 @@
             transform: scale(1);
           }
 
-          .search-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-          }
 
           .offer-percentage {
             z-index: 2;
@@ -215,7 +187,7 @@
           }
 
           .badge.bg-danger {
-            background-color: #dc3545 !important;
+            background-color: #910110 !important;
           }
 
           .card-img-top.out-of-stock-img {
@@ -224,12 +196,6 @@
         </style>
         <div
           class="filters-wrapper flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0 px-2 md:px-0">
-          <div class="search-container mb-2 md:mb-0">
-            <input type="text" class="search-input" id="search-input" placeholder="Search...">
-            <button type="button" class="search-button" id="search-button" onclick="search()">
-              <span class="search-icon"><img src="/image/search.svg" width="16" height="16"></span>
-            </button>
-          </div>
           <div class="filter-section mb-2 md:mb-0">
             <select id="sort-filter" onchange="applyFilter()" aria-label="Sort products">
               <option value="">Sort by</option>
@@ -250,65 +216,113 @@
             </select>
           </div>
         </div>
-   
-        <div class="flex w-full bg-gray-300 p-4 ">
-        <div class="bg-green-300 w-[270px] rounded-md p-4 ">filter-section</div>
-        <div class="max-w-6xl ">
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 " id="product-list">
-            <% if (Array.isArray(products) && products.length> 0) { %>
-            <% products.forEach((product)=> { %>
-              <div onclick="goToDetail('<%= product._id %>')" class="h-[400px] w-[300px]  rounded-md shadow-md bg-white">
 
-                <div class="h-[50%] w-full rounded-t-md">
-                  <img class="h-full w-full object-cover rounded-t-md" src=<%=product.productImage[0] %> alt="">
-                </div>
+        <div class="flex flex-col lg:flex-row w-full min-h-screen bg-gray-100 p-4">
 
-                <div class="h-[50%] w-full  p-2  rounded-b-md">
-                  <h1 class="text-xl font-semibold text-[#3F3E44] p-3 truncate">
-                    <%= product.productName %>
-                  </h1>
-
-                  <div class="px-2 flex justify-between items-center mb-3 ">
-                    <h1 class="font-semibold border border-black rounded-md px-2 py-0.5 ">Sizes: <%= product.sizes.join(" ") %></h1>
-                    <h1 class="font-semibold border border-black rounded-md px-2 py-0.5">Brand: <%= product.brands.brandName  %></h1>
-                  </div>
-                  
-                  <p class="text-sm font-light px-2"><%= product.description.split(' ').splice(0,15).join(' ')  %></p>
-                  
-                  <div class="flex justify-between items-center mt-3 px-2 ">
-                    <h1 class="text-2xl font-semibold text-[#3F3E44] ">₹ <%= product.salePrice  %></h1>
-                    <button onclick="addToCart(event, '<%= product._id %>')" class="text-white text-lg font-semibold px-6 py-2 bg-[#5E568B] rounded-md ">Add to cart </button>
-                  </div>
-                </div>
+          <aside class="lg:w-[270px] w-full bg-white p-4 border-r border-gray-300 shadow-md  rounded-lg bg-white">
+            <h2 class="text-lg font-semibold border-b pb-2">Filters</h2>
+            <div class="mt-3 mb-4">
+              <div class="search-container">
+                <input type="text" class="search-input" id="search-input" placeholder="Search...">
               </div>
+            </div>
+            <div>
+              <h3 class="font-medium mb-1">Brands</h3>
+              <div id="brands-container" class="flex flex-col space-y-1 "></div>
+            </div>
+
+            <div>
+              <h3 class="font-medium mb-1">Price Range</h3>
+              <input id="price-range" type="range" min="0" max="100000" step="100" class="w-full">
+              <div class="flex justify-between text-sm">
+                <span id="price-min">₹0</span>
+                <span id="price-max">₹100000</span>
+              </div>
+            </div>
+
+            <div>
+              <h3 class="font-medium mb-1">Size</h3>
+              <div id="sizes-container" class="flex flex-wrap gap-3">
+                <% const allSizes=[...new Set(products.flatMap(p=>
+                  p.sizes))].sort((a,b) => a - b);
+                  %>
+
+                  <% allSizes.forEach(size=> { %>
+                    <button type="button"
+                      class="size-filter w-12 h-10 flex items-center justify-center border rounded-md bg-gray-100 hover:bg-gray-200 transition"
+                      data-size="<%= size %>" aria-pressed="false">
+                      <%= size %>
+                    </button>
+                    <% }) %>
+              </div>
+            </div>
+
+          </aside>
+
+          <main class="flex-1 p-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 " id="product-list">
+              <% if (Array.isArray(products) && products.length> 0) { %>
+                <% products.forEach((product)=> { %>
+                  <div onclick="goToDetail('<%= product._id %>')"
+                    class="col h-[400px] w-[300px]  rounded-md shadow-md bg-white" data-price="<%= product.salePrice %>"
+                    data-name="<%= product.productName %>"
+                    data-category="<%= product.category ? product.category._id : '' %>"
+                    data-brand="<%= product.brands ? product.brands.brandName : '' %>"
+                    data-sizes="<%= (product.sizes || []).join(',') %>">
+
+                    <div class="h-[50%] w-full rounded-t-md">
+                      <img class="h-full w-full object-cover rounded-t-md" src=<%=product.productImage[0] %> alt="">
+                    </div>
+
+                    <div class="h-[50%] w-full  p-2  rounded-b-md">
+                      <h1 class="text-xl font-semibold text-[#3F3E44] p-3 truncate">
+                        <%= product.productName %>
+                      </h1>
+
+                      <div class="px-2 flex justify-between items-center mb-3 ">
+                        <h1 class="font-semibold border border-black rounded-md px-2 py-0.5 ">Sizes: <%=
+                            product.sizes.join(" ") %></h1>
+                    <h1 class=" font-semibold border border-black rounded-md px-2 py-0.5">Brand: <%=
+                              product.brands.brandName %>
+                        </h1>
+                      </div>
+
+                      <p class="text-sm font-light px-2">
+                        <%= product.description.split(' ').splice(0,15).join(' ')  %></p>
+                  
+                        <div class="flex justify-between items-center mt-3 px-2 ">
+                    <h1 class="text-2xl font-semibold text-[#3F3E44] ">₹ <%= product.salePrice  %></h1>
+                    <button onclick="addToCart(event, ' <%=product._id %>')" class="text-white text-lg font-semibold
+                          px-6 py-2 bg-[#5E568B] rounded-md ">Add to cart </button>
+                    </div>
+                  </div>
+            </div>
 
             <% }) %>
-                <% } else { %>
-                  <div class=" col-span-full text-center">
-                        <canvas id="dotlottie-canvas" style="width: 300px; height: 300px;"></canvas>
-                        <p class="text-secondary font-medium text-xl">No products available at the moment. Please check
-                          back
-                          later!</p>
-                  </div>
-                  <% } %>
+              <% } else { %>
+                <div class=" col-span-full text-center">
+                  <canvas id="dotlottie-canvas" style="width: 300px; height: 300px;"></canvas>
+                  <p class="text-secondary font-medium text-xl">No products available at the moment. Please check
+                    back
+                    later!</p>
                 </div>
-                </div>
-                </div>
+                <% } %>
+        </div>
+      </main>
+      </div>
 
-
-
-                <nav aria-label="Page navigation" class="mt-8 flex justify-center">
-                  <ul class="flex items-center space-x-2">
-                    <% for(let i=1;i<=totalPages; i++){ %>
-                      <li>
-                        <a class="px-3 py-2 text-sm font-medium rounded-md transition duration-200 <%= (i === currentPage) ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300' %>"
-                          href="?page=<%= i %>">
-                          <%= i %>
-                        </a>
-                      </li>
-                      <% } %>
-                  </ul>
-                </nav>
+      <nav aria-label="Page navigation" class="mt-8 flex justify-center">
+        <ul class="flex items-center space-x-2">
+          <% for(let i=1;i<=totalPages; i++){ %>
+            <li>
+              <a class="px-3 py-2 text-sm font-medium rounded-md transition duration-200 <%= (i === currentPage) ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300' %>"
+                href="?page=<%= i %>">
+                <%= i %>
+              </a>
+            </li>
+            <% } %>
+        </ul>
+      </nav>
       </main>
 
       <%- include('../partials/user/footer.ejs') %>
@@ -319,61 +333,141 @@
 
   // filter section
   function applyFilter() {
-    const sortFilter = document.getElementById('sort-filter').value;
-    const productList = document.getElementById('product-list');
-    const products = Array.from(productList.getElementsByClassName('col'));
-    products.sort((a, b) => {
-      const aPrice = parseFloat(a.dataset.price);
-      const bPrice = parseFloat(b.dataset.price);
-      const aName = a.dataset.name;
-      const bName = b.dataset.name;
-
-      switch (sortFilter) {
-        case 'price-asc':
-          return aPrice - bPrice;
-        case 'price-desc':
-          return bPrice - aPrice;
-        case 'name-asc':
-          return aName.localeCompare(bName);
-        case 'name-desc':
-          return bName.localeCompare(aName);
-        default:
-          return 0;
-      }
-    });
-    products.forEach(product => productList.appendChild(product));
+    applyCombinedFilters();
   }
 
   function filterByCategory() {
-    const selectedCategory = document.getElementById('category-filter').value;
-    const products = document.querySelectorAll('.col');
+    applyCombinedFilters();
 
-    products.forEach(product => {
-      const productCategory = product.getAttribute('data-category').split(',');
-      if (selectedCategory === "" || productCategory.includes(selectedCategory)) {
-        product.style.display = "block";
-      } else {
-        product.style.display = "none";
+  }
+
+  function search() {
+    applyCombinedFilters();
+  }
+
+  function getSelectedBrands() {
+    const checked = Array.from(document.querySelectorAll('input[name="brand-filter"]:checked'));
+    return checked.map(cb => cb.value.toLowerCase());
+  }
+
+  function getSelectedSizes() {
+    const active = Array.from(document.querySelectorAll('#sizes-container .size-filter[aria-pressed="true"]'));
+    return active.map(btn => btn.dataset.size);
+  }
+
+  function applyCombinedFilters() {
+    const productList = document.getElementById('product-list');
+    const products = Array.from(productList.getElementsByClassName('col'));
+    const sortFilter = document.getElementById('sort-filter').value;
+    const selectedCategory = document.getElementById('category-filter').value;
+    const selectedBrands = getSelectedBrands();
+    const selectedSizes = getSelectedSizes();
+    const priceInput = document.getElementById('price-range');
+    const maxPrice = priceInput ? parseFloat(priceInput.value) : Infinity;
+    const searchQuery = (document.getElementById('search-input').value || '').toLowerCase();
+
+    products.forEach(p => {
+      const price = parseFloat(p.dataset.price || '0');
+      const name = (p.dataset.name || '').toLowerCase();
+      const category = (p.dataset.category || '');
+      const brand = (p.dataset.brand || '').toLowerCase();
+      const sizes = (p.dataset.sizes || '').split(',');
+
+      const matchesCategory = !selectedCategory || category.split(',').includes(selectedCategory);
+      const matchesBrand = selectedBrands.length === 0 || selectedBrands.includes(brand);
+      const matchesPrice = isNaN(maxPrice) ? true : price <= maxPrice;
+      const matchesSearch = !searchQuery || name.includes(searchQuery);
+
+      const matchesSize = selectedSizes.length === 0 || selectedSizes.some(sz => sizes.includes(sz));
+      const visible = matchesCategory && matchesBrand && matchesPrice && matchesSearch && matchesSize;
+      p.style.display = visible ? 'block' : 'none';
+    });
+
+    const visibleProducts = products.filter(p => p.style.display !== 'none');
+    visibleProducts.sort((a, b) => {
+      const aPrice = parseFloat(a.dataset.price);
+      const bPrice = parseFloat(b.dataset.price);
+      const aName = a.dataset.name || '';
+      const bName = b.dataset.name || '';
+      switch (sortFilter) {
+        case 'price-asc': return aPrice - bPrice;
+        case 'price-desc': return bPrice - aPrice;
+        case 'name-asc': return aName.localeCompare(bName);
+        case 'name-desc': return bName.localeCompare(aName);
+        default: return 0;
       }
     });
+    visibleProducts.forEach(p => productList.appendChild(p));
   }
-function goToDetail(productId) {
-  window.location.href = `/productDetails/${productId}`;
-}
+
+  function initializeBrandsAndPrice() {
+    const products = Array.from(document.getElementsByClassName('col'));
+    const brandSet = new Set();
+    const prices = [];
+    products.forEach(p => {
+      const brand = (p.dataset.brand || '').trim();
+      if (brand) brandSet.add(brand);
+      const price = parseFloat(p.dataset.price || '0');
+      if (!isNaN(price)) prices.push(price);
+    });
+
+    const brandsContainer = document.getElementById('brands-container');
+    if (brandsContainer) {
+      brandsContainer.innerHTML = '';
+      Array.from(brandSet).sort().forEach(brand => {
+        const id = 'brand-' + brand.toLowerCase().replace(/\s+/g, '-');
+        const wrapper = document.createElement('label');
+        wrapper.className = 'inline-flex items-center space-x-2';
+        wrapper.innerHTML = `
+          <input type="checkbox" id="${id}" name="brand-filter" value="${brand}" class="mr-2">
+          <span>${brand}</span>
+        `;
+        brandsContainer.appendChild(wrapper);
+      });
+      brandsContainer.addEventListener('change', applyCombinedFilters);
+    }
+
+    const priceInput = document.getElementById('price-range');
+    const priceMinSpan = document.getElementById('price-min');
+    const priceMaxSpan = document.getElementById('price-max');
+    if (priceInput && prices.length > 0) {
+      const min = Math.floor(Math.min(...prices));
+      const max = Math.ceil(Math.max(...prices));
+      priceInput.min = String(min);
+      priceInput.max = String(max);
+      priceInput.value = String(max);
+      if (priceMinSpan) priceMinSpan.textContent = `₹${min}`;
+      if (priceMaxSpan) priceMaxSpan.textContent = `₹${priceInput.value}`;
+      priceInput.addEventListener('input', () => {
+        if (priceMaxSpan) priceMaxSpan.textContent = `₹${priceInput.value}`;
+        applyCombinedFilters();
+      });
+    }
+  }
+  function goToDetail(productId) {
+    window.location.href = `/productDetails/${productId}`;
+  }
 
   document.getElementById("search-input").addEventListener("input", function () {
-    let searchQuery = this.value.toLowerCase();
-    let products = document.querySelectorAll(".col");
+    applyCombinedFilters();
+  });
 
-    products.forEach(product => {
-      let productName = product.getAttribute("data-name").toLowerCase();
-
-      if (productName.includes(searchQuery)) {
-        product.style.display = "block";
-      } else {
-        product.style.display = "none";
-      }
-    });
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeBrandsAndPrice();
+    const sizesContainer = document.getElementById('sizes-container');
+    if (sizesContainer) {
+      sizesContainer.addEventListener('click', (e) => {
+        const btn = e.target.closest('.size-filter');
+        if (!btn) return;
+        const pressed = btn.getAttribute('aria-pressed') === 'true';
+        btn.setAttribute('aria-pressed', String(!pressed));
+        btn.classList.toggle('bg-gray-200', pressed);
+        btn.classList.toggle('bg-red-500', !pressed);
+        btn.classList.toggle('text-white', !pressed);
+        applyCombinedFilters();
+      });
+    }
+    applyCombinedFilters();
   });
   // wishlist
   function showToast(message, type = 'success') {
@@ -389,4 +483,5 @@ function goToDetail(productId) {
       setTimeout(() => toastmsg.remove(), 300);
     }, 1000);
   }
+
 </script>

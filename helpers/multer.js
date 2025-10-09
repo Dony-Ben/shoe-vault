@@ -6,8 +6,8 @@ const storage = new CloudinaryStorage({
   params: {
     folder: "re-image",
     allowed_formats: ['jpg', 'png', 'svg', 'jpeg', 'webp',"AVIF"],
-    // transformation: [{ width: 800, height: 600, crop: 'limit' }],
+    transformation: [{ width: 800, height: 600, crop: 'limit' }],
   },
 });
-
+  
 module.exports = storage;

@@ -50,7 +50,7 @@ adminRouter.get("/unBlockBrand",adminAuth, unBlockBrand);
 
 // productmanagement
 adminRouter.get("/addProducts",adminAuth, getProductAddpage);
-adminRouter.post("/addproducts",adminAuth, uploads.array('images'), addProducts);
+adminRouter.post("/addproducts",adminAuth, uploads.array('images',3), addProducts);
 adminRouter.get("/products",adminAuth, getAllProducts);
 adminRouter.get("/blockProduct",adminAuth, blockProduct);
 adminRouter.get("/unblockProduct", adminAuth,unblockProduct)

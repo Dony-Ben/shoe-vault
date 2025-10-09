@@ -95,7 +95,7 @@
               <% for (let i = data.length - 1; i >= 0; i--) { %>
               <tr>
                 <td>
-                  <img src="<%= data[i].productImage[0] %>" alt="Product Image" class="product-img" />
+                  <img src="<%= data[i].productImage && data[i].productImage.length > 0 ? data[i].productImage[0] : '/path/to/placeholder.jpg' %>" alt="Product Image" class="product-img" />
                 </td>
                 <td><%= data[i].productName %></td>
                 <td><%= data[i].brands ? data[i].brands.brandName : 'No Brand' %></td>
@@ -136,9 +136,9 @@
 
     <nav aria-label="Page navigation" class="pagination-container">
       <ul class="pagination justify-content-center">
-        <% if (currentPage > 1) { %>
+        <% if (hasPrevPage) { %>
           <li class="page-item">
-            <a class="page-link" href="?page=<%= currentPage - 1 %>" aria-label="Previous">
+            <a class="page-link" href="?page=<%= prevPage %>" aria-label="Previous">
               <span aria-hidden="true">&laquo;</span>
             </a>
           </li>
@@ -150,9 +150,9 @@
           </li>
         <% } %>
 
-        <% if (currentPage < totalPages) { %>
+        <% if (hasNextPage) { %>
           <li class="page-item">
-            <a class="page-link" href="?page=<%= currentPage + 1 %>" aria-label="Next">
+            <a class="page-link" href="?page=<%= nextPage %>" aria-label="Next">
               <span aria-hidden="true">&raquo;</span>
             </a>
           </li>

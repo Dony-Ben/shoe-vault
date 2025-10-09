@@ -39,15 +39,9 @@ const addProducts = async (req, res) => {
         if (productExists) {
             return res.status(STATUS_CODES.BadRequest).json("Product already exists. Please use a different name.");
         }
-        const images = [];
-        if (req.files?.length > 0) {
-            for (const file of req.files) {
-                const originalImagePath = file.path;
-                const resizedImagePath = path.join('public', 'uploads', 'product-images', file.filename);
-                await sharp(originalImagePath).resize({ width: 440, height: 440 }).toFile(resizedImagePath);
-                images.push(file.filename);
-            }
-        } else {
+        const images = req.files.map(file => file.path);
+
+        if (!images.length) {
             return res.status(STATUS_CODES.BadRequest).send("No images uploaded. Please try again.");
         }
 
@@ -71,27 +65,46 @@ const addProducts = async (req, res) => {
             sizes: productData.availableSizes || [],
             colors: productData.availableColors || [],
         });
+        console.log(newProduct)
         await newProduct.save();
-        res.redirect("/admin/product-add");
+        res.redirect("/admin/addProducts");
     } catch (error) {
-        console.error("Error saving product:", error.message);
+        console.error("Error saving product:", error);
         res.render(RENDER_PAGE_KEYS.adminPageError);
     }
 };
 
 const getAllProducts = async (req, res) => {
-  try {
-    // fetch products with category + brand details
-    const products = await Product.find()
-      .populate("category") // because you stored category._id
-      .populate("brands")   // because you stored brand._id
-      .lean();              // gives plain JS objects (good for EJS)
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10; // products per page
+        const skip = (page - 1) * limit;
 
-    res.render(RENDER_PAGE_KEYS.adminProducts, { data:products });
-  } catch (error) {
-    console.error("Error fetching products:", error.message);
-    res.render(RENDER_PAGE_KEYS.adminPageError);
-  }
+        // fetch total count for pagination
+        const totalProducts = await Product.countDocuments();
+        const totalPages = Math.ceil(totalProducts / limit);
+
+        // fetch products with category + brand details
+        const products = await Product.find()
+            .populate("category") // because you stored category._id
+            .populate("brands")   // because you stored brand._id
+            .skip(skip)
+            .limit(limit)
+            .lean();              // gives plain JS objects (good for EJS)
+
+        res.render(RENDER_PAGE_KEYS.adminProducts, {
+            data: products,
+            currentPage: page,
+            totalPages: totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1,
+            nextPage: page + 1,
+            prevPage: page - 1
+        });
+    } catch (error) {
+        console.error("Error fetching products:", error.message);
+        res.render(RENDER_PAGE_KEYS.adminPageError);
+    }
 };
 
 
@@ -107,7 +120,7 @@ const blockProduct = async (req, res) => {
         res.redirect("/admin/products");
     } catch (error) {
         console.error("Error blocking product:", error);
-        res.status(STATUS_CODES.InternalServerError).render("admin/pageError", { error: error.message });
+        res.render(RENDER_PAGE_KEYS.adminPageError);
     }
 };
 
@@ -118,7 +131,7 @@ const unblockProduct = async (req, res) => {
 
         res.redirect("/admin/products");
     } catch (error) {
-        res.redirect("/pageError");
+        res.redirect("/admin/pageError");
     }
 };
 
@@ -129,10 +142,12 @@ const getEditProduct = async (req, res) => {
         const category = await Category.find({});
         const brand = await Brand.find({});
         const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
-        res.render(RENDER_PAGE_KEYS.adminProductList, {
+        res.render(RENDER_PAGE_KEYS.adminEditProduct, {
             product: product,
             cat: category,
             brand: brand,
+            sizes: PRODUCT_SIZES,
+            colors: PRODUCT_COLORS,
         })
     } catch (error) {
         res.render(RENDER_PAGE_KEYS.adminPage404)
@@ -188,7 +203,7 @@ const editProduct = async (req, res) => {
         res.redirect("/admin/products");
     } catch (error) {
         console.error("Error updating product:", error);
-        res.redirect("/pageError");
+        res.redirect("/admin/pageError");
     }
 };
 

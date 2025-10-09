@@ -34,6 +34,7 @@ const cartaddToCart = async (req, res) => {
     try {
         const userId = req.session.user?.id;
         const { productId,size } = req.body;
+        console.log(productId)
 
         if (!productId || !userId || !size) {
             return res.status(STATUS_CODES.BadRequest).json({ message: "Missing product ID, user ID, or size.", success: false });
