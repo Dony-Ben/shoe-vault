@@ -4,10 +4,11 @@ const Wishlist = require("../../models/wishlist")
 const wishlist = async (req, res) => {
     try {
         const userId = req.session.user?.id;
+        const user = req.session.user? req.session.user : null;
         const wishlist = await Wishlist.findOne({ userId }).populate('product.productId');
 
         const wishlistItems = wishlist ? wishlist.product.map(item => item.productId) : [];
-        res.render("user/wishlist", { wishlistItems });
+        res.render("user/wishlist", { wishlistItems,user });
     } catch (err) {
         console.log(err);
         res.render("user/page-404");
