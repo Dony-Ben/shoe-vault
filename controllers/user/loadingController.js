@@ -81,7 +81,7 @@ const landingpage = async (req, res) => {
             title: "Experience the Elegance of Shoe Vault",
             subtitle: "Discover exclusive products crafted for modern lifestyles."
         };
-        res.render(RENDER_PAGE_KEYS.userLanding, { products: productData, banner, user: req.session.user });
+        res.render(RENDER_PAGE_KEYS.userLanding, { products: productData, banner, user: req.session.user ||null });
 
     } catch (error) {
         console.error("Error loading home page:", error);
