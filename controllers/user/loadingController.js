@@ -17,6 +17,7 @@ const pageNotFound = async (req, res) => {
 
 const landingpage = async (req, res) => {
     try {
+        const user = req.session.user? req.session.user : null;
         const productData = await Product.aggregate([
             {
                 $lookup: {
@@ -72,7 +73,6 @@ const landingpage = async (req, res) => {
                 }
             }
         ]);
-        console.log(productData);
 
         const banner = {
             imageUrl: "/image/Banner1.jpg",
@@ -81,7 +81,7 @@ const landingpage = async (req, res) => {
             title: "Experience the Elegance of Shoe Vault",
             subtitle: "Discover exclusive products crafted for modern lifestyles."
         };
-        res.render(RENDER_PAGE_KEYS.userLanding, { products: productData, banner, user: req.session.user ||null });
+        res.render(RENDER_PAGE_KEYS.userLanding, { products: productData, banner, user });
 
     } catch (error) {
         console.error("Error loading home page:", error);
