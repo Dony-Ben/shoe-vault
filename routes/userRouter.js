@@ -9,6 +9,7 @@ const {
   pageNotFound,
   loadOTP,
   shop,
+  shopApi,
   about,
 } = require("../controllers/user/loadingController.js");
 

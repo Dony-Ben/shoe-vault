@@ -206,7 +206,7 @@
             </select>
           </div>
           <div class="filter-section">
-            <select id="category-filter" onchange="filterByCategory()" aria-label="Filter by category">
+            <select id="category-filter" onchange="applyFilter()" aria-label="Filter by category">
               <option value="">All Categories</option>
               <% categories.forEach(category=> { %>
                 <option value="<%= category._id %>">
@@ -226,27 +226,43 @@
                 <input type="text" class="search-input" id="search-input" placeholder="Search...">
               </div>
             </div>
-            <div>
-              <h3 class="font-medium mb-1">Brands</h3>
-              <div id="brands-container" class="flex flex-col space-y-1 "></div>
-            </div>
 
-            <div>
-              <h3 class="font-medium mb-1">Price Range</h3>
-              <input id="price-range" type="range" min="0" max="100000" step="100" class="w-full">
-              <div class="flex justify-between text-sm">
-                <span id="price-min">₹0</span>
-                <span id="price-max">₹100000</span>
+            <div class="my-6">
+              <h3 class="font-semibold text-2xl mt-2">Brands</h3>
+              <div id="brands-container" class="flex flex-col space-y-2 my-3 ">
+                <% Brand.forEach((b)=> { %>
+                  <label class="flex items-center space-x-2">
+                    <input class="text-4xl" type="checkbox" name="brand" value="<%= b._id || '' %>" />
+                    <span class="text-xl">
+                      <%= b.brandName || 'Unknown Brand' %>
+                    </span>
+                  </label>
+                  <% }) %>
               </div>
             </div>
 
-            <div>
-              <h3 class="font-medium mb-1">Size</h3>
+            <div class="my-6">
+              <h3 class="font-semibold mb-4 text-2xl">Price Range</h3>
+              <input id="price-range" type="range" min="0" max="<%= maxPrice %>" step="100" class="w-full"
+                value="<%= req.query.priceMax || 0 %>">
+
+              <div class="flex justify-between text-sm">
+                <span class="text-lg" id="price-min">₹:<%= minPrice %></span>
+                <span class="text-lg" id="price-max">₹:<%= maxPrice %></span>
+              </div>
+              <p class="text-center text-md mt-2 font-semibold text-gray-700">
+                Selected price: ₹<span id="price-display">
+                  <%= req.query.priceMax || 0 %>
+                </span>
+              </p>
+            </div>
+
+            <div class="my-6">
+              <h3 class="font-semibold mb-4 text-2xl ">Size</h3>
               <div id="sizes-container" class="flex flex-wrap gap-3">
                 <% const allSizes=[...new Set(products.flatMap(p=>
                   p.sizes))].sort((a,b) => a - b);
                   %>
-
                   <% allSizes.forEach(size=> { %>
                     <button type="button"
                       class="size-filter w-12 h-10 flex items-center justify-center border rounded-md bg-gray-100 hover:bg-gray-200 transition"
@@ -256,11 +272,12 @@
                     <% }) %>
               </div>
             </div>
+            <button id="clearFilters" class="btn btn-outline-dark">Clear Filters</button>
 
           </aside>
 
           <main class="flex-1 p-4">
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 " id="product-list">
+            <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 ">
               <% if (Array.isArray(products) && products.length> 0) { %>
                 <% products.forEach((product)=> { %>
                   <div onclick="goToDetail('<%= product._id %>')"
@@ -332,156 +349,58 @@
 <script>
 
   // filter section
-  function applyFilter() {
-    applyCombinedFilters();
-  }
 
-  function filterByCategory() {
-    applyCombinedFilters();
-
-  }
-
-  function search() {
-    applyCombinedFilters();
-  }
-
-  function getSelectedBrands() {
-    const checked = Array.from(document.querySelectorAll('input[name="brand-filter"]:checked'));
-    return checked.map(cb => cb.value.toLowerCase());
-  }
-
-  function getSelectedSizes() {
-    const active = Array.from(document.querySelectorAll('#sizes-container .size-filter[aria-pressed="true"]'));
-    return active.map(btn => btn.dataset.size);
-  }
-
-  function applyCombinedFilters() {
-    const productList = document.getElementById('product-list');
-    const products = Array.from(productList.getElementsByClassName('col'));
-    const sortFilter = document.getElementById('sort-filter').value;
-    const selectedCategory = document.getElementById('category-filter').value;
-    const selectedBrands = getSelectedBrands();
-    const selectedSizes = getSelectedSizes();
-    const priceInput = document.getElementById('price-range');
-    const maxPrice = priceInput ? parseFloat(priceInput.value) : Infinity;
-    const searchQuery = (document.getElementById('search-input').value || '').toLowerCase();
-
-    products.forEach(p => {
-      const price = parseFloat(p.dataset.price || '0');
-      const name = (p.dataset.name || '').toLowerCase();
-      const category = (p.dataset.category || '');
-      const brand = (p.dataset.brand || '').toLowerCase();
-      const sizes = (p.dataset.sizes || '').split(',');
-
-      const matchesCategory = !selectedCategory || category.split(',').includes(selectedCategory);
-      const matchesBrand = selectedBrands.length === 0 || selectedBrands.includes(brand);
-      const matchesPrice = isNaN(maxPrice) ? true : price <= maxPrice;
-      const matchesSearch = !searchQuery || name.includes(searchQuery);
-
-      const matchesSize = selectedSizes.length === 0 || selectedSizes.some(sz => sizes.includes(sz));
-      const visible = matchesCategory && matchesBrand && matchesPrice && matchesSearch && matchesSize;
-      p.style.display = visible ? 'block' : 'none';
-    });
-
-    const visibleProducts = products.filter(p => p.style.display !== 'none');
-    visibleProducts.sort((a, b) => {
-      const aPrice = parseFloat(a.dataset.price);
-      const bPrice = parseFloat(b.dataset.price);
-      const aName = a.dataset.name || '';
-      const bName = b.dataset.name || '';
-      switch (sortFilter) {
-        case 'price-asc': return aPrice - bPrice;
-        case 'price-desc': return bPrice - aPrice;
-        case 'name-asc': return aName.localeCompare(bName);
-        case 'name-desc': return bName.localeCompare(aName);
-        default: return 0;
-      }
-    });
-    visibleProducts.forEach(p => productList.appendChild(p));
-  }
-
-  function initializeBrandsAndPrice() {
-    const products = Array.from(document.getElementsByClassName('col'));
-    const brandSet = new Set();
-    const prices = [];
-    products.forEach(p => {
-      const brand = (p.dataset.brand || '').trim();
-      if (brand) brandSet.add(brand);
-      const price = parseFloat(p.dataset.price || '0');
-      if (!isNaN(price)) prices.push(price);
-    });
-
-    const brandsContainer = document.getElementById('brands-container');
-    if (brandsContainer) {
-      brandsContainer.innerHTML = '';
-      Array.from(brandSet).sort().forEach(brand => {
-        const id = 'brand-' + brand.toLowerCase().replace(/\s+/g, '-');
-        const wrapper = document.createElement('label');
-        wrapper.className = 'inline-flex items-center space-x-2';
-        wrapper.innerHTML = `
-          <input type="checkbox" id="${id}" name="brand-filter" value="${brand}" class="mr-2">
-          <span>${brand}</span>
-        `;
-        brandsContainer.appendChild(wrapper);
-      });
-      brandsContainer.addEventListener('change', applyCombinedFilters);
-    }
-
-    const priceInput = document.getElementById('price-range');
-    const priceMinSpan = document.getElementById('price-min');
-    const priceMaxSpan = document.getElementById('price-max');
-    if (priceInput && prices.length > 0) {
-      const min = Math.floor(Math.min(...prices));
-      const max = Math.ceil(Math.max(...prices));
-      priceInput.min = String(min);
-      priceInput.max = String(max);
-      priceInput.value = String(max);
-      if (priceMinSpan) priceMinSpan.textContent = `₹${min}`;
-      if (priceMaxSpan) priceMaxSpan.textContent = `₹${priceInput.value}`;
-      priceInput.addEventListener('input', () => {
-        if (priceMaxSpan) priceMaxSpan.textContent = `₹${priceInput.value}`;
-        applyCombinedFilters();
-      });
-    }
-  }
   function goToDetail(productId) {
     window.location.href = `/productDetails/${productId}`;
   }
+  function applyFilter() {
+    const sort = document.getElementById('sort-filter').value;
+    const category = document.getElementById('category-filter').value;
+    const search = document.getElementById('search-input').value.trim();
 
-  document.getElementById("search-input").addEventListener("input", function () {
-    applyCombinedFilters();
-  });
+    const filters = collectfilters();
 
-  document.addEventListener('DOMContentLoaded', () => {
-    initializeBrandsAndPrice();
-    const sizesContainer = document.getElementById('sizes-container');
-    if (sizesContainer) {
-      sizesContainer.addEventListener('click', (e) => {
-        const btn = e.target.closest('.size-filter');
-        if (!btn) return;
-        const pressed = btn.getAttribute('aria-pressed') === 'true';
-        btn.setAttribute('aria-pressed', String(!pressed));
-        btn.classList.toggle('bg-gray-200', pressed);
-        btn.classList.toggle('bg-red-500', !pressed);
-        btn.classList.toggle('text-white', !pressed);
-        applyCombinedFilters();
-      });
-    }
-    applyCombinedFilters();
-  });
-  // wishlist
-  function showToast(message, type = 'success') {
-    const toastmsg = $('<div class="toastmsg"></div>').text(message).addClass(type);
-    $('body').append(toastmsg);
+    const params = new URLSearchParams();
 
-    setTimeout(() => {
-      toastmsg.addClass('show');
-    }, 100);
+    if (sort) params.append('sort', sort);
+    if (category) params.append('category', category);
+    if (search) params.append('search', search);
+    if (filters.brands.length > 0) params.append('brands', filters.brands.join(','));
+    if (filters.sizes.length > 0) params.append('sizes', filters.sizes.join(','));
+    if (filters.price) params.append('priceMax', filters.price);
 
-    setTimeout(() => {
-      toastmsg.removeClass('show');
-      setTimeout(() => toastmsg.remove(), 300);
-    }, 1000);
+    window.location.href = `/shop?${params.toString()}`;
   }
+
+  function collectfilters() {
+    const brands = Array.from(document.querySelectorAll('#brands-container input[type="checkbox"]:checked')).map(b => b.value);
+    const price = document.getElementById('price-range').value;
+    const sizes = Array.from(document.querySelectorAll('.size-filter[aria-pressed="true"]')).map(s => s.getAttribute('data-size'));
+
+    return { brands, sizes, price };
+  }
+
+  document.getElementById('search-input').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+      applyFilter();
+    }
+  });
+
+  document.querySelectorAll('#brands-container input').forEach(cb =>
+    cb.addEventListener('change', applyFilter)
+  );
+  document.getElementById('price-range').addEventListener('change', applyFilter);
+  document.querySelectorAll('.size-filter').forEach(btn =>
+    btn.addEventListener('click', e => {
+      e.target.setAttribute(
+        'aria-pressed',
+        e.target.getAttribute('aria-pressed') === 'true' ? 'false' : 'true'
+      );
+      applyFilter();
+    })
+  );
+  document.getElementById("clearFilters").addEventListener("click", () => {
+    window.location.href = "/shop";
+  });
 
 </script>

@@ -21,7 +21,7 @@ const productDetails = async (req, res) => {
                 isWishlisted = wishlist.product.some(p => p.productId.toString() === id);
             }
         }
-        res.render("user/product-details", { productData, isWishlisted });
+        res.render("user/product-details", { productData, isWishlisted,user: req.session.user });
     } catch (error) {
         console.log('error in productdetail: ', error);
     }

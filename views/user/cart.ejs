@@ -198,7 +198,6 @@
                             return;
                         }
 
-                        // Show loading state
                         const button = $(buttonElement);
                         const originalText = button.html();
                         button.prop('disabled', true).html('<span class="loading-spinner"></span>');
@@ -235,7 +234,6 @@
                     function removeItem(itemId) {
                         const itemElement = document.getElementById(`cart-item-${itemId}`);
 
-                        // Show loading state
                         if (itemElement) {
                             itemElement.style.opacity = '0.5';
                             itemElement.style.pointerEvents = 'none';
@@ -252,7 +250,6 @@
                                 if (data.success) {
                                     showToast('Item removed from cart successfully!', 'success');
 
-                                    // Animate removal
                                     if (itemElement) {
                                         itemElement.style.transition = 'all 0.3s ease';
                                         itemElement.style.transform = 'translateX(-100%)';
@@ -263,13 +260,11 @@
                                         }, 300);
                                     }
 
-                                    // Update totals
                                     document.getElementById('cart-total').textContent = `₹${data.newTotal.toFixed(2)}`;
                                     document.getElementById('cart-subtotal').textContent = `₹${data.newSubtotal.toFixed(2)}`;
                                 } else {
                                     showToast('Failed to remove item: ' + data.message, 'error');
 
-                                    // Reset loading state
                                     if (itemElement) {
                                         itemElement.style.opacity = '1';
                                         itemElement.style.pointerEvents = 'auto';

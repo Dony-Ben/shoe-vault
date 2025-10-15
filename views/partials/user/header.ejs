@@ -1,43 +1,65 @@
 <nav class="bg-white fixed w-full z-50 transition-all duration-300 ease-in-out" id="navbar">
     <div class="container mx-auto flex justify-between items-center px-6 py-4">
-        <a href="/home" class="text-2xl font-serif font-bold text-black hover:text-gray-600 transition duration-300">Shoe Vault</a>
-        
+        <a href="/home"
+            class="text-2xl font-serif font-bold text-black hover:text-gray-600 transition duration-300">Shoe Vault</a>
+
         <!-- Hamburger for mobile -->
-        <button id="mobileMenuButton" class="md:hidden flex flex-col justify-center items-center w-10 h-10 focus:outline-none" aria-label="Toggle navigation" aria-expanded="false">
+        <button id="mobileMenuButton"
+            class="md:hidden flex flex-col justify-center items-center w-10 h-10 focus:outline-none"
+            aria-label="Toggle navigation" aria-expanded="false">
             <span class="hamburger-line block w-6 h-0.5 bg-black mb-1 transition-all duration-300"></span>
             <span class="hamburger-line block w-6 h-0.5 bg-black mb-1 transition-all duration-300"></span>
             <span class="hamburger-line block w-6 h-0.5 bg-black transition-all duration-300"></span>
         </button>
-        
+
         <!-- Nav links -->
-        <ul id="navLinks" class="hidden md:flex space-x-8 absolute md:static top-full left-0 w-full md:w-auto bg-white md:bg-transparent flex-col md:flex-row z-40">
-            <li><a href="/home" class="block px-2 py-3 md:py-2 text-black hover:text-gray-600 transition duration-300 font-medium text-sm uppercase tracking-wide">HOME</a></li>
-            <li><a href="/shop" class="block px-2 py-3 md:py-2 text-black hover:text-gray-600 transition duration-300 font-medium text-sm uppercase tracking-wide">SHOP</a></li>
-            <li><a href="/about" class="block px-2 py-3 md:py-2 text-black hover:text-gray-600 transition duration-300 font-medium text-sm uppercase tracking-wide">ABOUT US</a></li>
+        <ul id="navLinks"
+            class="hidden md:flex space-x-8 absolute md:static top-full left-0 w-full md:w-auto bg-white md:bg-transparent flex-col md:flex-row z-40">
+            <li><a href="/home"
+                    class="block px-2 py-3 md:py-2 text-black hover:text-gray-600 transition duration-300 font-medium text-sm uppercase tracking-wide">HOME</a>
+            </li>
+            <li><a href="/shop"
+                    class="block px-2 py-3 md:py-2 text-black hover:text-gray-600 transition duration-300 font-medium text-sm uppercase tracking-wide">SHOP</a>
+            </li>
+            <li><a href="/about"
+                    class="block px-2 py-3 md:py-2 text-black hover:text-gray-600 transition duration-300 font-medium text-sm uppercase tracking-wide">ABOUT
+                    US</a></li>
         </ul>
-        
+
         <div class="flex items-center space-x-6">
-            <a href="/wishlist" class="text-black hover:text-gray-600 transition duration-300 flex items-center" aria-label="View wishlist">
+            <a href="/wishlist" class="text-black hover:text-gray-600 transition duration-300 flex items-center"
+                aria-label="View wishlist">
                 <img src="/image/whishlist.svg" alt="Wishlist" class="w-6 h-6">
             </a>
-            <a href="/cart" class="text-black hover:text-gray-600 transition duration-300 flex items-center relative" aria-label="View cart">
+            <a href="/cart" class="text-black hover:text-gray-600 transition duration-300 flex items-center relative"
+                aria-label="View cart">
                 <img src="/image/cart-icon.svg" alt="Cart" class="w-6 h-6">
                 <!-- Cart count badge can be added here -->
             </a>
             <div class="relative">
-                <button class="text-black hover:text-gray-600 focus:outline-none flex items-center" id="profileButton" aria-label="User profile menu" aria-expanded="false">
+                <!-- <button class="text-black hover:text-gray-600 focus:outline-none flex items-center" id="profileButton"
+                    aria-label="User profile menu" aria-expanded="false">
                     <img src="/image/profile.jpg" alt="Profile" class="w-8 h-8 rounded-full">
-               </button>
+                </button> -->
                 <!-- Dropdown -->
-                <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg border border-gray-200 z-50">
-                    <a href="/profile" class="block px-4 py-3 text-gray-700 hover:bg-gray-50 transition duration-200 font-medium">My Profile</a>
-                    <hr class="my-1 border-gray-200">
-                    <div class="flex justify-center">
-                        <button id="logoutButton" class="block px-4 py-3 text-red-600 hover:bg-red-50 transition duration-200 font-medium w-full text-left">
-                            Logout
-                        </button>
+                <% if(user){ %>
+                    <div id="profileDropdown"
+                        class="hidden absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg border border-gray-200 z-50">
+                        <a href="/profile"
+                            class="block px-4 py-3 text-gray-700 hover:bg-gray-50 transition duration-200 font-medium">My
+                            Profile</a>
+                        <hr class="my-1 border-gray-200">
+                        <div class="flex justify-center">
+                            <button id="logoutButton"
+                                class="block px-4 py-3 text-red-600 hover:bg-red-50 transition duration-200 font-medium w-full text-left">
+                                Logout
+                            </button>
+                        </div>
                     </div>
-                </div>
+                    <% }else{ %>
+                        <a href="/login" class="text-gray-700 font-medium hover:text-black">Login/Signup</a>
+
+                        <% } %>
             </div>
         </div>
     </div>
@@ -74,14 +96,14 @@
     // Profile dropdown functionality
     const profileButton = document.getElementById('profileButton');
     const profileDropdown = document.getElementById('profileDropdown');
-    
+
     profileButton.addEventListener('click', (e) => {
         e.stopPropagation();
         const isOpen = !profileDropdown.classList.contains('hidden');
-        
+
         // Close mobile menu if open
         closeMobileMenu();
-        
+
         // Toggle dropdown
         if (isOpen) {
             closeProfileDropdown();
@@ -103,14 +125,14 @@
     // Mobile menu functionality
     const mobileMenuButton = document.getElementById('mobileMenuButton');
     const navLinks = document.getElementById('navLinks');
-    
+
     mobileMenuButton.addEventListener('click', (e) => {
         e.stopPropagation();
         const isOpen = !navLinks.classList.contains('hidden');
-        
+
         // Close profile dropdown if open
         closeProfileDropdown();
-        
+
         // Toggle mobile menu
         if (isOpen) {
             closeMobileMenu();
@@ -142,7 +164,7 @@
         if (!profileButton.contains(event.target) && !profileDropdown.contains(event.target)) {
             closeProfileDropdown();
         }
-        
+
         if (!mobileMenuButton.contains(event.target) && !navLinks.contains(event.target)) {
             closeMobileMenu();
         }
