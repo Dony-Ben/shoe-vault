@@ -37,12 +37,12 @@
                 <!-- Cart count badge can be added here -->
             </a>
             <div class="relative">
-                <button class="text-black hover:text-gray-600 focus:outline-none flex items-center" id="profileButton"
-                    aria-label="User profile menu" aria-expanded="false">
-                    <img src="/image/profile.jpg" alt="Profile" class="w-8 h-8 rounded-full">
-                </button>
-                <!-- Dropdown -->
                 <% if(user){ %>
+                    <button class="text-black hover:text-gray-600 focus:outline-none flex items-center" id="profileButton"
+                        aria-label="User profile menu" aria-expanded="false">
+                        <img src="/image/profile.jpg" alt="Profile" class="w-8 h-8 rounded-full">
+                    </button>
+                    <!-- Dropdown -->
                     <div id="profileDropdown"
                         class="hidden absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg border border-gray-200 z-50">
                         <a href="/profile"
@@ -56,10 +56,9 @@
                             </button>
                         </div>
                     </div>
-                    <% }else if(!user){ %>
-                        <a href="/login" class="text-gray-700 font-medium hover:text-black">Login/Signup</a>
-
-                        <% } %>
+                <% } else { %>
+                    <a href="/login" class="text-gray-700 font-medium hover:text-black">Login/Signup</a>
+                <% } %>
             </div>
         </div>
     </div>
@@ -97,29 +96,31 @@
     const profileButton = document.getElementById('profileButton');
     const profileDropdown = document.getElementById('profileDropdown');
 
-    profileButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isOpen = !profileDropdown.classList.contains('hidden');
+    if (profileButton && profileDropdown) {
+        profileButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = !profileDropdown.classList.contains('hidden');
 
-        // Close mobile menu if open
-        closeMobileMenu();
+            // Close mobile menu if open
+            closeMobileMenu();
 
-        // Toggle dropdown
-        if (isOpen) {
-            closeProfileDropdown();
-        } else {
-            openProfileDropdown();
+            // Toggle dropdown
+            if (isOpen) {
+                closeProfileDropdown();
+            } else {
+                openProfileDropdown();
+            }
+        });
+
+        function openProfileDropdown() {
+            profileDropdown.classList.remove('hidden');
+            profileButton.setAttribute('aria-expanded', 'true');
         }
-    });
 
-    function openProfileDropdown() {
-        profileDropdown.classList.remove('hidden');
-        profileButton.setAttribute('aria-expanded', 'true');
-    }
-
-    function closeProfileDropdown() {
-        profileDropdown.classList.add('hidden');
-        profileButton.setAttribute('aria-expanded', 'false');
+        function closeProfileDropdown() {
+            profileDropdown.classList.add('hidden');
+            profileButton.setAttribute('aria-expanded', 'false');
+        }
     }
 
     // Mobile menu functionality
