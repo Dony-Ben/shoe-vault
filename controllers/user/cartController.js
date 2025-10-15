@@ -6,6 +6,7 @@ const { RENDER_PAGE_KEYS } = require("../../constants/renderPageKeys");
 const getcartpage = async (req, res) => {
     try {
         const userId = req.session.user?.id;
+        const user = req.session.user? req.session.user : null;
         const cart = await Cart.findOne({ userId: userId }).populate('items.productId');
 
         if (!cart) {
@@ -23,6 +24,7 @@ const getcartpage = async (req, res) => {
             cart: cart.items,
             subtotal,
             total,
+            user,
         });
     } catch (error) {
         console.error("Error in getcartpage:", error);

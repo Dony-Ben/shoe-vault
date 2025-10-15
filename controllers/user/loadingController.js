@@ -4,7 +4,6 @@ const Category = require("../../models/category");
 const Offer = require("../../models/offers");
 const Product = require("../../models/product");
 const Brands = require("../../models/Brands")
-const Order = require("../../models/order");
 
 const pageNotFound = async (req, res) => {
     try {
@@ -91,9 +90,9 @@ const landingpage = async (req, res) => {
 
 const loadhome = async (req, res) => {
     try {
-
+        const user = req.session.user? req.session.user : null;
         let productData = await Product.find({ isblocked: false }).populate({ path: "brands", match: { isBlocked: false } });
-        res.render(RENDER_PAGE_KEYS.userHome, { products: productData, user: req.session.user });
+        res.render(RENDER_PAGE_KEYS.userHome, { products: productData,user});
     } catch (error) {
         console.error(error);
         res.status(STATUS_CODES.InternalError).send('Server Error');
@@ -251,6 +250,7 @@ const applyOffersToProducts = (products, offers) => {
 
 const shop = async (req, res) => {
     try {
+        const user = req.session.user? req.session.user : null;
         const currentPage = parseInt(req.query.page) || 1;
         const productsPerPage = 12;
 
@@ -300,7 +300,7 @@ const shop = async (req, res) => {
             maxPrice,
             minPrice,
             req,
-            user: req.session.user,
+            user,
         });
     } catch (error) {
         console.error("Error while rendering shop page:", error);
@@ -310,7 +310,8 @@ const shop = async (req, res) => {
 
 const about = async (req, res) => {
     try {
-        res.render(RENDER_PAGE_KEYS.userAbout)
+        const user = req.session.user? req.session.user : null;
+        res.render(RENDER_PAGE_KEYS.userAbout,{user});
     } catch (error) {
         console.error(error);
 

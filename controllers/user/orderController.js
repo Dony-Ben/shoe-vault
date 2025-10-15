@@ -52,6 +52,7 @@ function getBestOfferForProduct(product, offers) {
 
 const loadcheckout = async (req, res) => {
     try {
+        const user = req.session.user? req.session.user : null;
         if (!req.session.user) {
             return res.redirect('/login');
         }
@@ -96,6 +97,7 @@ const loadcheckout = async (req, res) => {
             coupons,
             offerDiscount,
             offerTotal,
+            user
         });
     } catch (error) {
         console.error("Error while loading checkout page:", error.message);
