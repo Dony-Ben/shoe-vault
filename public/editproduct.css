@@ -100,35 +100,7 @@
     margin-bottom: 1.5rem;
   }
   
-  .row {
-    display: flex;
-    flex-wrap: wrap;
-    margin-right: -15px;
-    margin-left: -15px;
-  }
-  
-  .col-lg-4,
-  .col-lg-6,
-  .col-9 {
-    padding-right: 15px;
-    padding-left: 15px;
-    width: 100%;
-  }
-  
-  @media (min-width: 992px) {
-    .col-lg-4 {
-      flex: 0 0 33.333333%;
-      max-width: 33.333333%;
-    }
-    .col-lg-6 {
-      flex: 0 0 50%;
-      max-width: 50%;
-    }
-    .col-9 {
-      flex: 0 0 75%;
-      max-width: 75%;
-    }
-  }
+  /* Bootstrap-style grid rules removed to prevent conflicts with Tailwind CSS */
   
   .card-header {
     background-color: var(--primary-color);

@@ -57,11 +57,11 @@ userRouter.post('/user/delete-address/:id', userAuth, deleteAddress);
 
 
 // Authenticated routes (Require login)
-userRouter.get("/home", userAuth, loadhome);
+userRouter.get("/home", loadhome);
 userRouter.get("/logout", logout);
 userRouter.get("/pageNotFound", userAuth, pageNotFound);
 userRouter.get("/shop",shop);
-userRouter.get("/about", userAuth, about)
+userRouter.get("/about",  about)
 
 // OTP Management
 userRouter.get('/otp', ensureGuest, loadOTP);

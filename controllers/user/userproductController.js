@@ -10,7 +10,7 @@ const productDetails = async (req, res) => {
             return;
         }
 
-        const productData = await product.findById(id).populate('category');
+        const productData = await product.findById(id).populate('category').populate('brands');
         if (!productData) {
             return res.redirect("/shop");
         }
@@ -21,7 +21,13 @@ const productDetails = async (req, res) => {
                 isWishlisted = wishlist.product.some(p => p.productId.toString() === id);
             }
         }
-        res.render("user/product-details", { productData, isWishlisted,user: req.session.user });
+        // Fetch related products: same category, exclude current, limit 4
+        const relatedProducts = await product.find({
+            category: productData.category,
+            _id: { $ne: id },
+            isblocked: false
+        }).populate('brands').limit(4);
+        res.render("user/product-details", { productData, isWishlisted, relatedProducts, user: req.session.user });
     } catch (error) {
         console.log('error in productdetail: ', error);
     }

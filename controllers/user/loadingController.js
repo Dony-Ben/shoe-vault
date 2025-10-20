@@ -252,7 +252,7 @@ const shop = async (req, res) => {
     try {
         const user = req.session.user? req.session.user : null;
         const currentPage = parseInt(req.query.page) || 1;
-        const productsPerPage = 12;
+        const productsPerPage = 9;
 
         const maxPriceProduct = await Product.findOne().sort({ salePrice: -1 }).select("salePrice");
         const maxPrice = maxPriceProduct ? maxPriceProduct.salePrice : 10000;
@@ -278,8 +278,6 @@ const shop = async (req, res) => {
 
         if (req.query.sort) filters.sort = req.query.sort;
 
-        console.log("Filters received:", req.query);
-        console.log("Filters applied:", filters);
         const [products, totalPages, categories, Brand, offers,] = await Promise.all([
             getPaginatedProducts(currentPage, productsPerPage, filters),
             getTotalPages(productsPerPage, filters),

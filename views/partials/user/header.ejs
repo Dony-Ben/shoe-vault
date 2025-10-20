@@ -1,211 +1,261 @@
 <nav class="bg-white fixed w-full z-50 transition-all duration-300 ease-in-out" id="navbar">
-    <div class="container mx-auto flex justify-between items-center px-6 py-4">
-        <a href="/home"
-            class="text-2xl font-serif font-bold text-black hover:text-gray-600 transition duration-300">Shoe Vault</a>
-
-        <!-- Hamburger for mobile -->
-        <button id="mobileMenuButton"
-            class="md:hidden flex flex-col justify-center items-center w-10 h-10 focus:outline-none"
-            aria-label="Toggle navigation" aria-expanded="false">
-            <span class="hamburger-line block w-6 h-0.5 bg-black mb-1 transition-all duration-300"></span>
-            <span class="hamburger-line block w-6 h-0.5 bg-black mb-1 transition-all duration-300"></span>
-            <span class="hamburger-line block w-6 h-0.5 bg-black transition-all duration-300"></span>
-        </button>
-
-        <!-- Nav links -->
-        <ul id="navLinks"
-            class="hidden md:flex space-x-8 absolute md:static top-full left-0 w-full md:w-auto bg-white md:bg-transparent flex-col md:flex-row z-40">
-            <li><a href="/home"
-                    class="block px-2 py-3 md:py-2 text-black hover:text-gray-600 transition duration-300 font-medium text-sm uppercase tracking-wide">HOME</a>
-            </li>
-            <li><a href="/shop"
-                    class="block px-2 py-3 md:py-2 text-black hover:text-gray-600 transition duration-300 font-medium text-sm uppercase tracking-wide">SHOP</a>
-            </li>
-            <li><a href="/about"
-                    class="block px-2 py-3 md:py-2 text-black hover:text-gray-600 transition duration-300 font-medium text-sm uppercase tracking-wide">ABOUT
-                    US</a></li>
-        </ul>
-
-        <div class="flex items-center space-x-6">
-            <a href="/wishlist" class="text-black hover:text-gray-600 transition duration-300 flex items-center"
-                aria-label="View wishlist">
-                <img src="/image/whishlist.svg" alt="Wishlist" class="w-6 h-6">
-            </a>
-            <a href="/cart" class="text-black hover:text-gray-600 transition duration-300 flex items-center relative"
-                aria-label="View cart">
-                <img src="/image/cart-icon.svg" alt="Cart" class="w-6 h-6">
-                <!-- Cart count badge can be added here -->
-            </a>
-            <div class="relative">
+        <div class="container mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8 xl:px-12 py-3 sm:py-4">
+            <a href="/home"
+                class="text-xl sm:text-2xl font-serif font-bold text-black hover:text-gray-600 transition duration-300">Shoe Vault</a>
+    
+            <!-- Hamburger for mobile -->
+            <button id="mobileMenuButton"
+                class="sm:hidden flex flex-col justify-center items-center w-10 h-10 focus:outline-none"
+                aria-label="Toggle navigation" aria-expanded="false">
+                <span class="hamburger-line block w-6 h-0.5 bg-black mb-1 transition-all duration-300"></span>
+                <span class="hamburger-line block w-6 h-0.5 bg-black mb-1 transition-all duration-300"></span>
+                <span class="hamburger-line block w-6 h-0.5 bg-black transition-all duration-300"></span>
+            </button>
+    
+            <!-- Nav links -->
+            <ul id="navLinks"
+                class="hidden sm:flex space-x-6 xl:space-x-8 absolute sm:static top-full left-0 w-full sm:w-auto bg-gray-500 sm:bg-transparent flex-col sm:flex-row z-40">
+                <li><a href="/home"
+                        class="block px-3 py-3 sm:py-2 text-black hover:text-gray-600 transition duration-300 font-medium text-sm uppercase tracking-wide">HOME</a>
+                </li>
+                <li><a href="/shop"
+                        class="block px-3 py-3 sm:py-2 text-black hover:text-gray-600 transition duration-300 font-medium text-sm uppercase tracking-wide">SHOP</a>
+                </li>
+                <li><a href="/about"
+                        class="block px-3 py-3 sm:py-2 text-black hover:text-gray-600 transition duration-300 font-medium text-sm uppercase tracking-wide">ABOUT
+                        US</a></li>
+                <!-- Mobile-only icons and auth -->
+                <li class="sm:hidden border-t border-gray-200 my-2"></li>
+                <li class="sm:hidden">
+                    <a href="/wishlist" class="flex items-center px-3 py-3 text-black hover:text-gray-600 transition duration-300">
+                        <img src="/image/whishlist.svg" alt="Wishlist" class="w-5 h-5 mr-2"> Wishlist
+                    </a>
+                </li>
+                <li class="sm:hidden">
+                    <a href="/cart" class="flex items-center px-3 py-3 text-black hover:text-gray-600 transition duration-300">
+                        <img src="/image/cart-icon.svg" alt="Cart" class="w-5 h-5 mr-2"> Cart
+                    </a>
+                </li>
                 <% if(user){ %>
-                    <button class="text-black hover:text-gray-600 focus:outline-none flex items-center" id="profileButton"
-                        aria-label="User profile menu" aria-expanded="false">
-                        <img src="/image/profile.jpg" alt="Profile" class="w-8 h-8 rounded-full">
-                    </button>
-                    <!-- Dropdown -->
-                    <div id="profileDropdown"
-                        class="hidden absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg border border-gray-200 z-50">
-                        <a href="/profile"
-                            class="block px-4 py-3 text-gray-700 hover:bg-gray-50 transition duration-200 font-medium">My
-                            Profile</a>
-                        <hr class="my-1 border-gray-200">
-                        <div class="flex justify-center">
-                            <button id="logoutButton"
-                                class="block px-4 py-3 text-red-600 hover:bg-red-50 transition duration-200 font-medium w-full text-left">
-                                Logout
-                            </button>
-                        </div>
-                    </div>
+                <li class="sm:hidden">
+                    <a href="/profile" class="flex items-center px-3 py-3 text-black hover:text-gray-600 transition duration-300">
+                        <img src="/image/profile.jpg" alt="Profile" class="w-6 h-6 rounded-full mr-2"> My Profile
+                    </a>
+                </li>
+                <li class="sm:hidden">
+                    <button id="mobileLogoutButton" class="w-full text-left px-3 py-3 text-red-600 hover:bg-red-50 transition duration-200">Logout</button>
+                </li>
                 <% } else { %>
-                    <a href="/login" class="text-gray-700 font-medium hover:text-black">Login/Signup</a>
+                <li class="sm:hidden">
+                    <a href="/login" class="block px-3 py-3 text-gray-700 hover:text-black transition duration-300">Login/Signup</a>
+                </li>
                 <% } %>
+            </ul>
+    
+            <div class="hidden sm:flex items-center space-x-4 sm:space-x-6">
+                <a href="/wishlist" class="text-black hover:text-gray-600 transition duration-300 flex items-center"
+                    aria-label="View wishlist">
+                    <img src="/image/whishlist.svg" alt="Wishlist" class="w-5 h-5 sm:w-6 sm:h-6">
+                </a>
+                <a href="/cart" class="text-black hover:text-gray-600 transition duration-300 flex items-center relative"
+                    aria-label="View cart">
+                    <img src="/image/cart-icon.svg" alt="Cart" class="w-5 h-5 sm:w-6 sm:h-6">
+                    <!-- Cart count badge can be added here -->
+                </a>
+                <div class="relative">
+                    <% if(user){ %>
+                        <button class="text-black hover:text-gray-600 focus:outline-none flex items-center" id="profileButton"
+                            aria-label="User profile menu" aria-expanded="false">
+                            <img src="/image/profile.jpg" alt="Profile" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full">
+                        </button>
+                        <!-- Dropdown -->
+                        <div id="profileDropdown"
+                            class="hidden absolute right-0 mt-2 w-44 sm:w-48 bg-white shadow-lg rounded-lg border border-gray-200 z-50">
+                            <a href="/profile"
+                                class="block px-4 py-3 text-gray-700 hover:bg-gray-50 transition duration-200 font-medium">My
+                                Profile</a>
+                            <hr class="my-1 border-gray-200">
+                            <div class="flex justify-center">
+                                <button id="logoutButton"
+                                    class="block px-4 py-3 text-red-600 hover:bg-red-50 transition duration-200 font-medium w-full text-left">
+                                    Logout
+                                </button>
+                            </div>
+                        </div>
+                    <% } else { %>
+                        <a href="/login" class="text-gray-700 font-medium hover:text-black text-sm sm:text-base">Login/Signup</a>
+                    <% } %>
+                </div>
             </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
 <script>
-    let lastScrollY = window.scrollY;
-    const navbar = document.getElementById('navbar');
-
-    window.addEventListener('scroll', () => {
-        const currentScrollY = window.scrollY;
-
-        if (currentScrollY > lastScrollY && currentScrollY > 50) {
-            navbar.style.transform = 'translateY(-100%)';
-        } else if (currentScrollY < lastScrollY) {
-            navbar.style.transform = 'translateY(0)';
+        let lastScrollY = window.scrollY;
+        const navbar = document.getElementById('navbar');
+    
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+    
+            if (currentScrollY > lastScrollY && currentScrollY > 50) {
+                navbar.style.transform = 'translateY(-100%)';
+            } else if (currentScrollY < lastScrollY) {
+                navbar.style.transform = 'translateY(0)';
+            }
+    
+            lastScrollY = currentScrollY;
+        });
+    
+        // Scroll animations (unchanged)
+        const elements = document.querySelectorAll('.animate-on-scroll');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                }
+            });
+        }, { threshold: 0.1 });
+    
+        elements.forEach(el => observer.observe(el));
+    
+        // Profile dropdown functionality
+        const profileButton = document.getElementById('profileButton');
+        const profileDropdown = document.getElementById('profileDropdown');
+    
+        if (profileButton && profileDropdown) {
+            profileButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = !profileDropdown.classList.contains('hidden');
+    
+                // Close mobile menu if open
+                closeMobileMenu();
+    
+                // Toggle dropdown
+                if (isOpen) {
+                    closeProfileDropdown();
+                } else {
+                    openProfileDropdown();
+                }
+            });
+    
+            function openProfileDropdown() {
+                profileDropdown.classList.remove('hidden');
+                profileButton.setAttribute('aria-expanded', 'true');
+            }
+    
+            function closeProfileDropdown() {
+                profileDropdown.classList.add('hidden');
+                profileButton.setAttribute('aria-expanded', 'false');
+            }
         }
-
-        lastScrollY = currentScrollY;
-    });
-
-    // Scroll animations (unchanged)
-    const elements = document.querySelectorAll('.animate-on-scroll');
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
+    
+        // Mobile menu functionality
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const navLinks = document.getElementById('navLinks');
+        const mobileLogoutButton = document.getElementById('mobileLogoutButton');
+    
+        if (mobileMenuButton) {
+            mobileMenuButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = !navLinks.classList.contains('hidden');
+    
+                // Close profile dropdown if open
+                if (typeof closeProfileDropdown === 'function') {
+                    closeProfileDropdown();
+                }
+    
+                // Toggle mobile menu
+                if (isOpen) {
+                    closeMobileMenu();
+                } else {
+                    openMobileMenu();
+                }
+            });
+        }
+    
+        function openMobileMenu() {
+            if (navLinks && mobileMenuButton) {
+                navLinks.classList.remove('hidden');
+                mobileMenuButton.setAttribute('aria-expanded', 'true');
+                // Animate hamburger to X
+                const line1 = mobileMenuButton.querySelector('.hamburger-line:nth-child(1)');
+                const line2 = mobileMenuButton.querySelector('.hamburger-line:nth-child(2)');
+                const line3 = mobileMenuButton.querySelector('.hamburger-line:nth-child(3)');
+                
+                if (line1) line1.style.transform = 'rotate(65deg) translate(5px,4px)';
+                if (line2) line2.style.opacity = '0';
+                if (line3) line3.style.transform = 'rotate(-45deg) translate(5px, -5px)';
+            }
+        }
+    
+        function closeMobileMenu() {
+            if (navLinks && mobileMenuButton) {
+                navLinks.classList.add('hidden');
+                mobileMenuButton.setAttribute('aria-expanded', 'false');
+                // Reset hamburger animation
+                const line1 = mobileMenuButton.querySelector('.hamburger-line:nth-child(1)');
+                const line2 = mobileMenuButton.querySelector('.hamburger-line:nth-child(2)');
+                const line3 = mobileMenuButton.querySelector('.hamburger-line:nth-child(3)');
+                
+                if (line1) line1.style.transform = '';
+                if (line2) line2.style.opacity = '';
+                if (line3) line3.style.transform = '';
+            }
+        }
+    
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (event) => {
+            if (profileButton && profileDropdown && !profileButton.contains(event.target) && !profileDropdown.contains(event.target)) {
+                if (typeof closeProfileDropdown === 'function') {
+                    closeProfileDropdown();
+                }
+            }
+    
+            if (mobileMenuButton && navLinks && !mobileMenuButton.contains(event.target) && !navLinks.contains(event.target)) {
+                closeMobileMenu();
             }
         });
-    }, { threshold: 0.1 });
-
-    elements.forEach(el => observer.observe(el));
-
-    // Profile dropdown functionality
-    const profileButton = document.getElementById('profileButton');
-    const profileDropdown = document.getElementById('profileDropdown');
-
-    if (profileButton && profileDropdown) {
-        profileButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const isOpen = !profileDropdown.classList.contains('hidden');
-
-            // Close mobile menu if open
-            closeMobileMenu();
-
-            // Toggle dropdown
-            if (isOpen) {
+    
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 640) {
+                closeMobileMenu();
+            }
+        });
+    
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
                 closeProfileDropdown();
-            } else {
-                openProfileDropdown();
+                closeMobileMenu();
             }
         });
-
-        function openProfileDropdown() {
-            profileDropdown.classList.remove('hidden');
-            profileButton.setAttribute('aria-expanded', 'true');
-        }
-
-        function closeProfileDropdown() {
-            profileDropdown.classList.add('hidden');
-            profileButton.setAttribute('aria-expanded', 'false');
-        }
-    }
-
-    // Mobile menu functionality
-    const mobileMenuButton = document.getElementById('mobileMenuButton');
-    const navLinks = document.getElementById('navLinks');
-
-    mobileMenuButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isOpen = !navLinks.classList.contains('hidden');
-
-        // Close profile dropdown if open
-        closeProfileDropdown();
-
-        // Toggle mobile menu
-        if (isOpen) {
-            closeMobileMenu();
-        } else {
-            openMobileMenu();
-        }
-    });
-
-    function openMobileMenu() {
-        navLinks.classList.remove('hidden');
-        mobileMenuButton.setAttribute('aria-expanded', 'true');
-        // Animate hamburger to X
-        mobileMenuButton.querySelector('.hamburger-line:nth-child(1)').style.transform = 'rotate(45deg) translate(5px, 5px)';
-        mobileMenuButton.querySelector('.hamburger-line:nth-child(2)').style.opacity = '0';
-        mobileMenuButton.querySelector('.hamburger-line:nth-child(3)').style.transform = 'rotate(-45deg) translate(7px, -6px)';
-    }
-
-    function closeMobileMenu() {
-        navLinks.classList.add('hidden');
-        mobileMenuButton.setAttribute('aria-expanded', 'false');
-        // Reset hamburger animation
-        mobileMenuButton.querySelector('.hamburger-line:nth-child(1)').style.transform = '';
-        mobileMenuButton.querySelector('.hamburger-line:nth-child(2)').style.opacity = '';
-        mobileMenuButton.querySelector('.hamburger-line:nth-child(3)').style.transform = '';
-    }
-
-    // Close dropdowns when clicking outside
-    document.addEventListener('click', (event) => {
-        if (!profileButton.contains(event.target) && !profileDropdown.contains(event.target)) {
-            closeProfileDropdown();
-        }
-
-        if (!mobileMenuButton.contains(event.target) && !navLinks.contains(event.target)) {
-            closeMobileMenu();
-        }
-    });
-
-    // Handle window resize
-    window.addEventListener('resize', () => {
-        if (window.innerWidth >= 768) {
-            closeMobileMenu();
-        }
-    });
-
-    // Handle escape key
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
-            closeProfileDropdown();
-            closeMobileMenu();
-        }
-    });
-
-    // Logout functionality
-    document.getElementById('logoutButton').addEventListener('click', () => {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You will be logged out!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, log me out!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire(
-                    'Logged Out!',
-                    'You have been logged out successfully.',
-                    'success'
-                ).then(() => {
-                    window.location.href = '/logout';
+    
+        const desktopLogoutButton = document.getElementById('logoutButton');
+        function attachLogoutHandler(button) {
+            if (!button) return;
+            button.addEventListener('click', () => {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You will be logged out!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire(
+                            'Logged Out!',
+                            'You have been logged out successfully.',
+                            'success'
+                        ).then(() => {
+                            window.location.href = '/logout';
+                        });
+                    }
                 });
-            }
-        });
-    });
+            });
+        }
+        attachLogoutHandler(desktopLogoutButton);
+        attachLogoutHandler(mobileLogoutButton);
 </script>
+
