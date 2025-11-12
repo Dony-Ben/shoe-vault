@@ -21,12 +21,15 @@ const productDetails = async (req, res) => {
                 isWishlisted = wishlist.product.some(p => p.productId.toString() === id);
             }
         }
-        // Fetch related products: same category, exclude current, limit 4
-        const relatedProducts = await product.find({
-            category: productData.category,
-            _id: { $ne: id },
-            isblocked: false
-        }).populate('brands').limit(4);
+        let relatedProducts = [];
+        const brandId = productData.brands?._id || productData.brands;
+        if (brandId) {
+            relatedProducts = await product.find({
+                brands: brandId,
+                _id: { $ne: id },
+                isblocked: false
+            }).populate('brands').limit(4);
+        }
         res.render("user/product-details", { productData, isWishlisted, relatedProducts, user: req.session.user });
     } catch (error) {
         console.log('error in productdetail: ', error);
